@@ -1,18 +1,21 @@
-import { defineConfig } from "vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
-import babel from "@rolldown/plugin-babel";
-import { fileURLToPath } from "url";
-
-import path from "path";
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
+import svgr from 'vite-plugin-svgr';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// https://vite.dev/config/
+
 export default defineConfig({
-  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
+  plugins: [react(), svgr()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "/src"),
+      '@': path.resolve(__dirname, './src'),
     },
+  },
+  server: {
+    port: 5173,
+    open: true,
   },
 });

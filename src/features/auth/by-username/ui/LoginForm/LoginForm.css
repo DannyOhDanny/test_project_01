@@ -1,0 +1,240 @@
+.form-content {
+  border-radius: 40px;
+  width: 527px;
+  height: 716px;
+  background: #fff;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* ---------- Карточка ---------- */
+.form-card {
+  border-radius: 34px;
+  border: 1.5px solid #ededed;
+  padding: 48px;
+  width: 515px;
+  height: 704px;
+  background: linear-gradient(180deg, rgba(35, 35, 35, 0.03) 0%, rgba(35, 35, 35, 0) 50%);
+}
+
+.form-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.ant-card .ant-card-body {
+  padding: 0 !important;
+}
+
+/* ---------- Логотип ---------- */
+.form-image {
+  display: block;
+  margin: 0 auto;
+  width: 52px;
+  height: 52px;
+  padding: 8.5px 9px;
+  border-radius: 100px;
+  box-shadow:
+    0 12px 8px 0 rgba(0, 0, 0, 0.03),
+    0 0 0 2px #fff;
+}
+
+.form-image svg {
+  border-radius: 100px;
+  background: #fff, linear-gradient(360deg, rgba(35, 35, 35, 0) 50%, rgba(35, 35, 35, 0.06) 100%);
+}
+
+/* ---------- Заголовки и текст ---------- */
+.form-title {
+  font-family: var(--third-family);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 110%;
+  letter-spacing: -0.01em;
+  text-align: center;
+  margin-top: 32px;
+  background: linear-gradient(to bottom, #1f1f1f 0%, #2b2b2b 60%, #3a3a3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.form-secondary-text {
+  font-family: var(--third-family);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 150%;
+  text-align: center;
+  color: var(--font-color--secondary);
+  text-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.17);
+  margin-top: 12px;
+  padding: 0;
+}
+
+/* ---------- Форма ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 32px;
+}
+
+/* ---------- Поля ввода ---------- */
+.ant-input-affix-wrapper {
+  border-radius: 12px !important;
+  height: 48px;
+  border: 1.5px solid var(--border-color) !important;
+}
+
+/* ---------- Элементы формы (отступы) ---------- */
+.form-item:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+.form-item:has(.ant-form-item-explain-error) {
+  margin-bottom: 6px;
+}
+
+/* ---------- Сообщения об ошибках ---------- */
+.ant-form-item-explain {
+  min-height: 0;
+  transition:
+    min-height 0.2s ease,
+    margin 0.2s ease;
+}
+
+.ant-form-item-explain-error {
+  margin-top: 4px;
+  margin-bottom: 6px;
+  animation: slideDown 0.2s ease;
+  font-size: 14px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Чекбокс ---------- */
+.check-box {
+  margin-bottom: 16px;
+}
+.form-input {
+  min-width: 399px;
+  width: 100%;
+}
+
+.form-label {
+  font-family: var(--third-family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  color: var(--checkbox-label-color);
+}
+
+.ant-form-item .ant-form-item-label > label.ant-form-item-required::before {
+  display: none;
+}
+
+/* ---------- Кнопка отправки ---------- */
+.form-button {
+  width: 399px;
+  height: 54px;
+  background: var(--gradient-primary);
+  box-shadow:
+    0 8px 20px rgba(47, 63, 255, 0.25),
+    0 4px 8px rgba(47, 63, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-size: 16px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 0;
+}
+
+.form-button:hover {
+  transform: translateY(-2px);
+  background: var(--gradient-primary-hover);
+  box-shadow:
+    0 12px 28px rgba(47, 63, 255, 0.4),
+    0 6px 12px rgba(47, 63, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  filter: brightness(1.02);
+  animation: pulse 0.8s ease infinite alternate;
+}
+
+.form-button:active {
+  transform: translateY(1px);
+  background: var(--gradient-primary-active);
+  box-shadow:
+    0 4px 12px rgba(47, 63, 255, 0.2),
+    0 2px 4px rgba(47, 63, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  transition: all 0.05s ease;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 8px 20px rgba(47, 63, 255, 0.25);
+  }
+  100% {
+    box-shadow: 0 12px 28px rgba(47, 63, 255, 0.45);
+  }
+}
+
+/* ---------- Разделитель ---------- */
+.ant-divider-horizontal.ant-divider-with-text {
+  margin: 16px 0 32px 0;
+  font-family: var(--third-family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  color: var(--divider-color);
+  text-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.ant-divider .ant-divider-rail {
+  border-block-start: 1px solid var(--divider-color) !important;
+}
+
+.form-bottom-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+.form-bottom-text {
+  text-align: center;
+  font-family: var(--third-family);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+  color: #6c6c6c;
+}
+.form-link-root {
+  margin: 0;
+  padding: 0;
+}
+
+.form-link {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  color: #242edb;
+}
