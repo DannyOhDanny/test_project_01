@@ -6,7 +6,7 @@
 
 ## Стек
 
-- React 19
+- React 19 + React Compiler
 - Vite
 - TypeScript
 - Ant Design + antd-style

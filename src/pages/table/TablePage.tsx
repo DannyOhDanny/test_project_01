@@ -50,15 +50,19 @@ const TablePage: React.FC = () => {
     addProduct,
   } = useProductStore();
 
-  const [sortedInfo, setSortedInfo] = useState(() => {
+  const getInitialSort = (): SorterResult<Product> | null => {
+    const savedSort = localStorage.getItem('sortOrder');
+
+    if (!savedSort) return null;
+
     try {
-      const savedSort = localStorage.getItem('sortOrder');
-      return savedSort ? JSON.parse(savedSort) : null;
-    } catch (e) {
-      console.error('Ошибка сортировки', e);
+      return JSON.parse(savedSort);
+    } catch {
       return null;
     }
-  });
+  };
+
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<Product> | null>(getInitialSort);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
   const [form] = Form.useForm<ProductFormFieldsType>();
