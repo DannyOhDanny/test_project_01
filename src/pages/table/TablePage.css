@@ -21,3 +21,27 @@
   min-height: 42px;
   background: var(--bg-color);
 }
+
+.ant-pagination .ant-pagination-item {
+  box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.12) !important;
+  line-height: 1.8;
+}
+
+.ant-pagination .ant-pagination-item-active {
+  border: none;
+  line-height: 2;
+}
+
+.custom-pagination.ant-table-pagination {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.custom-pagination .ant-pagination-total-text {
+  margin-right: 0;
+}
+
+.custom-pagination .ant-pagination-prev {
+  margin-left: auto;
+}

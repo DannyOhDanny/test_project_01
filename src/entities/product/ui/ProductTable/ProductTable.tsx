@@ -138,7 +138,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
 
   return (
     <Table
-      rowKey="title"
+      rowKey="sku"
       styles={{
         root: { marginTop: '40px' },
         header: {

@@ -156,6 +156,7 @@ const TablePage: React.FC = () => {
   };
 
   const paginationConfig = {
+    className: 'custom-pagination',
     current: pagination.current,
     pageSize: pagination.pageSize,
     total: total,
@@ -173,6 +174,27 @@ const TablePage: React.FC = () => {
       }
       getProductsByPage(pageSize, skip, sortBy, order);
     },
+    showTotal: (total: number, range: number[]) => (
+      <div
+        style={{
+          display: 'flex',
+          gap: '4px',
+          flexDirection: 'row',
+          whiteSpace: 'nowrap',
+          fontFamily: 'var(--third-family)',
+          fontWeight: 350,
+          fontSize: '18px',
+          lineHeight: '1.7',
+        }}
+      >
+        <span style={{ color: '#969b9f' }}>Показано </span>
+        <span style={{ color: '#333' }}>
+          {range[0]}-{range[1]}
+        </span>
+        <span style={{ color: '#969b9f' }}> из </span>
+        <span style={{ color: '#333' }}>{total}</span>
+      </div>
+    ),
     locale: {
       items_per_page: 'на стр.',
       jump_to: 'Перейти к',
@@ -258,6 +280,7 @@ const TablePage: React.FC = () => {
         justify="space-between"
         align="center"
         style={{ width: '100%' }}
+        gap={20}
       >
         <Text className="search-title" style={{ textAlign: 'left', flex: '0 0 auto' }}>
           Товары
@@ -279,18 +302,20 @@ const TablePage: React.FC = () => {
             </Button>
           </Flex>
         </Flex>
-        {isLoading && (
-          <Progress
-            percent={progress}
-            type="line"
-            strokeColor={{
-              '0%': '#fff',
-              '100%': '#242edb',
-            }}
-            strokeLinecap="round"
-            style={{ margin: '20px' }}
-          />
-        )}{' '}
+        <Flex style={{ height: '20px' }}>
+          {isLoading && (
+            <Progress
+              percent={progress}
+              type="line"
+              strokeColor={{
+                '0%': '#fff',
+                '100%': '#242edb',
+              }}
+              strokeLinecap="round"
+              style={{ margin: '20px' }}
+            />
+          )}{' '}
+        </Flex>
         {dataSource.length > 0 && (
           <ProductTable
             data={dataSource}

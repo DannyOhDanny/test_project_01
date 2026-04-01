@@ -74,6 +74,11 @@ export function App() {
             Table: {
               headerBorderRadius: 12,
             },
+            Pagination: {
+              itemActiveBg: '#797fea',
+              itemActiveColor: '#fff',
+              itemActiveColorHover: '#fff',
+            },
           },
         }}
       >

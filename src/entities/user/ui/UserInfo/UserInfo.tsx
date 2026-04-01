@@ -17,25 +17,34 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
     {
       key: '1',
       label: 'Пользователь',
+      span: 'filled',
       children: `${user.firstName} ${user.lastName}`,
     },
     {
       key: '2',
       label: 'Тел.',
+      span: 'filled',
+
       children: user.phone,
     },
     {
       key: '3',
       label: 'Эл.почта',
+      span: 'filled',
+
       children: user.email,
     },
     {
       key: '4',
       label: 'Пол',
+      span: 3,
+
       children: user.gender === 'male' ? 'Муж' : 'Жен.',
     },
     {
       key: '5',
+      span: 3,
+
       label: 'Возраст',
       children: `${user.age} лет`,
     },
@@ -46,7 +55,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
       style={{
         borderRadius: 16,
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-        maxWidth: 1200,
+        maxWidth: 600,
         margin: '0 auto',
         padding: '24px',
       }}
