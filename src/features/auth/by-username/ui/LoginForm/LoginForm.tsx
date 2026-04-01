@@ -1,16 +1,17 @@
 import React from 'react';
-import { Form, Alert, Input, Button, Checkbox, Typography, Image, Flex, Card, Divider } from 'antd';
-import { LoginFormValues } from '../../model/types';
+import { Link } from 'react-router';
+import { Alert, Button, Card, Checkbox, Divider, Flex, Form, Image, Input, Typography } from 'antd';
+
 import { useAuthStore } from '../../../../../entities/user/model/authStore';
-import logo from '../../../../../shared/assets/logo.svg';
-import './LoginForm.css';
-import LockIcon from '../../../../../shared/assets/lock-icon.svg?react';
-import UserIcon from '../../../../../shared/assets/user-icon.svg?react';
+import ClearIcon from '../../../../../shared/assets/close-icon.svg?react';
 import EyeOffIcon from '../../../../../shared/assets/eye-off-icon.svg?react';
 import EyeOpenIcon from '../../../../../shared/assets/eye-on-icon.svg?react';
-import ClearIcon from '../../../../../shared/assets/close-icon.svg?react';
+import LockIcon from '../../../../../shared/assets/lock-icon.svg?react';
+import logo from '../../../../../shared/assets/logo.svg';
+import UserIcon from '../../../../../shared/assets/user-icon.svg?react';
+import { LoginFormValues } from '../../model/types';
 
-import { Link } from 'react-router';
+import './LoginForm.css';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -27,7 +28,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         values.remember
       );
       onSuccess?.();
-    } catch {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

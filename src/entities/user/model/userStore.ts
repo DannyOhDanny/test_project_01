@@ -1,12 +1,14 @@
 import { create } from 'zustand';
+
+import { authApi } from '../../../features/auth/by-username/api/authApi.ts';
+import { authUtils } from '../../../shared/lib/authConfig';
+import { tokenStorage } from '../../../shared/lib/tokenStorage';
+
 import {
-  UserState,
   UserActions,
+  UserState,
   //User
 } from './types';
-import { authApi } from '../../../features/auth/by-username/api/authApi.ts';
-import { tokenStorage } from '../../../shared/lib/tokenStorage';
-import { authUtils } from '../../../shared/lib/authConfig';
 
 type UserStore = UserState & UserActions;
 

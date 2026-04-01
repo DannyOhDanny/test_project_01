@@ -1,6 +1,8 @@
 import { create } from 'zustand';
-import { ProductsState, ProductActions, Product } from './types';
+
 import { productApi } from '../api/productApi';
+
+import { Product, ProductActions, ProductsState } from './types';
 
 type ProductStore = ProductsState & ProductActions;
 

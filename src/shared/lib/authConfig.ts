@@ -1,5 +1,3 @@
-import { tokenStorage } from './tokenStorage.ts';
-
 export const authUtils = {
   isTokenExpired: (token: string): boolean => {
     try {

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Avatar, Card, Descriptions, Flex, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { User } from '../../model/types';
 import type { DescriptionsProps } from 'antd';
+import { Avatar, Card, Descriptions, Flex, Typography } from 'antd';
+
+import { User } from '../../model/types';
 
 const { Title, Text } = Typography;
 interface UserInfoProps {

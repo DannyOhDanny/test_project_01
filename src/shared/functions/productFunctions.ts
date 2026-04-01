@@ -22,4 +22,4 @@ const formatPrice = (value: number | string): string => {
     maximumFractionDigits: 2,
   }).format(numberValue);
 };
-export { getCategory, getRatingColor, formatPrice };
+export { formatPrice, getCategory, getRatingColor };

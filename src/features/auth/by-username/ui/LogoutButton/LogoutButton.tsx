@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { Button } from 'antd';
 import { useNavigate } from 'react-router';
-import { useUserStore } from '../../../../../entities/user/model/userStore';
 import { LogoutOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+
+import { useUserStore } from '../../../../../entities/user/model/userStore';
 
 export const LogoutButton: React.FC = React.memo(() => {
   const navigate = useNavigate();

@@ -1,10 +1,12 @@
 import React from 'react';
-import './AppLayout.css';
-import { Layout, Menu, Flex } from 'antd';
-import { useNavigate, useLocation } from 'react-router';
-import { LogoutButton } from '../../../features/auth/by-username/ui/LogoutButton/LogoutButton';
-import { useUserStore } from '../../../entities/user/model/userStore';
+import { useLocation, useNavigate } from 'react-router';
 import { UserOutlined } from '@ant-design/icons';
+import { Flex, Layout, Menu } from 'antd';
+
+import { useUserStore } from '../../../entities/user/model/userStore';
+import { LogoutButton } from '../../../features/auth/by-username/ui/LogoutButton/LogoutButton';
+
+import './AppLayout.css';
 
 const { Header, Content, Footer } = Layout;
 interface AppLayoutProps {

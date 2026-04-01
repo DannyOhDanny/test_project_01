@@ -1,15 +1,17 @@
 import React from 'react';
-import { Table, Button, Avatar, Flex, Typography } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
+import { Avatar, Button, Flex, Table, Typography } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
-import { Product } from '../../model/types';
-import DotsButton from '../../../../shared/assets/dots-icon.svg?react';
+
 import AddIcon from '../../../../shared/assets/add-icon.svg?react';
+import DotsButton from '../../../../shared/assets/dots-icon.svg?react';
 import {
-  getCategory,
   formatPrice,
+  getCategory,
   getRatingColor,
 } from '../../../../shared/functions/productFunctions';
+import { Product } from '../../model/types';
+
 import './ProductTable.css';
 
 const { Text } = Typography;

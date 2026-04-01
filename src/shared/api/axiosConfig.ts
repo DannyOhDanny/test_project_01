@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { API_CONFIG, PRODUCT_API_CONFIG } from '../config/api.config';
 
 export const axiosInstance = axios.create({

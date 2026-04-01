@@ -1,9 +1,11 @@
-import './ProductSearch.css';
-import { Input, Flex } from 'antd';
-import type { GetProps, InputRef } from 'antd';
 import type { Ref } from 'react';
-import SearchIcon from '../../../../shared/assets/search-icon.svg?react';
+import type { GetProps, InputRef } from 'antd';
+import { Flex, Input } from 'antd';
 import { createStaticStyles } from 'antd-style';
+
+import SearchIcon from '../../../../shared/assets/search-icon.svg?react';
+
+import './ProductSearch.css';
 
 const { Search } = Input;
 

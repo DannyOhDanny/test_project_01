@@ -1,13 +1,16 @@
-import { App as AntdApp, ConfigProvider } from 'antd';
-import ruRU from 'antd/locale/ru_RU';
 import { StrictMode } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
-import { StoreProvider } from './provider/StoreProvider';
-import { ProtectedRoute } from '../shared/ui/ProtectedRoute/ProtectedRoute';
-import { AppLayout } from '../widgets/Layout/AppLayout/AppLayout';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { ConfigProvider } from 'antd';
+import ruRU from 'antd/locale/ru_RU';
+
 import { LoginPage } from '../pages/auth/LoginPage/ui/LoginPage';
 import { ProfilePage } from '../pages/profile/ProfilePage/ui/ProfilePage';
 import { TablePage } from '../pages/table/TablePage';
+import { ProtectedRoute } from '../shared/ui/ProtectedRoute/ProtectedRoute';
+import { AppLayout } from '../widgets/Layout/AppLayout/AppLayout';
+
+import { StoreProvider } from './provider/StoreProvider';
+
 import './App.css';
 
 export function App() {
@@ -75,47 +78,45 @@ export function App() {
         }}
       >
         <StoreProvider>
-          <AntdApp>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
 
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout>
-                        <ProfilePage />
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <ProfilePage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
 
-                <Route
-                  path="/table"
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout>
-                        <TablePage />
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout>
-                        <Navigate to="/profile" replace />
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+              <Route
+                path="/table"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <TablePage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Navigate to="/profile" replace />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </BrowserRouter>
-          </AntdApp>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
         </StoreProvider>
       </ConfigProvider>
     </StrictMode>

@@ -1,10 +1,11 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './app/App.tsx';
-
 import '@fontsource-variable/inter';
 import '@fontsource-variable/open-sans';
 import '@fontsource-variable/roboto-mono';
+
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import App from './app/App.tsx';
 
 import './index.css';
 

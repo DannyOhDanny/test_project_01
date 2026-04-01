@@ -1,7 +1,9 @@
 import React from 'react';
-import { Layout, Row, Col } from 'antd';
-import { LoginForm } from '../../../../features/auth/by-username/ui/LoginForm/LoginForm';
 import { useNavigate } from 'react-router';
+import { Col, Layout, Row } from 'antd';
+
+import { LoginForm } from '../../../../features/auth/by-username/ui/LoginForm/LoginForm';
+
 import './LoginPage.css';
 
 const { Content } = Layout;

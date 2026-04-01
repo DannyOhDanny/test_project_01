@@ -1,4 +1,6 @@
 import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import prettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
@@ -6,39 +8,29 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
 
 export default [
   js.configs.recommended,
+
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    ignores: ['**/*.d.ts', 'dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**'],
+
     languageOptions: {
+      parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parser: tsParser,
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
+      globals: { ...globals.node },
+
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-        project: './tsconfig.json',
+        project: null,
       },
     },
+
     settings: {
       react: { version: 'detect' },
-      'import/resolver': {
-        typescript: {},
-        alias: {
-          map: [['@', './src']],
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        },
-      },
     },
+
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -47,50 +39,53 @@ export default [
       prettier,
       '@typescript-eslint': tseslint,
     },
+
     rules: {
       ...reactHooks.configs.recommended.rules,
+
+      'react/react-in-jsx-scope': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+
+      'no-undef': 'off',
       'simple-import-sort/imports': [
         'error',
         {
           groups: [
-            ['^\\u0000'],
-            ['^react', '^@?\\w'],
-            ['^@/'],
-            ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
-            ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
-            ['^.+\\.?(css|scss|sass|less)$'],
-            ['^.+\\.[^.]*$'],
+            ['^\\u0000'], // side effects
+            ['^react', '^@?\\w'], // packages
+            ['^@/'], // alias
+            ['^\\.\\.(?!/?$)', '^\\.\\./?$'], // parent
+            ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'], // relative
+            ['^.+\\.?(css|scss|sass|less)$'], // styles
           ],
         },
       ],
       'simple-import-sort/exports': 'error',
+
+      // prettier
       'prettier/prettier': 'error',
+
+      // TS вместо JS
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
           varsIgnorePattern: '^_',
           argsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },
   },
+
+  // конфиги
   {
-    files: ['*.config.js', '*.config.ts', 'vite.config.ts'],
+    files: ['*.config.*', 'vite.config.ts'],
     languageOptions: {
-      sourceType: 'module',
       parser: tsParser,
-      globals: {
-        ...globals.node,
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': ['warn'],
+      sourceType: 'module',
+      globals: { ...globals.node },
     },
   },
+
   eslintConfigPrettier,
 ];
-ы;

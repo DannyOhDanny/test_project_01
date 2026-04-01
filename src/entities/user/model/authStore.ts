@@ -1,11 +1,12 @@
+import axios from 'axios';
 import { create } from 'zustand';
+
 import { authApi } from '../../../features/auth/by-username/api/authApi';
 import { LoginCredentials } from '../../../features/auth/by-username/model/types';
-import { tokenStorage } from '../../../shared/lib/tokenStorage';
-import { useUserStore } from './userStore';
 import { authUtils } from '../../../shared/lib/authConfig';
-import axios from 'axios';
-import { axiosInstance } from '../../../shared/api/axiosConfig';
+import { tokenStorage } from '../../../shared/lib/tokenStorage';
+
+import { useUserStore } from './userStore';
 interface AuthState {
   isLoading: boolean;
   error: string | null;

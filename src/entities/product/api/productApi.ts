@@ -1,7 +1,8 @@
-import { axiosProductInstance } from '../../../shared/api/axiosConfig';
-import { Product, Products } from '../model/types';
-import { PRODUCT_API_CONFIG } from '../../../shared/config/api.config';
 import { AxiosProgressEvent } from 'axios';
+
+import { axiosProductInstance } from '../../../shared/api/axiosConfig';
+import { PRODUCT_API_CONFIG } from '../../../shared/config/api.config';
+import { Product, Products } from '../model/types';
 
 export const productApi = {
   getAll: (onProgress?: (progressEvent: AxiosProgressEvent) => void) =>

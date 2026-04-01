@@ -1,26 +1,28 @@
-import './TablePage.css';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { TableProps } from 'antd';
+import type { FormProps } from 'antd';
 import {
-  Typography,
-  Table,
+  Alert,
   Button,
   Flex,
-  Progress,
-  Alert,
-  Modal,
   Form,
   Input,
   message,
+  Modal,
+  Progress,
+  Table,
+  Typography,
 } from 'antd';
+import type { SorterResult } from 'antd/es/table/interface';
+
 import { useProductStore } from '../../entities/product/model/productStore';
-import type { TableProps } from 'antd';
 import { Product } from '../../entities/product/model/types';
+import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
+import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
-import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
-import type { SorterResult } from 'antd/es/table/interface';
-import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
-import type { FormProps } from 'antd';
+
+import './TablePage.css';
 
 const { Title, Text } = Typography;
 
@@ -48,7 +50,15 @@ const TablePage: React.FC = () => {
     addProduct,
   } = useProductStore();
 
-  const [sortedInfo, setSortedInfo] = useState<SorterResult<Product> | null>(null);
+  const [sortedInfo, setSortedInfo] = useState(() => {
+    try {
+      const savedSort = localStorage.getItem('sortOrder');
+      return savedSort ? JSON.parse(savedSort) : null;
+    } catch (e) {
+      console.error('Ошибка сортировки', e);
+      return null;
+    }
+  });
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
   const [form] = Form.useForm<ProductFormFieldsType>();
@@ -111,17 +121,6 @@ const TablePage: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  useEffect(() => {
-    const savedSort = localStorage.getItem('sortOrder');
-    if (savedSort) {
-      try {
-        const parsed = JSON.parse(savedSort);
-        setSortedInfo(parsed);
-      } catch (e) {
-        console.error('Failed to parse sortOrder from localStorage', e);
-      }
-    }
-  }, []);
   const rowSelection: TableRowSelection<Product> = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -222,7 +221,7 @@ const TablePage: React.FC = () => {
         {dataSource.length > 0 && (
           <ProductTable
             data={dataSource}
-            sortedInfo={sortedInfo}
+            sortedInfo={sortedInfo!}
             onChange={handleTableChange}
             rowSelection={rowSelection}
           />
@@ -237,6 +236,7 @@ const TablePage: React.FC = () => {
         footer={null}
       >
         <Form
+          form={form}
           name="product-form"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
