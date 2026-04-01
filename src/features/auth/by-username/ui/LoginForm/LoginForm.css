@@ -111,6 +111,7 @@
   margin-bottom: 6px;
   animation: slideDown 0.2s ease;
   font-size: 14px;
+  line-height: 1.2;
 }
 
 @keyframes slideDown {
@@ -237,4 +238,5 @@
   text-decoration: underline;
   text-decoration-skip-ink: none;
   color: #242edb;
+  line-height: 1.2;
 }
