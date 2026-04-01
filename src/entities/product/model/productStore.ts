@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ProductsState, ProductActions } from './types';
+import { ProductsState, ProductActions, Product } from './types';
 import { productApi } from '../api/productApi';
 
 type ProductStore = ProductsState & ProductActions;
@@ -104,5 +104,44 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         error?.response?.data?.message || error?.message || 'Ошибка поиска товаров';
       set({ isLoading: false, error: errorMessage });
     }
+  },
+  addProduct: (newProduct: Partial<Product>) => {
+    const currentProducts = get().products?.products || [];
+
+    const productWithDefaults: Product = {
+      id: newProduct.id || Date.now(),
+      title: newProduct.title || 'Без названия',
+      brand: newProduct.brand || '',
+      rating: newProduct.rating || 0,
+      category: newProduct.category || '',
+      sku: newProduct.sku || '11111',
+      price: newProduct.price || 0,
+      description: newProduct.description || '',
+      discountPercentage: newProduct.discountPercentage || 0,
+      stock: newProduct.stock || 0,
+      tags: newProduct.tags || [],
+      weight: newProduct.weight || 0,
+      dimensions: newProduct.dimensions || { width: 0, height: 0, depth: 0 },
+      warrantyInformation: newProduct.warrantyInformation || '',
+      shippingInformation: newProduct.shippingInformation || '',
+      availabilityStatus: newProduct.availabilityStatus || 'unknown',
+      reviews: newProduct.reviews || [],
+      returnPolicy: newProduct.returnPolicy || '',
+      minimumOrderQuantity: newProduct.minimumOrderQuantity || 1,
+      meta: newProduct.meta || { createdAt: '', updatedAt: '', barcode: '', qrCode: '' },
+      thumbnail:
+        newProduct.thumbnail ||
+        'https://cdn.dummyjson.com/product-images/mobile-accessories/apple-homepod-mini-cosmic-grey/thumbnail.webp',
+      images: newProduct.images || [],
+    };
+
+    set({
+      products: {
+        products: [productWithDefaults, ...currentProducts],
+        total: (get().products?.total || 0) + 1,
+        skip: get().products?.skip ?? 0, // если нет, то 0
+        limit: get().products?.limit ?? 10, // дефолт 10
+      },
+    });
   },
 }));

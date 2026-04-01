@@ -1,13 +1,12 @@
 import React from 'react';
 import './AppLayout.css';
-import { Layout, Menu, Typography, Space } from 'antd';
+import { Layout, Menu, Flex } from 'antd';
 import { useNavigate, useLocation } from 'react-router';
 import { LogoutButton } from '../../../features/auth/by-username/ui/LogoutButton/LogoutButton';
 import { useUserStore } from '../../../entities/user/model/userStore';
 import { UserOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer } = Layout;
-const { Title } = Typography;
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -38,6 +37,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           background: '#fff',
+          boxShadow: 'inset 0 -2px 0 0  #f3f3f3',
         }}
       >
         <Menu
@@ -49,19 +49,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         />
 
         {user && (
-          <Space>
+          <Flex gap={12} align="center">
             <UserOutlined />
             {user.firstName}
             {user.lastName}
             <LogoutButton />
-          </Space>
+          </Flex>
         )}
       </Header>
 
       <Content style={{ padding: '24px 50px', border: 'none' }}>{children}</Content>
 
       <Footer style={{ textAlign: 'center' }}>
-        Тестовое ©{new Date().getUTCMonth()}.{new Date().getFullYear()}
+        Project 01 ©{new Date().getUTCMonth()}.{new Date().getFullYear()}
       </Footer>
     </Layout>
   );

@@ -1,0 +1,62 @@
+.table-title {
+  font-family: var(--font-family) !important;
+  font-weight: 600;
+  font-size: 20px !important;
+  line-height: 100%;
+  color: #333;
+  margin: 0;
+}
+.table-refresh-btn {
+  border: 1px solid #ececeb;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  width: 42px !important;
+  height: 42px !important;
+}
+.table-add-btn {
+  border-radius: 6px;
+  padding: 10px 20px;
+  width: 147px;
+  height: 42px;
+  min-height: 42px;
+  background: var(--bg-color);
+}
+
+.item-title {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #222;
+  text-align: left;
+  line-height: 1.2;
+}
+.item-subtitle {
+  font-family: var(--second-family);
+  font-weight: 400;
+  font-size: 14px !important;
+  color: #b2b3b9;
+  line-height: 1.2;
+}
+.brand-item {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #000;
+  line-height: 1.2;
+}
+.sku-item {
+  font-family: var(--second-family);
+  font-weight: 400;
+  font-size: 16px !important;
+  text-align: center;
+  color: #000;
+  line-height: 1.2;
+}
+.price-item {
+  font-family: var(--third-family);
+  font-weight: 400;
+  font-size: 16px !important;
+  text-align: center;
+  color: #000;
+  line-height: 1.2;
+}

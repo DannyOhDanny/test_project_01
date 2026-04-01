@@ -1,75 +1,87 @@
-# React + TypeScript + Vite
+# Test Project 01
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Фронтенд-приложение на базе **React 19 + Vite + TypeScript**, с использованием **Ant Design**, **Zustand** и настроенным пайплайном разработки (ESLint, Prettier, Husky).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Стек
 
-## React Compiler
+- React 19
+- Vite
+- TypeScript
+- Ant Design + antd-style
+- Zustand
+- Axios
+- React Router
+- ESLint + Prettier
+- Husky + lint-staged
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## Демо функционала
 
-## Expanding the ESLint configuration
+- Список товаров
+- Поиск (по ID и строке)
+- Сортировка таблицы
+- Выбор строк (включая кастомные фильтры)
+- Обновление данных
+- Кастомный UI (antd-style)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Структура проекта FSD
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+src/
+├── app/ # Инициализация приложения
+├── entities/ # Бизнес-сущности
+├── features/ # Фичи
+├── shared/ # Общие утилиты, UI, функции
+├── pages/ # Страницы
+├── widgets/ # Виджеты
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Установка
+
+```
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Запуск
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```
+npm run dev
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Порт: http://localhost:5173
+
+### Сборка
+
+```
+npm run build
+npm run preview
+```
+
+---
+
+### Скрипты
+
+- dev - Запуск dev-сервера
+
+- build - сборка
+
+- preview - Preview билда
+
+- lint -Проверка ESLint
+
+- lint:fix - Автофикс ESLint
+
+- format - Форматирование Prettier
+
+- type-check - Проверка типов TypeScript
+
+- test - Тесты (не реализованы)
+
+```
+Автор
+Test Project 01
+@DannyohDanny
 ```

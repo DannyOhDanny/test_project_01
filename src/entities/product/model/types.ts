@@ -65,4 +65,5 @@ export interface ProductActions {
   searchProducts: (quote: string) => Promise<void>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  addProduct: (newProduct: Partial<Product>) => void;
 }

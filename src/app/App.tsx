@@ -68,6 +68,9 @@ export function App() {
             Divider: {
               textPaddingInline: '10px',
             },
+            Table: {
+              headerBorderRadius: 12,
+            },
           },
         }}
       >

@@ -1,0 +1,18 @@
+.ant-input-affix-wrapper,
+.ant-input-affix-wrapper-focus {
+  background-color: #f3f3f3 !important;
+}
+
+.table-search {
+  border-radius: 10px;
+  padding: 0px 30px;
+  height: 100px;
+  background: #fff;
+}
+
+.search-title {
+  font-family: var(--font-family) !important;
+  font-weight: 600;
+  font-size: 24px !important;
+  color: #202020;
+}
