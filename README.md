@@ -51,7 +51,7 @@ npm install
 npm run dev
 ```
 
-Порт: http://localhost:5173
+Порт: http://localhost:3000
 
 ### Сборка
 
