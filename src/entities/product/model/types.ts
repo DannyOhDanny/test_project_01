@@ -57,6 +57,7 @@ export interface ProductsState {
   isLoading: boolean;
   error: string | null;
   progress: number;
+  total: number;
 }
 
 export interface ProductActions {
@@ -66,4 +67,10 @@ export interface ProductActions {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   addProduct: (newProduct: Partial<Product>) => void;
+  getProductsByPage: (
+    limit: number,
+    skip: number,
+    sortBy: string | undefined,
+    order: 'asc' | 'desc' | undefined
+  ) => Promise<void>;
 }

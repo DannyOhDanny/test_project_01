@@ -6,9 +6,22 @@ import { Product, Products } from '../model/types';
 
 export const productApi = {
   getAll: (onProgress?: (progressEvent: AxiosProgressEvent) => void) =>
-    axiosProductInstance.get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}?limit=120`, {
+    axiosProductInstance.get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}`, {
       onDownloadProgress: onProgress,
     }),
+  getProductsByPage: (
+    limit: number,
+    skip: number,
+    sortBy?: string | undefined,
+    order?: 'asc' | 'desc' | undefined,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ) => {
+    let url = `${PRODUCT_API_CONFIG.BASE_URL}?limit=${limit}&skip=${skip}`;
+    if (sortBy) {
+      url += `&sortBy=${sortBy}&order=${order || 'asc'}`;
+    }
+    return axiosProductInstance.get<Products>(url, { onDownloadProgress: onProgress });
+  },
   getById: (id: string) =>
     axiosProductInstance.get<Product>(`${PRODUCT_API_CONFIG.BASE_URL}/${id}`),
   search: (query: string) =>

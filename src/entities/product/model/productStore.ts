@@ -13,6 +13,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   searchProduct: null,
   isLoading: false,
   error: null,
+  total: 0,
   progress: 0,
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
@@ -141,9 +142,29 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       products: {
         products: [productWithDefaults, ...currentProducts],
         total: (get().products?.total || 0) + 1,
-        skip: get().products?.skip ?? 0, // если нет, то 0
-        limit: get().products?.limit ?? 10, // дефолт 10
+        skip: get().products?.skip ?? 0,
+        limit: get().products?.limit ?? 10,
       },
     });
+  },
+  getProductsByPage: async (
+    limit: number,
+    skip: number,
+    sortBy?: string,
+    order?: 'asc' | 'desc'
+  ) => {
+    set({ isLoading: true, error: null, searchProduct: null });
+    try {
+      const response = await productApi.getProductsByPage(limit, skip, sortBy, order);
+      set({
+        products: response.data,
+        total: response.data.total,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || error?.message || 'Ошибка подгрузки товаров';
+      set({ isLoading: false, error: errorMessage });
+    }
   },
 }));

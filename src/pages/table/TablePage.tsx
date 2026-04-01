@@ -16,7 +16,7 @@ import {
 import type { SorterResult } from 'antd/es/table/interface';
 
 import { useProductStore } from '../../entities/product/model/productStore';
-import { Product } from '../../entities/product/model/types';
+import { type Product } from '../../entities/product/model/types';
 import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
 import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
@@ -40,7 +40,7 @@ type ProductFormFieldsType = {
 const TablePage: React.FC = () => {
   const {
     products,
-    getProducts,
+    total,
     isLoading,
     error,
     progress,
@@ -48,6 +48,7 @@ const TablePage: React.FC = () => {
     getProductById,
     searchProduct,
     addProduct,
+    getProductsByPage,
   } = useProductStore();
 
   const getInitialSort = (): SorterResult<Product> | null => {
@@ -66,6 +67,25 @@ const TablePage: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
   const [form] = Form.useForm<ProductFormFieldsType>();
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: Number(localStorage.getItem('tablePageSize')) || 5,
+  });
+
+  useEffect(() => {
+    const savedSort = getInitialSort();
+    let sortBy: string | undefined;
+    let order: 'asc' | 'desc' | undefined;
+    if (savedSort && savedSort.order) {
+      sortBy = savedSort.columnKey?.toString();
+      order = savedSort.order === 'ascend' ? 'asc' : 'desc';
+    }
+    const skip = (pagination.current - 1) * pagination.pageSize;
+    getProductsByPage(pagination.pageSize, skip, sortBy, order);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const showModal = () => {
     setProductPopupOpen(true);
   };
@@ -104,21 +124,66 @@ const TablePage: React.FC = () => {
 
   const dataSource = searchProduct ? [searchProduct] : products?.products || [];
 
-  const handleTableChange: TableProps<Product>['onChange'] = (_, __, sorter) => {
-    let sortToStore: SorterResult<Product> | SorterResult<Product>[] | null = null;
+  const handleTableChange: TableProps<Product>['onChange'] = (
+    newPagination,
+    _filters,
+    sorter,
+    _extra
+  ) => {
+    let sortBy: string | undefined;
+    let order: 'asc' | 'desc' | undefined;
 
-    if (Array.isArray(sorter)) {
-      sortToStore = sorter;
-      setSortedInfo(sorter[0] || null);
-    } else if (sorter && sorter.order) {
-      sortToStore = sorter;
-      setSortedInfo(sorter || null);
+    if (!Array.isArray(sorter) && sorter && sorter.order) {
+      sortBy = sorter.columnKey?.toString();
+      order = sorter.order === 'ascend' ? 'asc' : 'desc';
+      setSortedInfo(sorter);
+      localStorage.setItem('sortOrder', JSON.stringify(sorter));
     } else {
-      sortToStore = null;
       setSortedInfo(null);
+      localStorage.removeItem('sortOrder');
     }
 
-    localStorage.setItem('sortOrder', JSON.stringify(sortToStore));
+    setPagination({
+      current: newPagination.current ?? 1,
+      pageSize: newPagination.pageSize ?? pagination.pageSize,
+    });
+
+    localStorage.setItem('tablePageSize', String(newPagination.pageSize));
+
+    const skip =
+      ((newPagination.current ?? 1) - 1) * (newPagination.pageSize ?? pagination.pageSize);
+    getProductsByPage(newPagination.pageSize ?? pagination.pageSize, skip, sortBy, order);
+  };
+
+  const paginationConfig = {
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    total: total,
+    showQuickJumper: false,
+    showSizeChanger: true,
+    pageSizeOptions: ['5', '10', '20', '50', '100'],
+    onChange: (page: number, pageSize: number) => {
+      setPagination({ current: page, pageSize });
+      const skip = (page - 1) * pageSize;
+      let sortBy: string | undefined;
+      let order: 'asc' | 'desc' | undefined;
+      if (sortedInfo && sortedInfo.order) {
+        sortBy = sortedInfo.columnKey?.toString();
+        order = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
+      }
+      getProductsByPage(pageSize, skip, sortBy, order);
+    },
+    locale: {
+      items_per_page: 'на стр.',
+      jump_to: 'Перейти к',
+      page: 'Страница',
+      prev_page: 'Предыдущая страница',
+      next_page: 'Следующая страница',
+      prev_5: 'Предыдущие 5 страниц',
+      next_5: 'Следующие 5 страниц',
+      prev_3: 'Предыдущие 3 страницы',
+      next_3: 'Следующие 3 страницы',
+    },
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -162,17 +227,21 @@ const TablePage: React.FC = () => {
       },
     ],
   };
-  useEffect(() => {
-    getProducts();
-  }, [getProducts]);
 
   const handleRefresh = () => {
-    getProducts();
+    const skip = (pagination.current - 1) * pagination.pageSize;
+    let sortBy: string | undefined;
+    let order: 'asc' | 'desc' | undefined;
+    if (sortedInfo && sortedInfo.order) {
+      sortBy = sortedInfo.columnKey?.toString();
+      order = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
+    }
+    getProductsByPage(pagination.pageSize, skip, sortBy, order);
   };
 
   const handleSearch = (data: string) => {
     const numericId = Number(data);
-
+    setPagination((prev) => ({ ...prev, current: 1 }));
     if (!isNaN(numericId) && numericId > 0) {
       getProductById(numericId.toString());
     } else {
@@ -228,6 +297,7 @@ const TablePage: React.FC = () => {
             sortedInfo={sortedInfo!}
             onChange={handleTableChange}
             rowSelection={rowSelection}
+            paginationConfig={paginationConfig}
           />
         )}
       </Flex>

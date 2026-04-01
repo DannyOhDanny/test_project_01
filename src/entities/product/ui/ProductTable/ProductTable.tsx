@@ -1,7 +1,6 @@
 import React from 'react';
-import type { TableColumnsType, TableProps } from 'antd';
+import type { TableColumnsType } from 'antd';
 import { Avatar, Button, Flex, Table, Typography } from 'antd';
-import type { SorterResult } from 'antd/es/table/interface';
 
 import AddIcon from '../../../../shared/assets/add-icon.svg?react';
 import DotsButton from '../../../../shared/assets/dots-icon.svg?react';
@@ -12,18 +11,19 @@ import {
 } from '../../../../shared/functions/productFunctions';
 import { Product } from '../../model/types';
 
+import type { ProductTableProps } from './model/types';
+
 import './ProductTable.css';
 
 const { Text } = Typography;
 
-type Props = {
-  data: Product[];
-  sortedInfo: SorterResult<Product>;
-  onChange: TableProps<Product>['onChange'];
-  rowSelection: TableProps<Product>['rowSelection'];
-};
-
-const ProductTable: React.FC<Props> = ({ data, sortedInfo, onChange, rowSelection }) => {
+const ProductTable: React.FC<ProductTableProps> = ({
+  data,
+  sortedInfo,
+  onChange,
+  rowSelection,
+  paginationConfig,
+}) => {
   const tableColumns: TableColumnsType<Product> = [
     {
       title: 'Наименование',
@@ -74,8 +74,8 @@ const ProductTable: React.FC<Props> = ({ data, sortedInfo, onChange, rowSelectio
       title: 'Оценка',
       dataIndex: 'rating',
       key: 'rating',
-
-      sorter: (a, b) => a.rating - b.rating,
+      sorter: true,
+      // sorter: (a, b) => a.rating - b.rating,
       sortOrder: sortedInfo?.columnKey === 'rating' ? sortedInfo.order : null,
       ellipsis: true,
       align: 'center',
@@ -92,7 +92,8 @@ const ProductTable: React.FC<Props> = ({ data, sortedInfo, onChange, rowSelectio
       title: 'Цена, ₽',
       dataIndex: 'price',
       key: 'price',
-      sorter: (a, b) => a.price - b.price,
+      sorter: true,
+      // sorter: (a, b) => a.price - b.price,
       sortOrder: sortedInfo?.columnKey === 'price' ? sortedInfo.order : null,
       ellipsis: true,
       align: 'center',
@@ -159,6 +160,7 @@ const ProductTable: React.FC<Props> = ({ data, sortedInfo, onChange, rowSelectio
       rowSelection={rowSelection}
       style={{ marginTop: 40 }}
       scroll={{ x: 'max-content' }}
+      pagination={paginationConfig}
     />
   );
 };
