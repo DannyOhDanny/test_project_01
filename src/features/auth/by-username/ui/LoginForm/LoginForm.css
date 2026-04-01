@@ -1,7 +1,6 @@
 .form-content {
   border-radius: 40px;
   width: 527px;
-  height: 716px;
   background: #fff;
   box-shadow:
     0 40px 80px rgba(0, 0, 0, 0.08),
@@ -14,7 +13,8 @@
   border: 1.5px solid #ededed;
   padding: 48px;
   width: 515px;
-  height: 704px;
+  margin-top: 4px;
+  margin-bottom: 4px;
   background: linear-gradient(180deg, rgba(35, 35, 35, 0.03) 0%, rgba(35, 35, 35, 0) 50%);
 }
 

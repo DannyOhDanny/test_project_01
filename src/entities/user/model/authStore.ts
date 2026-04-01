@@ -4,7 +4,8 @@ import { LoginCredentials } from '../../../features/auth/by-username/model/types
 import { tokenStorage } from '../../../shared/lib/tokenStorage';
 import { useUserStore } from './userStore';
 import { authUtils } from '../../../shared/lib/authConfig';
-
+import axios from 'axios';
+import { axiosInstance } from '../../../shared/api/axiosConfig';
 interface AuthState {
   isLoading: boolean;
   error: string | null;
@@ -31,12 +32,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       set({ isLoading: false });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Введенные даннные неверны. Попробуйте еще раз';
-      set({
-        error: errorMessage,
-        isLoading: false,
-      });
+      let errorMessage = 'Введенные данные неверны. Попробуйте еще раз';
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      set({ error: errorMessage, isLoading: false });
       throw error;
     }
   },

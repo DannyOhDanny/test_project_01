@@ -1,11 +1,15 @@
 import React from 'react';
-import { Form, Input, Button, Checkbox, Alert, Typography, Image, Flex, Card, Divider } from 'antd';
+import { Form, Alert, Input, Button, Checkbox, Typography, Image, Flex, Card, Divider } from 'antd';
 import { LoginFormValues } from '../../model/types';
 import { useAuthStore } from '../../../../../entities/user/model/authStore';
 import logo from '../../../../../shared/assets/logo.svg';
 import './LoginForm.css';
 import LockIcon from '../../../../../shared/assets/lock-icon.svg?react';
 import UserIcon from '../../../../../shared/assets/user-icon.svg?react';
+import EyeOffIcon from '../../../../../shared/assets/eye-off-icon.svg?react';
+import EyeOpenIcon from '../../../../../shared/assets/eye-on-icon.svg?react';
+import ClearIcon from '../../../../../shared/assets/close-icon.svg?react';
+
 import { Link } from 'react-router';
 
 interface LoginFormProps {
@@ -60,6 +64,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 prefix={<UserIcon />}
                 placeholder="Введите логин"
                 size="large"
+                allowClear={{ clearIcon: <ClearIcon /> }}
+                autoComplete="off"
                 classNames={{
                   root: 'form-input',
                 }}
@@ -74,7 +80,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 { min: 6, message: 'Минимум 6 символов' },
               ]}
             >
-              <Input.Password prefix={<LockIcon />} placeholder="Введите пароль" size="large" />
+              <Input.Password
+                prefix={<LockIcon />}
+                placeholder="Введите пароль"
+                size="large"
+                autoComplete="new-password"
+                iconRender={(visible) => (visible ? <EyeOpenIcon /> : <EyeOffIcon />)}
+              />
             </Form.Item>
 
             <Form.Item name="remember" valuePropName="checked" className="check-box">
@@ -125,9 +137,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           </Form>
         </Card>
       </Flex>
-      <Text style={{ fontSize: 11, textAlign: 'center', marginTop: '12px' }}>
-        Данные для входа: Логин: "emilys", Пароль: "emilyspass"
-      </Text>
+
+      <Alert
+        style={{ marginTop: 16, fontSize: 14, width: '50%' }}
+        title="Данные для входа:"
+        description={
+          <div style={{ whiteSpace: 'pre-line' }}>
+            Логин: "emilys"
+            <br />
+            Пароль: "emilyspass"
+          </div>
+        }
+        type="info"
+        showIcon
+      />
     </Flex>
   );
 };

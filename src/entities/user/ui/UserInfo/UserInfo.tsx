@@ -1,33 +1,71 @@
 import React from 'react';
-import { Avatar, Card, Descriptions, Space, Typography } from 'antd';
+import { Avatar, Card, Descriptions, Flex, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useUserStore } from '../../model/userStore';
+import { User } from '../../model/types';
+import type { DescriptionsProps } from 'antd';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+interface UserInfoProps {
+  user: User;
+}
 
-export const UserInfo: React.FC = () => {
-  const { user } = useUserStore();
-
+const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
   if (!user) return null;
 
+  const items: DescriptionsProps['items'] = [
+    {
+      key: '1',
+      label: 'Пользователь',
+      children: `${user.firstName} ${user.lastName}`,
+    },
+    {
+      key: '2',
+      label: 'Тел.',
+      children: user.phone,
+    },
+    {
+      key: '3',
+      label: 'Эл.почта',
+      children: user.email,
+    },
+    {
+      key: '4',
+      label: 'Пол',
+      children: user.gender === 'male' ? 'Муж' : 'Жен.',
+    },
+    {
+      key: '5',
+      label: 'Возраст',
+      children: `${user.age} лет`,
+    },
+  ];
   return (
-    <Card>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Space align="center">
-          <Avatar size={64} src={user.image} icon={<UserOutlined />} />
-          <Title level={3}>
-            {user.firstName} {user.lastName}
-          </Title>
-        </Space>
-
-        <Descriptions bordered column={1}>
-          <Descriptions.Item label="Username">{user.username}</Descriptions.Item>
-          <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
-          <Descriptions.Item label="Gender">{user.gender}</Descriptions.Item>
-          {user.age && <Descriptions.Item label="Age">{user.age}</Descriptions.Item>}
-          {user.phone && <Descriptions.Item label="Phone">{user.phone}</Descriptions.Item>}
-        </Descriptions>
-      </Space>
+    <Card
+      variant="borderless"
+      style={{
+        borderRadius: 16,
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+        maxWidth: 1200,
+        margin: '0 auto',
+        padding: '24px',
+      }}
+    >
+      <Flex vertical align="center" gap={16} style={{ marginBottom: 24 }}>
+        <Avatar
+          size={96}
+          icon={<UserOutlined />}
+          style={{ backgroundColor: '#242EDB', flexShrink: 0 }}
+        />
+        <Title level={2} style={{ margin: 0, textAlign: 'center' }}>
+          {user.firstName} {user.lastName}
+        </Title>
+        <Text type="secondary" style={{ fontSize: 16 }}>
+          @{user.username}
+        </Text>
+      </Flex>
+      <Descriptions title="Профиль" items={items} />
     </Card>
   );
 };
+
+export { UserInfo };

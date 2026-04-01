@@ -1,0 +1,76 @@
+.ant-input-affix-wrapper,
+.ant-input-affix-wrapper-focus {
+  background-color: #f3f3f3 !important;
+}
+
+.table-search {
+  border-radius: 10px;
+  padding: 0px 30px;
+  height: 100px;
+  background: #fff;
+}
+.search-title {
+  font-family: var(--font-family) !important;
+  font-weight: 700;
+  font-size: 24px !important;
+  color: #202020;
+}
+
+.table-title {
+  font-family: var(--font-family) !important;
+  font-weight: 700;
+  font-size: 20px !important;
+  line-height: 100%;
+  color: #333;
+  margin: 0;
+}
+.table-refresh-btn {
+  border: 1px solid #ececeb;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  width: 42px !important;
+  height: 42px !important;
+}
+.table-add-btn {
+  border-radius: 6px;
+  padding: 10px 20px;
+  width: 147px;
+  height: 42px;
+  min-height: 42px;
+  background: var(--bg-color);
+}
+
+.item-title {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #222;
+  text-align: left;
+}
+.item-subtitle {
+  font-family: var(--second-family);
+  font-weight: 400;
+  font-size: 14px !important;
+  color: #b2b3b9;
+}
+.brand-item {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #000;
+}
+.sku-item {
+  font-family: var(--second-family);
+  font-weight: 400;
+  font-size: 16px !important;
+  text-align: center;
+  color: #000;
+}
+.price-item {
+  font-family: var(--third-family);
+  font-weight: 400;
+  font-size: 16px !important;
+  text-align: center;
+  color: #000;
+  line-height: 110%;
+}

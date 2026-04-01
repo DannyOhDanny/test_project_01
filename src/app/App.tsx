@@ -1,4 +1,4 @@
-import { App as AntdApp, ConfigProvider, Button, Input, Form } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
 import { StrictMode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
@@ -7,7 +7,7 @@ import { ProtectedRoute } from '../shared/ui/ProtectedRoute/ProtectedRoute';
 import { AppLayout } from '../widgets/Layout/AppLayout/AppLayout';
 import { LoginPage } from '../pages/auth/LoginPage/ui/LoginPage';
 import { ProfilePage } from '../pages/profile/ProfilePage/ui/ProfilePage';
-import { TablePage } from '../pages/table/TablePga';
+import { TablePage } from '../pages/table/TablePage';
 import './App.css';
 
 export function App() {
@@ -17,8 +17,7 @@ export function App() {
         locale={ruRU}
         theme={{
           token: {
-            // borderRadius: 24,
-            fontFamily: `'Inter Variable', sans-serif`,
+            fontFamily: 'Inter Variable, sans-serif',
             fontSize: 16,
             fontSizeHeading1: 32,
             fontSizeHeading2: 28,
@@ -28,8 +27,6 @@ export function App() {
             paddingSM: 12,
             lineWidth: 2,
             controlInteractiveSize: 24,
-
-            // Цвета для инпутов
             colorPrimary: '#4a5cff',
             colorBorder: '#d9d9d9',
             colorBgContainer: '#fff',
@@ -90,22 +87,23 @@ export function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout>
-                        <Navigate to="/profile" replace />
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+
                 <Route
                   path="/table"
                   element={
                     <ProtectedRoute>
                       <AppLayout>
                         <TablePage />
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <Navigate to="/profile" replace />
                       </AppLayout>
                     </ProtectedRoute>
                   }

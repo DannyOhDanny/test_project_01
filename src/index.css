@@ -2,15 +2,20 @@ html,
 body {
   --border: none !important;
 }
+body {
+}
 
 :root {
-  --font-family: 'Inter Variable', sans-serif;
-  --font-color--secondary: #e0e0e0;
+  --font-family: 'Inter Variable', sans-serif !important;
+  --second-family: 'Open Sans Variable', sans-serif !important;
+  --third-family: 'Roboto Mono Variable', monospace !important;
 
+  --font-color--secondary: #e0e0e0;
+  --bg-color: #242edb;
   --border-color: #e5e5e5;
   --divider-color: #ebebeb;
   --checkbox-label-color: #9c9c9c;
-  --gradient-primary: linear-gradient(135deg, #4a5cff 0%, #2f3fff 100%);
+  --gradient-primary: linear-gradient(135deg, #4a5cff 0%, #242edb 100%);
   --gradient-primary-hover: linear-gradient(135deg, #5a6cff 0%, #3f4fff 100%);
   --gradient-primary-active: linear-gradient(135deg, #3f4fff 0%, #1f2fff 100%);
 }

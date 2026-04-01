@@ -1,8 +1,8 @@
-// features/auth/by-username/ui/LogoutButton/LogoutButton.tsx
 import React, { useCallback } from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router';
 import { useUserStore } from '../../../../../entities/user/model/userStore';
+import { LogoutOutlined } from '@ant-design/icons';
 
 export const LogoutButton: React.FC = React.memo(() => {
   const navigate = useNavigate();
@@ -15,11 +15,7 @@ export const LogoutButton: React.FC = React.memo(() => {
     navigate('/login');
   }, [navigate, setUser]);
 
-  return (
-    <Button type="primary" danger onClick={handleLogout}>
-      Выйти
-    </Button>
-  );
+  return <Button type="primary" onClick={handleLogout} icon={<LogoutOutlined />} />;
 });
 
 LogoutButton.displayName = 'LogoutButton';
