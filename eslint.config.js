@@ -61,11 +61,7 @@ export default [
         },
       ],
       'simple-import-sort/exports': 'error',
-
-      // prettier
       'prettier/prettier': 'error',
-
-      // TS вместо JS
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -77,7 +73,6 @@ export default [
     },
   },
 
-  // конфиги
   {
     files: ['*.config.*', 'vite.config.ts'],
     languageOptions: {
