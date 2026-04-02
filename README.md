@@ -15,8 +15,11 @@
 - React Router
 - ESLint + Prettier
 - Husky + lint-staged
+- API - dummyjson.com (авторизация, товары)
 
 ---
+
+_ВАЖНО! Для загрузки данных с использованием <https://dummyjson.com/docs/> нужен VPN._
 
 ## Демо функционала
 
@@ -52,18 +55,19 @@ npm install
 
 ```
 npm run dev
-```
 
 Порт: http://localhost:3000
+```
 
 ### Сборка
 
 ```
 npm run build
 npm run preview
-```
 
----
+Порт: http://localhost:4173
+
+```
 
 ### Скрипты
 
@@ -84,7 +88,9 @@ npm run preview
 - test - Тесты (не реализованы)
 
 ```
+
 Автор
 Test Project 01
 @DannyohDanny
+
 ```
