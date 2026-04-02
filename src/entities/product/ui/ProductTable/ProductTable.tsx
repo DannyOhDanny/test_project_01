@@ -23,6 +23,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   onChange,
   rowSelection,
   paginationConfig,
+  onOpenInfoModal,
 }) => {
   const tableColumns: TableColumnsType<Product> = [
     {
@@ -110,8 +111,9 @@ const ProductTable: React.FC<ProductTableProps> = ({
       title: '',
       dataIndex: '',
       key: 'x',
-      render: () => (
+      render: (_, record) => (
         <Button
+          onClick={() => onOpenInfoModal(record)}
           style={{
             background: 'var(--bg-color)',
             boxShadow: 'none',
@@ -137,29 +139,31 @@ const ProductTable: React.FC<ProductTableProps> = ({
   ];
 
   return (
-    <Table
-      rowKey="sku"
-      styles={{
-        root: { marginTop: '40px' },
-        header: {
-          cell: {
-            fontFamily: 'var(--font-family)',
-            fontWeight: 600,
-            fontSize: '16px',
-            color: '#b2b3b9',
-            background: 'transparent',
+    <>
+      <Table
+        rowKey="sku"
+        styles={{
+          root: { marginTop: '40px' },
+          header: {
+            cell: {
+              fontFamily: 'var(--font-family)',
+              fontWeight: 600,
+              fontSize: '16px',
+              color: '#b2b3b9',
+              background: 'transparent',
+            },
           },
-        },
-      }}
-      tableLayout="auto"
-      dataSource={data}
-      columns={tableColumns}
-      onChange={onChange}
-      rowSelection={rowSelection}
-      style={{ marginTop: 40 }}
-      scroll={{ x: 'max-content' }}
-      pagination={paginationConfig}
-    />
+        }}
+        tableLayout="auto"
+        dataSource={data}
+        columns={tableColumns}
+        onChange={onChange}
+        rowSelection={rowSelection}
+        style={{ marginTop: 40 }}
+        scroll={{ x: 'max-content' }}
+        pagination={paginationConfig}
+      />
+    </>
   );
 };
 

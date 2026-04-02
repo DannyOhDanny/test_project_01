@@ -62,8 +62,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
       <Content style={{ padding: '24px 50px', border: 'none' }}>{children}</Content>
 
-      <Footer style={{ textAlign: 'center' }}>
-        Project 01 ©{new Date().getUTCMonth()}.{new Date().getFullYear()}
+      <Footer style={{ textAlign: 'center', color: 'grey' }}>
+        Project 01 ©{new Date().getFullYear()}
       </Footer>
     </Layout>
   );

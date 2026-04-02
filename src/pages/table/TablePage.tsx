@@ -4,6 +4,7 @@ import type { FormProps } from 'antd';
 import {
   Alert,
   Button,
+  Descriptions,
   Flex,
   Form,
   Input,
@@ -73,6 +74,19 @@ const TablePage: React.FC = () => {
     pageSize: Number(localStorage.getItem('tablePageSize')) || 5,
   });
 
+  const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const openInfoModal = (product: Product) => {
+    setSelectedProduct(product);
+    setInfoModalOpen(true);
+  };
+
+  const closeInfoModal = () => {
+    setInfoModalOpen(false);
+    setSelectedProduct(null);
+  };
+
   useEffect(() => {
     const savedSort = getInitialSort();
     let sortBy: string | undefined;
@@ -92,6 +106,7 @@ const TablePage: React.FC = () => {
   const handleModalClose = () => {
     setProductPopupOpen(false);
   };
+
   const handleReset = () => {
     form?.resetFields();
   };
@@ -318,6 +333,7 @@ const TablePage: React.FC = () => {
         </Flex>
         {dataSource.length > 0 && (
           <ProductTable
+            onOpenInfoModal={openInfoModal}
             data={dataSource}
             sortedInfo={sortedInfo!}
             onChange={handleTableChange}
@@ -439,6 +455,24 @@ const TablePage: React.FC = () => {
             </Button>
           </Flex>
         </Form>
+      </Modal>
+      <Modal
+        title="Карточка товара"
+        centered
+        open={infoModalOpen}
+        onCancel={closeInfoModal}
+        footer={null}
+      >
+        {selectedProduct && (
+          <Descriptions bordered column={1} layout="horizontal">
+            <Descriptions.Item label="Наименование">
+              {selectedProduct.title ?? '—'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Вендор">{selectedProduct.brand ?? '—'}</Descriptions.Item>
+            <Descriptions.Item label="Цена">{selectedProduct.price ?? '—'} ₽</Descriptions.Item>
+            <Descriptions.Item label="Рейтинг">{selectedProduct.rating ?? '—'}</Descriptions.Item>
+          </Descriptions>
+        )}
       </Modal>
     </Flex>
   );

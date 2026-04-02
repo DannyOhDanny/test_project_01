@@ -145,11 +145,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         style={{ marginTop: 16, fontSize: 14, width: '50%' }}
         title="Данные для входа:"
         description={
-          <div style={{ whiteSpace: 'pre-line' }}>
-            Логин: "emilys"
-            <br />
-            Пароль: "emilyspass"
-          </div>
+          <Text>
+            Логин:{' '}
+            <Text copyable style={{ whiteSpace: 'pre-line' }}>
+              emilys
+            </Text>
+            Пароль: <Text copyable>emilyspass</Text>
+          </Text>
         }
         type="info"
         showIcon

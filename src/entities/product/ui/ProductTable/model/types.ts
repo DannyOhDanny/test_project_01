@@ -18,6 +18,7 @@ type ProductTableProps = {
   onChange: TableProps<Product>['onChange'];
   rowSelection: TableProps<Product>['rowSelection'];
   paginationConfig: PaginationConfigProps;
+  onOpenInfoModal: (product: Product) => void;
 };
 
 export type { PaginationConfigProps, ProductTableProps };
