@@ -4,9 +4,11 @@ import type { FormProps } from 'antd';
 import {
   Alert,
   Button,
+  Carousel,
   Descriptions,
   Flex,
   Form,
+  Image,
   Input,
   message,
   Modal,
@@ -464,14 +466,27 @@ const TablePage: React.FC = () => {
         footer={null}
       >
         {selectedProduct && (
-          <Descriptions bordered column={1} layout="horizontal">
-            <Descriptions.Item label="Наименование">
-              {selectedProduct.title ?? '—'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Вендор">{selectedProduct.brand ?? '—'}</Descriptions.Item>
-            <Descriptions.Item label="Цена">{selectedProduct.price ?? '—'} ₽</Descriptions.Item>
-            <Descriptions.Item label="Рейтинг">{selectedProduct.rating ?? '—'}</Descriptions.Item>
-          </Descriptions>
+          <>
+            <Carousel
+              autoplay
+              arrows
+              dots
+              style={{ width: '300px', height: '300px', margin: '0 auto' }}
+            >
+              {selectedProduct.images &&
+                selectedProduct.images.map((image, key) => {
+                  return <Image src={image} key={key} alt="pic" width={300} height={300} />;
+                })}
+            </Carousel>
+            <Descriptions bordered column={1} layout="horizontal">
+              <Descriptions.Item label="Наименование">
+                {selectedProduct.title ?? '—'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Вендор">{selectedProduct.brand ?? '—'}</Descriptions.Item>
+              <Descriptions.Item label="Цена">{selectedProduct.price ?? '—'} ₽</Descriptions.Item>
+              <Descriptions.Item label="Рейтинг">{selectedProduct.rating ?? '—'}</Descriptions.Item>
+            </Descriptions>
+          </>
         )}
       </Modal>
     </Flex>
