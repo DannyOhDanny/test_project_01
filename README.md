@@ -2,7 +2,7 @@
 
 ## Фронтенд-приложение на базе **React 19 + Vite + TypeScript**, с использованием **Ant Design**, **Zustand** и настроенным пайплайном разработки (ESLint, Prettier, Husky).
 
-GH-pahges: [https://dannyohdanny.github.io/test_project_01/]
+GH-pages: [https://dannyohdanny.github.io/test_project_01/]
 
 ---
 
