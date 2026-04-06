@@ -39,7 +39,6 @@ type ProductFormFieldsType = {
   price: string;
   rating: string;
 };
-
 const TablePage: React.FC = () => {
   const {
     products,

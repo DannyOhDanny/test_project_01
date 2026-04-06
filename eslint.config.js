@@ -14,13 +14,13 @@ export default [
 
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', 'build/**'],
 
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: { ...globals.node },
+      globals: { ...globals.node, ...globals.browser }, // ДОБАВЛЕНЫ браузерные глобалы
 
       parserOptions: {
         project: null,
