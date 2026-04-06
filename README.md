@@ -1,10 +1,10 @@
 # Test Project 01
 
-## Фронтенд-приложение на базе **React 19 + Vite + TypeScript**, с использованием **Ant Design**, **Zustand** и настроенным пайплайном разработки (ESLint, Prettier, Husky).
-
-GH-pages: [https://dannyohdanny.github.io/test_project_01/]
+Фронтенд-приложение на базе **React 19 + Vite + TypeScript**, с использованием **Ant Design**, **Zustand** и настроенным пайплайном разработки (ESLint, Prettier, Husky).
 
 ---
+
+_GH-pages: [https://dannyohdanny.github.io/test_project_01/]_
 
 ## Стек
 
@@ -18,6 +18,7 @@ GH-pages: [https://dannyohdanny.github.io/test_project_01/]
 - ESLint + Prettier
 - Husky + lint-staged
 - API - dummyjson.com (авторизация, товары)
+- Vitest + Testing Library
 
 ---
 
