@@ -82,6 +82,7 @@ describe('ProductTable', () => {
   it('рендерит таблицу с данными', () => {
     render(
       <ProductTable
+        isLoading={false}
         data={mockProducts}
         sortedInfo={{
           column: {
@@ -121,6 +122,7 @@ describe('ProductTable', () => {
   it('показывает рейтинг с правильным цветом', () => {
     render(
       <ProductTable
+        isLoading={false}
         data={mockProducts}
         sortedInfo={{
           column: {
@@ -159,6 +161,7 @@ describe('ProductTable', () => {
   it('форматирует цену через formatPrice', () => {
     render(
       <ProductTable
+        isLoading={false}
         data={mockProducts}
         sortedInfo={{
           column: {
@@ -196,6 +199,7 @@ describe('ProductTable', () => {
     const openModalMock = vi.fn();
     render(
       <ProductTable
+        isLoading={false}
         data={mockProducts}
         sortedInfo={{
           column: {

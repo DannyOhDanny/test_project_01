@@ -24,6 +24,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   rowSelection,
   paginationConfig,
   onOpenInfoModal,
+  isLoading,
 }) => {
   const tableColumns: TableColumnsType<Product> = [
     {
@@ -141,6 +142,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   return (
     <>
       <Table
+        loading={isLoading}
         rowKey="sku"
         styles={{
           root: { marginTop: '40px' },

@@ -13,6 +13,7 @@ type PaginationConfigProps = {
 };
 
 type ProductTableProps = {
+  isLoading: boolean;
   data: Product[];
   sortedInfo: SorterResult<Product>;
   onChange: TableProps<Product>['onChange'];

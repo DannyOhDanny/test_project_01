@@ -334,6 +334,7 @@ const TablePage: React.FC = () => {
         </Flex>
         {dataSource.length > 0 && (
           <ProductTable
+            isLoading={isLoading}
             onOpenInfoModal={openInfoModal}
             data={dataSource}
             sortedInfo={sortedInfo!}
