@@ -1,10 +1,10 @@
-interface Dimensions {
+export interface Dimensions {
   width: number;
   height: number;
   depth: number;
 }
 
-interface Review {
+export interface Review {
   rating: number;
   comment: string;
   date: string;
@@ -12,7 +12,7 @@ interface Review {
   reviewerEmail: string;
 }
 
-interface Meta {
+export interface Meta {
   createdAt: string;
   updatedAt: string;
   barcode: string;

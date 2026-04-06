@@ -12,7 +12,7 @@
     "moduleDetection": "force",
 
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["vite/client", "jest"],
 
     "strict": true,
     "noUnusedLocals": true,
