@@ -89,7 +89,7 @@ npm run preview
 
 - type-check - Проверка типов TypeScript
 
-- test - Тесты (не реализованы)
+- test - Тесты
 
 ```
 
