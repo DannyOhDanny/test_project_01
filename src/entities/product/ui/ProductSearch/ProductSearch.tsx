@@ -1,15 +1,16 @@
-import type { Ref } from 'react';
-import type { GetProps, InputRef } from 'antd';
+import { type ComponentProps, forwardRef, type KeyboardEvent } from 'react';
+import type { InputRef } from 'antd';
 import { Flex, Input } from 'antd';
 import { createStaticStyles } from 'antd-style';
 
+import CloseIcon from '../../../../shared/assets/close-icon.svg?react';
 import SearchIcon from '../../../../shared/assets/search-icon.svg?react';
 
 import './ProductSearch.css';
 
 const { Search } = Input;
 
-type ProductSearchProps = GetProps<typeof Input.Search>;
+type SearchProps = ComponentProps<typeof Search>;
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
   focusEffect: css`
@@ -26,7 +27,7 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
   `,
 }));
 
-const stylesFnSearch: ProductSearchProps['styles'] = (info) => {
+const stylesFnSearch: SearchProps['styles'] = (info) => {
   if (info.props.size === 'large') {
     return {
       root: { color: 'var(--bg-color)' },
@@ -46,27 +47,29 @@ const stylesFnSearch: ProductSearchProps['styles'] = (info) => {
 };
 
 type Props = {
-  onSearch: (value: string) => void;
-  ref?: Ref<InputRef>;
+  onSearch: SearchProps['onSearch'];
 };
 
-const ProductSearch = ({ onSearch, ref }: Props) => {
+const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch({ onSearch }, ref) {
   return (
     <Flex justify="center" style={{ flex: 1 }}>
       <Search
         ref={ref}
         onSearch={onSearch}
+        onPressEnter={(e: KeyboardEvent<HTMLInputElement>) => {
+          onSearch?.(e.currentTarget.value, e);
+        }}
         prefix={<SearchIcon />}
         classNames={styles}
         styles={stylesFnSearch}
         size="large"
         placeholder="Найти"
         name="search-fn"
-        allowClear={false}
+        allowClear={{ clearIcon: <CloseIcon /> }}
         style={{ maxWidth: '1023px', width: '100%' }}
       />
     </Flex>
   );
-};
+});
 
 export { ProductSearch };

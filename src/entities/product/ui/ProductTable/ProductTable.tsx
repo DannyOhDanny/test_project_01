@@ -18,6 +18,7 @@ import './ProductTable.css';
 const { Text } = Typography;
 
 const ProductTable: React.FC<ProductTableProps> = ({
+  emptyText,
   data,
   sortedInfo,
   onChange,
@@ -142,21 +143,11 @@ const ProductTable: React.FC<ProductTableProps> = ({
   return (
     <>
       <Table
+        locale={{
+          emptyText: emptyText ? <div>{emptyText}</div> : undefined,
+        }}
         loading={isLoading}
         rowKey="sku"
-        styles={{
-          root: { marginTop: '40px' },
-          header: {
-            cell: {
-              fontFamily: 'var(--font-family)',
-              fontWeight: 600,
-              fontSize: '16px',
-              color: '#b2b3b9',
-              background: 'transparent',
-            },
-          },
-        }}
-        tableLayout="auto"
         dataSource={data}
         columns={tableColumns}
         onChange={onChange}

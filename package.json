@@ -21,6 +21,8 @@
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/open-sans": "^5.2.7",
     "@fontsource-variable/roboto-mono": "^5.2.8",
+    "@tanstack/react-query": "^5.99.0",
+    "@tanstack/react-query-devtools": "^5.99.0",
     "antd": "^6.3.5",
     "antd-style": "^4.1.0",
     "axios": "^1.14.0",

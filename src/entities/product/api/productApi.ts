@@ -9,6 +9,7 @@ export const productApi = {
     axiosProductInstance.get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}`, {
       onDownloadProgress: onProgress,
     }),
+  /** Постраничная выборка; на странице `/table` вызывается через TanStack Query (useQuery), а не напрямую из компонента. */
   getProductsByPage: (
     limit: number,
     skip: number,

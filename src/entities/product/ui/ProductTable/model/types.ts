@@ -13,6 +13,7 @@ type PaginationConfigProps = {
 };
 
 type ProductTableProps = {
+  emptyText?: string | undefined;
   isLoading: boolean;
   data: Product[];
   sortedInfo: SorterResult<Product>;

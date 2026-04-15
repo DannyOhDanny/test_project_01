@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
 
@@ -9,6 +10,7 @@ import { TablePage } from '../pages/table/TablePage';
 import { ProtectedRoute } from '../shared/ui/ProtectedRoute/ProtectedRoute';
 import { AppLayout } from '../widgets/Layout/AppLayout/AppLayout';
 
+import { QueryProvider } from './provider/QueryProvider';
 import { StoreProvider } from './provider/StoreProvider';
 
 import './App.css';
@@ -82,47 +84,51 @@ export function App() {
           },
         }}
       >
-        <StoreProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
+        <QueryProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
 
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <ProfilePage />
-                    </AppLayout>
-                  </ProtectedRoute>
-                }
-              />
+          <StoreProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
 
-              <Route
-                path="/table"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <TablePage />
-                    </AppLayout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout>
-                      <Navigate to="/profile" replace />
-                    </AppLayout>
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <ProfilePage />
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </StoreProvider>
+                <Route
+                  path="/table"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <TablePage />
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <Navigate to="/profile" replace />
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </StoreProvider>
+        </QueryProvider>
       </ConfigProvider>
     </StrictMode>
   );

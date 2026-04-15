@@ -9,6 +9,7 @@ import { tokenStorage } from '../../../shared/lib/tokenStorage';
 import { useUserStore } from './userStore';
 interface AuthState {
   isLoading: boolean;
+  isAuthenticated: boolean;
   error: string | null;
   login: (credentials: LoginCredentials, remember: boolean) => Promise<void>;
   logout: () => void;
@@ -17,9 +18,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   error: null,
+  isAuthenticated: false,
 
   login: async (credentials: LoginCredentials, remember: boolean) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, isAuthenticated: false });
 
     try {
       const response = await authApi.login(credentials);
@@ -30,10 +32,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       const userStore = useUserStore.getState();
       userStore.setUser(response.user);
       userStore.setAuthenticated(true);
+      set({ isAuthenticated: true });
 
       set({ isLoading: false });
     } catch (error) {
       let errorMessage = 'Введенные данные неверны. Попробуйте еще раз';
+      set({ isAuthenticated: false });
 
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -49,6 +53,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     const userStore = useUserStore.getState();
     userStore.clearUser();
-    set({ error: null, isLoading: false });
+    set({ error: null, isLoading: false, isAuthenticated: false });
   },
 }));

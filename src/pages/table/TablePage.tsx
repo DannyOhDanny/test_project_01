@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { TableProps } from 'antd';
 import type { FormProps } from 'antd';
 import {
-  Alert,
   Button,
   Carousel,
   Descriptions,
@@ -12,22 +12,54 @@ import {
   Input,
   message,
   Modal,
-  Progress,
+  Skeleton,
   Table,
   Typography,
 } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
+import axios from 'axios';
 
+import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQuery';
+import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
+import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
 import { useProductStore } from '../../entities/product/model/productStore';
 import { type Product } from '../../entities/product/model/types';
 import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
 import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
+import { useAuthStore } from '../../entities/user/model/authStore';
+import { useUserStore } from '../../entities/user/model/userStore';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
 
 import './TablePage.css';
 
 const { Title, Text } = Typography;
+
+/** Текст из тела ответа (message) или из axios-интерцептора (userMessage), а не только error.message. */
+function getQueryErrorMessage(error: unknown): string {
+  if (error !== null && typeof error === 'object' && 'userMessage' in error) {
+    const userMessage = (error as { userMessage?: unknown }).userMessage;
+    if (typeof userMessage === 'string' && userMessage.length > 0) {
+      return userMessage;
+    }
+  }
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data;
+    if (data && typeof data === 'object' && 'message' in data) {
+      const msg = (data as { message?: unknown }).message;
+      if (typeof msg === 'string' && msg.length > 0) {
+        return msg;
+      }
+    }
+    if (typeof error.message === 'string' && error.message.length > 0) {
+      return error.message;
+    }
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+}
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 
@@ -40,18 +72,13 @@ type ProductFormFieldsType = {
   rating: string;
 };
 const TablePage: React.FC = () => {
-  const {
-    products,
-    total,
-    isLoading,
-    error,
-    progress,
-    searchProducts,
-    getProductById,
-    searchProduct,
-    addProduct,
-    getProductsByPage,
-  } = useProductStore();
+  const isAuthenticatedAuth = useAuthStore((s) => s.isAuthenticated);
+  const isAuthenticatedUser = useUserStore((s) => s.isAuthenticated);
+  const isSessionAuthenticated = isAuthenticatedAuth || isAuthenticatedUser;
+  const { addProduct } = useProductStore();
+
+  const [listFromTextSearch, setListFromTextSearch] = useState(false);
+  const [isIdSearch, setIsIdSearch] = useState(false);
 
   const getInitialSort = (): SorterResult<Product> | null => {
     const savedSort = localStorage.getItem('sortOrder');
@@ -67,16 +94,91 @@ const TablePage: React.FC = () => {
 
   const [sortedInfo, setSortedInfo] = useState<SorterResult<Product> | null>(getInitialSort);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
+  const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
+
   const [form] = Form.useForm<ProductFormFieldsType>();
 
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: Number(localStorage.getItem('tablePageSize')) || 5,
   });
+  const pageSkip = (pagination.current - 1) * pagination.pageSize;
 
-  const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  let apiSortBy: string | undefined;
+  let apiOrder: 'asc' | 'desc' | undefined;
+  if (sortedInfo?.order) {
+    apiSortBy = sortedInfo.columnKey?.toString();
+    apiOrder = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
+  }
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearchText(searchText), 300);
+    return () => clearTimeout(t);
+  }, [searchText]);
+
+  const productsPaginatedQueryKey = useMemo(
+    () =>
+      [
+        'products',
+        'paginated',
+        pagination.pageSize,
+        pageSkip,
+        apiSortBy ?? '',
+        apiOrder ?? '',
+      ] as const,
+    [pagination.pageSize, pageSkip, apiSortBy, apiOrder]
+  );
+
+  const queryClient = useQueryClient();
+
+  const normalized = debouncedSearchText.trim().toLowerCase();
+
+  const productSearchQuery = useProductSearchQuery({
+    isAuthenticated: isSessionAuthenticated,
+    listFromTextSearch,
+    query: normalized,
+  });
+
+  const productIdSearchQuery = useProductByIdQuery({
+    isAuthenticated: isSessionAuthenticated,
+    selectedId,
+    listFromTextSearch,
+  });
+
+  const productsPageQuery = usePorductPageQuery({
+    isAuthenticated: isSessionAuthenticated,
+    listFromTextSearch,
+    selectedId,
+    pageSize: pagination.pageSize,
+    pageSkip,
+    sortBy: apiSortBy,
+    order: apiOrder,
+  });
+
+  const isProductsPagePending = productsPageQuery.isPending;
+  const isProductsPageLoading = productsPageQuery.isLoading;
+  const isProductsPageError = productsPageQuery.isError;
+  const isProductsPageFetching = productsPageQuery.isFetching;
+  const productsPageError = productsPageQuery.error;
+  const isProductsSearchPending = productSearchQuery.isPending;
+  const isProductsSearchLoading = productSearchQuery.isLoading;
+  const isProductsSearchError = productSearchQuery.isError;
+  const isProductsSearchFetching = productSearchQuery.isFetching;
+  const productsSearchError = productSearchQuery.error;
+
+  const isProductIdSearchPending = productIdSearchQuery.isPending;
+  const isProductIdSearchLoading = productIdSearchQuery.isLoading;
+  const isProductIdSearchError = productIdSearchQuery.isError;
+  const isProductIdSearchFetching = productIdSearchQuery.isFetching;
+  const productIdSearchError = productIdSearchQuery.error;
 
   const openInfoModal = (product: Product) => {
     setSelectedProduct(product);
@@ -87,19 +189,6 @@ const TablePage: React.FC = () => {
     setInfoModalOpen(false);
     setSelectedProduct(null);
   };
-
-  useEffect(() => {
-    const savedSort = getInitialSort();
-    let sortBy: string | undefined;
-    let order: 'asc' | 'desc' | undefined;
-    if (savedSort && savedSort.order) {
-      sortBy = savedSort.columnKey?.toString();
-      order = savedSort.order === 'ascend' ? 'asc' : 'desc';
-    }
-    const skip = (pagination.current - 1) * pagination.pageSize;
-    getProductsByPage(pagination.pageSize, skip, sortBy, order);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const showModal = () => {
     setProductPopupOpen(true);
@@ -123,6 +212,13 @@ const TablePage: React.FC = () => {
         rating: Number(values.rating),
       });
 
+      if (!listFromTextSearch && !isIdSearch) {
+        const snapshot = useProductStore.getState().products;
+        if (snapshot) {
+          queryClient.setQueryData([...productsPaginatedQueryKey], snapshot);
+        }
+      }
+
       message.success('Продукт успешно добавлен!');
       setProductPopupOpen(false);
       form.resetFields();
@@ -138,7 +234,61 @@ const TablePage: React.FC = () => {
 
   const searchQuoteRef = useRef(null);
 
-  const dataSource = searchProduct ? [searchProduct] : products?.products || [];
+  const clearTableSearchView = () => {
+    setListFromTextSearch(false);
+    setIsIdSearch(false);
+    setSelectedId(null);
+    setSearchText('');
+  };
+
+  const dataSource = isIdSearch
+    ? productIdSearchQuery.data
+      ? [productIdSearchQuery.data]
+      : []
+    : listFromTextSearch
+      ? productSearchQuery.data?.products || []
+      : productsPageQuery.data?.products || [];
+
+  const effectiveTotal = isIdSearch
+    ? 1
+    : listFromTextSearch
+      ? (productSearchQuery.data?.total ?? 0)
+      : (productsPageQuery.data?.total ?? 0);
+
+  const displayError = isIdSearch
+    ? isProductIdSearchError
+      ? getQueryErrorMessage(productIdSearchError)
+      : null
+    : listFromTextSearch
+      ? isProductsSearchError
+        ? getQueryErrorMessage(productsSearchError)
+        : null
+      : isProductsPageError
+        ? getQueryErrorMessage(productsPageError)
+        : null;
+
+  const tableLoading = isIdSearch
+    ? isProductIdSearchPending || isProductIdSearchLoading || isProductIdSearchFetching
+    : listFromTextSearch
+      ? isProductsSearchPending || isProductsSearchLoading || isProductsSearchFetching
+      : isProductsPagePending || isProductsPageLoading || isProductsPageFetching;
+
+  const tableEmptyText = (() => {
+    if (tableLoading) return 'Загрузка…';
+    if (isIdSearch && displayError) return displayError;
+    if (displayError) return `Не удалось загрузить данные: ${displayError}`;
+    if (isIdSearch && dataSource.length === 0) return 'Товар не найден';
+    if (listFromTextSearch && dataSource.length === 0) return 'Ничего не найдено';
+    if (!listFromTextSearch && !isIdSearch && dataSource.length === 0) return 'Нет данных';
+    return '';
+  })();
+
+  const sorterForTable: SorterResult<Product> =
+    sortedInfo ??
+    ({
+      columnKey: undefined,
+      order: null,
+    } as unknown as SorterResult<Product>);
 
   const handleTableChange: TableProps<Product>['onChange'] = (
     newPagination,
@@ -146,12 +296,9 @@ const TablePage: React.FC = () => {
     sorter,
     _extra
   ) => {
-    let sortBy: string | undefined;
-    let order: 'asc' | 'desc' | undefined;
+    clearTableSearchView();
 
     if (!Array.isArray(sorter) && sorter && sorter.order) {
-      sortBy = sorter.columnKey?.toString();
-      order = sorter.order === 'ascend' ? 'asc' : 'desc';
       setSortedInfo(sorter);
       localStorage.setItem('sortOrder', JSON.stringify(sorter));
     } else {
@@ -165,30 +312,19 @@ const TablePage: React.FC = () => {
     });
 
     localStorage.setItem('tablePageSize', String(newPagination.pageSize));
-
-    const skip =
-      ((newPagination.current ?? 1) - 1) * (newPagination.pageSize ?? pagination.pageSize);
-    getProductsByPage(newPagination.pageSize ?? pagination.pageSize, skip, sortBy, order);
   };
 
   const paginationConfig = {
     className: 'custom-pagination',
     current: pagination.current,
     pageSize: pagination.pageSize,
-    total: total,
+    total: effectiveTotal,
     showQuickJumper: false,
     showSizeChanger: true,
     pageSizeOptions: ['5', '10', '20', '50', '100'],
     onChange: (page: number, pageSize: number) => {
+      clearTableSearchView();
       setPagination({ current: page, pageSize });
-      const skip = (page - 1) * pageSize;
-      let sortBy: string | undefined;
-      let order: 'asc' | 'desc' | undefined;
-      if (sortedInfo && sortedInfo.order) {
-        sortBy = sortedInfo.columnKey?.toString();
-        order = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
-      }
-      getProductsByPage(pageSize, skip, sortBy, order);
     },
     showTotal: (total: number, range: number[]) => (
       <div
@@ -267,27 +403,30 @@ const TablePage: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    const skip = (pagination.current - 1) * pagination.pageSize;
-    let sortBy: string | undefined;
-    let order: 'asc' | 'desc' | undefined;
-    if (sortedInfo && sortedInfo.order) {
-      sortBy = sortedInfo.columnKey?.toString();
-      order = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
-    }
-    getProductsByPage(pagination.pageSize, skip, sortBy, order);
+    clearTableSearchView();
+    void productsPageQuery.refetch();
   };
 
   const handleSearch = (data: string) => {
     const numericId = Number(data);
     setPagination((prev) => ({ ...prev, current: 1 }));
     if (!isNaN(numericId) && numericId > 0) {
-      getProductById(numericId.toString());
+      setListFromTextSearch(false);
+      setSelectedId(numericId.toString());
+      setIsIdSearch(true);
+      setSearchText('');
+    } else if (data.length > 0 || data.trim() !== '') {
+      setSelectedId(null);
+      setListFromTextSearch(true);
+      setIsIdSearch(false);
+      setSearchText(data);
     } else {
-      searchProducts(data);
+      setSelectedId(null);
+      setListFromTextSearch(false);
+      setIsIdSearch(false);
+      setSearchText('');
     }
   };
-
-  if (error) return <Alert type="error" title={'Ошибка'} description={error} />;
 
   return (
     <Flex vertical gap={30}>
@@ -304,9 +443,12 @@ const TablePage: React.FC = () => {
 
         <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
       </Flex>
-      <Flex orientation="vertical" gap={0} style={{ width: '100%' }}>
+
+      <Flex vertical gap={0} style={{ width: '100%' }}>
         <Flex justify="space-between" gap={0}>
-          <Title className="table-title">Все позиции</Title>
+          <Title className="table-title">
+            Все позиции: {effectiveTotal > 0 ? effectiveTotal : '0'}
+          </Title>
           <Flex gap={8}>
             <Button
               icon={<RefreshIcon />}
@@ -318,32 +460,21 @@ const TablePage: React.FC = () => {
             </Button>
           </Flex>
         </Flex>
-        <Flex style={{ height: '20px' }}>
-          {isLoading && (
-            <Progress
-              percent={progress}
-              type="line"
-              strokeColor={{
-                '0%': '#fff',
-                '100%': '#242edb',
-              }}
-              strokeLinecap="round"
-              style={{ margin: '20px' }}
-            />
-          )}{' '}
-        </Flex>
-        {dataSource.length > 0 && (
+
+        <Skeleton active loading={tableLoading} paragraph={{ rows: 6 }}>
           <ProductTable
-            isLoading={isLoading}
+            emptyText={tableEmptyText}
+            isLoading={false}
             onOpenInfoModal={openInfoModal}
             data={dataSource}
-            sortedInfo={sortedInfo!}
+            sortedInfo={sorterForTable}
             onChange={handleTableChange}
             rowSelection={rowSelection}
             paginationConfig={paginationConfig}
           />
-        )}
+        </Skeleton>
       </Flex>
+
       <Modal
         centered={true}
         title="Добавить товар"

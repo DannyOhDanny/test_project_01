@@ -20,7 +20,7 @@ describe('ProductSearch', () => {
     fireEvent.change(input, { target: { value: 'apple' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-    expect(onSearchMock).toHaveBeenCalledWith('apple', expect.any(Object), expect.any(Object));
+    expect(onSearchMock).toHaveBeenCalledWith('apple', expect.anything());
   });
 
   it('имеет иконку поиска', () => {

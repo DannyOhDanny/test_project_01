@@ -8,17 +8,18 @@ _GH-pages: [https://dannyohdanny.github.io/test_project_01/]_
 
 ## Стек
 
-- React 19 + React Compiler
-- Vite
-- TypeScript
-- Ant Design + antd-style
-- Zustand
-- Axios
-- React Router
-- ESLint + Prettier
-- Husky + lint-staged
+- React 19 + React Compiler / мемоизация
+- TanStack Qiery / кеширование
+- Vite / сборка rollup
+- TypeScript / строгое типизирование
+- Ant Design + antd-style / UI-библиотека копонентов
+- Zustand / менеджер состояний
+- Axios / HTTP запросы
+- React Router / роутинг и маршрутизация
+- ESLint + Prettier / линтеры
+- Husky + lint-staged / линтеры
 - API - dummyjson.com (авторизация, товары)
-- Vitest + Testing Library
+- Vitest + Testing Library / unit-тестирование
 
 ---
 
