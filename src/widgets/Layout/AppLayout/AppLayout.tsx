@@ -53,8 +53,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         {user && (
           <Flex gap={12} align="center">
             <UserOutlined />
-            {user.firstName}
-            {user.lastName}
+            {user.firstName} {user.lastName}
             <LogoutButton />
           </Flex>
         )}

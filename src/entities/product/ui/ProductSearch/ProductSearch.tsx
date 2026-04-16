@@ -54,6 +54,7 @@ const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch({ onSea
   return (
     <Flex justify="center" style={{ flex: 1 }}>
       <Search
+        tabIndex={0}
         ref={ref}
         onSearch={onSearch}
         onPressEnter={(e: KeyboardEvent<HTMLInputElement>) => {
@@ -67,6 +68,7 @@ const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch({ onSea
         name="search-fn"
         allowClear={{ clearIcon: <CloseIcon /> }}
         style={{ maxWidth: '1023px', width: '100%' }}
+        aria-label="Поиск товара"
       />
     </Flex>
   );

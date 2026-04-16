@@ -115,6 +115,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
       key: 'x',
       render: (_, record) => (
         <Button
+          aria-label="Открыть информацию о товаре"
           onClick={() => onOpenInfoModal(record)}
           style={{
             background: 'var(--bg-color)',
@@ -144,7 +145,11 @@ const ProductTable: React.FC<ProductTableProps> = ({
     <>
       <Table
         locale={{
-          emptyText: emptyText ? <div>{emptyText}</div> : undefined,
+          emptyText: emptyText ? (
+            <div role="status" aria-live="polite">
+              {emptyText}
+            </div>
+          ) : undefined,
         }}
         loading={isLoading}
         rowKey="sku"

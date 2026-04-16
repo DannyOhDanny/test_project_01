@@ -451,6 +451,7 @@ const TablePage: React.FC = () => {
           </Title>
           <Flex gap={8}>
             <Button
+              aria-label="Обновить список товаров"
               icon={<RefreshIcon />}
               className="table-refresh-btn"
               onClick={handleRefresh}
@@ -491,6 +492,7 @@ const TablePage: React.FC = () => {
           autoComplete="off"
         >
           <Form.Item
+            aria-label="Наименование"
             name="title"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -500,10 +502,11 @@ const TablePage: React.FC = () => {
               },
             ]}
           >
-            <Input placeholder="Наименование" />
+            <Input placeholder="Наименование" tabIndex={0} />
           </Form.Item>
 
           <Form.Item
+            aria-label="Вендор"
             name="brand"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -517,6 +520,7 @@ const TablePage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
+            aria-label="Категория"
             name="category"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -530,6 +534,7 @@ const TablePage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
+            aria-label="Артикул"
             name="sku"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -543,6 +548,7 @@ const TablePage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
+            aria-label="Оценка"
             name="rating"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -560,6 +566,7 @@ const TablePage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
+            aria-label="Цена"
             name="price"
             rules={[
               { required: true, message: 'Обязательное поле' },
@@ -576,14 +583,14 @@ const TablePage: React.FC = () => {
           </Form.Item>
           <Flex justify="space-between">
             <Flex gap={10}>
-              <Button type="default" htmlType="reset" onClick={handleReset}>
+              <Button type="default" htmlType="reset" onClick={handleReset} aria-label="Сбросить">
                 Сбросить
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" aria-label="Добавить">
                 Добавить
               </Button>
             </Flex>
-            <Button type="default" onClick={handleModalClose}>
+            <Button type="default" onClick={handleModalClose} aria-label="Закрыть">
               Закрыть
             </Button>
           </Flex>
@@ -606,7 +613,15 @@ const TablePage: React.FC = () => {
             >
               {selectedProduct.images &&
                 selectedProduct.images.map((image, key) => {
-                  return <Image src={image} key={key} alt="pic" width={300} height={300} />;
+                  return (
+                    <Image
+                      src={image}
+                      key={key}
+                      alt={selectedProduct.title}
+                      width={300}
+                      height={300}
+                    />
+                  );
                 })}
             </Carousel>
             <Descriptions bordered column={1} layout="horizontal">

@@ -4,11 +4,8 @@ import { authApi } from '../../../features/auth/by-username/api/authApi.ts';
 import { authUtils } from '../../../shared/lib/authConfig';
 import { tokenStorage } from '../../../shared/lib/tokenStorage';
 
-import {
-  UserActions,
-  UserState,
-  //User
-} from './types';
+import { userApi } from './api/userApi';
+import { UserActions, UserState } from './types';
 
 type UserStore = UserState & UserActions;
 
@@ -17,6 +14,37 @@ export const useUserStore = create<UserStore>((set, get) => ({
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  updated: false,
+  updatedError: null,
+  updatedLoading: false,
+
+  updateUser: async (id, data) => {
+    set({ updatedLoading: true, updatedError: null, updated: false });
+    try {
+      const { data: updatedUser } = await userApi.patchUser(id, data);
+      set({
+        user: updatedUser,
+        updated: true,
+        updatedLoading: false,
+        updatedError: null,
+      });
+    } catch (err) {
+      const message =
+        err &&
+        typeof err === 'object' &&
+        'userMessage' in err &&
+        typeof (err as { userMessage: unknown }).userMessage === 'string'
+          ? (err as { userMessage: string }).userMessage
+          : err instanceof Error
+            ? err.message
+            : 'Не удалось обновить профиль';
+      set({
+        updated: false,
+        updatedLoading: false,
+        updatedError: message,
+      });
+    }
+  },
 
   setUser: (user) => set({ user }),
   setAuthenticated: (status) => set({ isAuthenticated: status }),
@@ -28,6 +56,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
       user: null,
       isAuthenticated: false,
       error: null,
+      updated: false,
+      updatedError: null,
+      updatedLoading: false,
     });
     tokenStorage.clearTokens();
   },

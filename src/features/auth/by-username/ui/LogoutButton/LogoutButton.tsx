@@ -16,7 +16,14 @@ export const LogoutButton: React.FC = React.memo(() => {
     navigate('/login');
   }, [navigate, setUser]);
 
-  return <Button type="primary" onClick={handleLogout} icon={<LogoutOutlined />} />;
+  return (
+    <Button
+      area-label="Выход из аккаунат"
+      type="primary"
+      onClick={handleLogout}
+      icon={<LogoutOutlined />}
+    />
+  );
 });
 
 LogoutButton.displayName = 'LogoutButton';

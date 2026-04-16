@@ -9,6 +9,10 @@ export interface User {
   age?: number;
   phone?: string;
   birthDate?: string;
+  address?: {
+    city: string;
+    address: string;
+  };
 }
 
 export interface UserState {
@@ -16,9 +20,16 @@ export interface UserState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  updated: boolean;
+  updatedError: string | null;
+  updatedLoading: boolean;
 }
 
 export interface UserActions {
+  updateUser: (
+    id: string,
+    data: Pick<User, 'firstName' | 'lastName' | 'email' | 'phone' | 'gender' | 'age'>
+  ) => Promise<void>;
   setUser: (user: User | null) => void;
   setAuthenticated: (status: boolean) => void;
   setLoading: (loading: boolean) => void;

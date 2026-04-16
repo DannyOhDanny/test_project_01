@@ -8,6 +8,12 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+export const axiosUsersInstance = axios.create({
+  baseURL: API_CONFIG.USERS_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export const axiosProductInstance = axios.create({
   baseURL: PRODUCT_API_CONFIG.BASE_URL,
@@ -47,6 +53,20 @@ axiosProductInstance.interceptors.response.use(
       error.userMessage = error.message;
     } else {
       error.userMessage = 'Произошла ошибка загрузки товаров';
+    }
+    return Promise.reject(error);
+  }
+);
+
+axiosUsersInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.data && error.response.data.message) {
+      error.userMessage = error.response.data.message;
+    } else if (error.message) {
+      error.userMessage = error.message;
+    } else {
+      error.userMessage = 'Произошла ошибка при обновлении пользователя';
     }
     return Promise.reject(error);
   }
