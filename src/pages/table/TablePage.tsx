@@ -12,30 +12,35 @@ import {
   Input,
   message,
   Modal,
+  Rate,
   Skeleton,
+  Space,
   Table,
+  Tag,
   Typography,
 } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
 import axios from 'axios';
 
+import { usePorductAllQuery } from '../../entities/product/api/usePorductAllQuery';
 import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQuery';
 import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
 import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
 import { useProductStore } from '../../entities/product/model/productStore';
-import { type Product } from '../../entities/product/model/types';
+import type { Product } from '../../entities/product/model/types';
 import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
 import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
+import { formatPrice } from '../../shared/functions/productFunctions';
+import { RatingsCard } from '../../shared/ui/RatingsCard/RatingsCard';
 
 import './TablePage.css';
 
 const { Title, Text } = Typography;
 
-/** Текст из тела ответа (message) или из axios-интерцептора (userMessage), а не только error.message. */
 function getQueryErrorMessage(error: unknown): string {
   if (error !== null && typeof error === 'object' && 'userMessage' in error) {
     const userMessage = (error as { userMessage?: unknown }).userMessage;
@@ -59,6 +64,37 @@ function getQueryErrorMessage(error: unknown): string {
     return error.message;
   }
   return String(error);
+}
+
+type ProductStatistics = {
+  topRatingProducts: Product[];
+  bottomRatingProducts: Product[];
+  highPriceProducts: Product[];
+  lowPriceProducts: Product[];
+};
+
+function computeProductStatistics(products: Product[]): ProductStatistics {
+  return products.reduce<ProductStatistics>(
+    (acc, product) => {
+      if (product.rating > 4.5) {
+        acc.topRatingProducts.push(product);
+      } else if (product.rating < 3.5) {
+        acc.bottomRatingProducts.push(product);
+      }
+      if (product.price > 1000) {
+        acc.highPriceProducts.push(product);
+      } else if (product.price < 100) {
+        acc.lowPriceProducts.push(product);
+      }
+      return acc;
+    },
+    {
+      topRatingProducts: [],
+      bottomRatingProducts: [],
+      highPriceProducts: [],
+      lowPriceProducts: [],
+    }
+  );
 }
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
@@ -163,11 +199,25 @@ const TablePage: React.FC = () => {
     order: apiOrder,
   });
 
+  const canLoadCatalogAll =
+    isSessionAuthenticated &&
+    !listFromTextSearch &&
+    !isIdSearch &&
+    productsPageQuery.isSuccess &&
+    !productsPageQuery.isError;
+
+  const catalogTotal = canLoadCatalogAll ? (productsPageQuery.data?.total ?? 0) : 0;
+
+  const allProductsQuery = usePorductAllQuery({
+    total: catalogTotal,
+    enabled: canLoadCatalogAll && catalogTotal > 0,
+  });
   const isProductsPagePending = productsPageQuery.isPending;
   const isProductsPageLoading = productsPageQuery.isLoading;
   const isProductsPageError = productsPageQuery.isError;
   const isProductsPageFetching = productsPageQuery.isFetching;
   const productsPageError = productsPageQuery.error;
+
   const isProductsSearchPending = productSearchQuery.isPending;
   const isProductsSearchLoading = productSearchQuery.isLoading;
   const isProductsSearchError = productSearchQuery.isError;
@@ -179,6 +229,89 @@ const TablePage: React.FC = () => {
   const isProductIdSearchError = productIdSearchQuery.isError;
   const isProductIdSearchFetching = productIdSearchQuery.isFetching;
   const productIdSearchError = productIdSearchQuery.error;
+
+  const productStatistics = useMemo((): ProductStatistics | null => {
+    if (!canLoadCatalogAll) return null;
+    if (!allProductsQuery.isSuccess || allProductsQuery.isError) return null;
+    const list = allProductsQuery.data;
+    if (!list?.length) return null;
+    return computeProductStatistics(list);
+  }, [
+    canLoadCatalogAll,
+    allProductsQuery.isSuccess,
+    allProductsQuery.isError,
+    allProductsQuery.data,
+  ]);
+
+  const productStatisticsSlides = useMemo(() => {
+    if (!productStatistics) return [];
+    const { highPriceProducts, lowPriceProducts, topRatingProducts, bottomRatingProducts } =
+      productStatistics;
+
+    type StatSlide = {
+      key: string;
+      products: Product[];
+      title: React.ReactNode;
+      tag?: React.ReactNode;
+      sortBy: 'price' | 'rating';
+      sortOrder: 'asc' | 'desc';
+      emptyText: string;
+      renderDescription?: (product: Product) => React.ReactNode;
+    };
+
+    const slides: StatSlide[] = [
+      {
+        key: 'highPrice',
+        products: highPriceProducts,
+        title: 'Дорогие позиции',
+        tag: <Tag color="volcano">цена выше 1000</Tag>,
+        sortBy: 'price',
+        sortOrder: 'desc',
+        emptyText: 'Нет товаров дороже 1000',
+      },
+      {
+        key: 'lowPrice',
+        products: lowPriceProducts,
+        title: 'Бюджетные позиции',
+        tag: <Tag color="cyan">цена ниже 100</Tag>,
+        sortBy: 'price',
+        sortOrder: 'asc',
+        emptyText: 'Нет товаров дешевле 100',
+      },
+      {
+        key: 'topRating',
+        products: topRatingProducts,
+        title: 'Высокий рейтинг',
+        tag: <Tag color="gold">рейтинг выше 4.5</Tag>,
+        sortBy: 'rating',
+        sortOrder: 'desc',
+        emptyText: 'Нет товаров с рейтингом выше 4.5',
+        renderDescription: (product) => (
+          <Space size={8} wrap align="center">
+            <Text type="secondary">{formatPrice(product.price)} ₽</Text>
+            <Rate disabled allowHalf value={product.rating} style={{ fontSize: 14 }} />
+          </Space>
+        ),
+      },
+      {
+        key: 'bottomRating',
+        products: bottomRatingProducts,
+        title: 'Низкий рейтинг',
+        tag: <Tag color="default">рейтинг ниже 3.5</Tag>,
+        sortBy: 'rating',
+        sortOrder: 'asc',
+        emptyText: 'Нет товаров с рейтингом ниже 3.5',
+        renderDescription: (product) => (
+          <Space size={8} wrap align="center">
+            <Text type="secondary">{formatPrice(product.price)} ₽</Text>
+            <Rate disabled allowHalf value={product.rating} style={{ fontSize: 14 }} />
+          </Space>
+        ),
+      },
+    ];
+
+    return slides.filter((s) => s.products.length > 0);
+  }, [productStatistics]);
 
   const openInfoModal = (product: Product) => {
     setSelectedProduct(product);
@@ -444,6 +577,23 @@ const TablePage: React.FC = () => {
         <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
       </Flex>
 
+      {productStatisticsSlides.length > 0 && (
+        <Carousel arrows dots style={{ width: '30%', minHeight: 280, marginBottom: 20 }}>
+          {productStatisticsSlides.map((slide) => (
+            <div key={slide.key} style={{ paddingInline: 12 }}>
+              <RatingsCard
+                data={slide.products}
+                title={slide.title}
+                tag={slide.tag}
+                sortBy={slide.sortBy}
+                sortOrder={slide.sortOrder}
+                emptyText={slide.emptyText}
+                renderDescription={slide.renderDescription}
+              />
+            </div>
+          ))}
+        </Carousel>
+      )}
       <Flex vertical gap={0} style={{ width: '100%' }}>
         <Flex justify="space-between" gap={0}>
           <Title className="table-title">

@@ -1,5 +1,6 @@
 export const productKeys = {
   all: () => ['products'] as const,
+  catalogAll: (total: number) => [...productKeys.all(), 'catalog-all', total] as const,
   paginated: (params: { limit: number; skip: number; sortBy?: string; order?: string }) =>
     [
       ...productKeys.all(),

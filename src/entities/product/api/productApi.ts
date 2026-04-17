@@ -9,6 +9,16 @@ export const productApi = {
     axiosProductInstance.get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}`, {
       onDownloadProgress: onProgress,
     }),
+  getAllProducts: async (total: number): Promise<Products> => {
+    try {
+      return axiosProductInstance
+        .get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}?limit=${total}&skip=0`)
+        .then((response) => response.data);
+    } catch (error) {
+      console.error('Error fetching products', error);
+      throw new Error('Error fetching products');
+    }
+  },
   /** Постраничная выборка; на странице `/table` вызывается через TanStack Query (useQuery), а не напрямую из компонента. */
   getProductsByPage: (
     limit: number,

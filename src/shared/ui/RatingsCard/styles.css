@@ -1,0 +1,15 @@
+.ant-carousel .slick-next {
+  color: black;
+}
+.ant-carousel .slick-prev {
+  color: black;
+}
+:where(.css-dev-only-do-not-override-ch9ese).ant-carousel .slick-dots li button {
+  background: black;
+  color: black;
+}
+
+:where(.css-dev-only-do-not-override-ch9ese).ant-carousel .slick-dots li.slick-active::after {
+  background: blue;
+  color: blue;
+}
