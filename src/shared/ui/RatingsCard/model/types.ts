@@ -9,7 +9,6 @@ export type RatingsCardSortOrder = 'asc' | 'desc';
 export type RatingsCardProps = {
   title?: ReactNode;
   tag?: ReactNode;
-
   data: Product[];
   columns: TableColumnsType<Product>;
   options: NonNullable<SelectProps['options']>;
@@ -17,6 +16,5 @@ export type RatingsCardProps = {
   onSelectStat: (value: string) => void;
   loading?: boolean;
   emptyText?: ReactNode;
-
   countText?: ReactNode;
 };

@@ -5,3 +5,8 @@ export type ProductStatistics = {
   highPriceProducts: Product[];
   lowPriceProducts: Product[];
 };
+export type PieDatum = {
+  categoryName: string;
+  categoryCount: number;
+  percent: number;
+};

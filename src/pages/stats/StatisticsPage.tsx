@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { Pie, type PieConfig } from '@ant-design/charts';
-import { Card, Col, Divider, Flex, Row, Skeleton, Space, Statistic, Typography } from 'antd';
+import { TableOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Card, Col, Flex, Row, Segmented, Skeleton, Space, Statistic, Typography } from 'antd';
 
 import { usePorductAllQuery } from '../../entities/product/api/usePorductAllQuery';
 import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQuery';
@@ -10,31 +11,15 @@ import { useUserStore } from '../../entities/user/model/userStore';
 import { getCategory } from '../../shared/functions/productFunctions';
 
 import type { ProductStatistics } from './model/types';
+import type { PieDatum } from './model/types';
 import { columns } from './utils/columnsConfig';
 import { computeProductStatistics } from './utils/functions';
 import { options } from './utils/optionsConfig';
+import { PIE_PALETTE } from './utils/pieConfig';
 import { genereteSlidesConfig } from './utils/slidesConfig';
+import { cardShellStyle } from './utils/styles';
 
 const { Title, Text } = Typography;
-
-const PIE_PALETTE = [
-  '#4a5cff',
-  '#5a6cff',
-  '#6f7bff',
-  '#8b96ff',
-  '#a7b0ff',
-  '#c3c9ff',
-  '#242EDB',
-  '#3d47e6',
-  '#5c65f0',
-  '#7b82f5',
-];
-
-type PieDatum = {
-  categoryName: string;
-  categoryCount: number;
-  percent: number;
-};
 
 const RatingCardLazy = lazy(() =>
   import('../../shared/ui/RatingsCard/RatingsCard').then((module) => ({
@@ -55,6 +40,7 @@ const StatisticsPage: React.FC = () => {
   const isAuthenticatedAuth = useAuthStore((s) => s.isAuthenticated);
   const isAuthenticatedUser = useUserStore((s) => s.isAuthenticated);
   const isSessionAuthenticated = isAuthenticatedAuth || isAuthenticatedUser;
+  const [selectedView, setSelectedView] = useState<'table' | 'list'>('table');
 
   const productsPageQuery = usePorductPageQuery({
     isAuthenticated: isSessionAuthenticated,
@@ -166,6 +152,14 @@ const StatisticsPage: React.FC = () => {
       ],
     },
   };
+  const handleViewChange = useCallback(
+    (view: 'table' | 'list') => {
+      if (view === selectedView) return;
+      setSelectedView(view);
+    },
+    [setSelectedView, selectedView]
+  );
+
   const pieData = useMemo((): PieDatum[] => {
     const filtered = chartData.filter((item) => Number(item.categoryCount) > 1) ?? [];
     const sum = filtered.reduce((acc, item) => acc + Number(item.categoryCount), 0);
@@ -202,17 +196,13 @@ const StatisticsPage: React.FC = () => {
           itemLabelFontSize: 12,
         },
       },
-      label: {
-        type: 'outer',
-        content: (datum: PieDatum) => `${datum.percent.toFixed(1)}%`,
-        style: { fontSize: 11, fill: 'rgba(0,0,0,0.65)' },
-      },
+      label: false,
       tooltip: {
         title: (datum: PieDatum) => datum.categoryName,
         items: [
           (datum: PieDatum) => ({
             name: 'Товаров',
-            value: `${datum.categoryCount} · ${datum.percent.toFixed(2)}%`,
+            value: `${datum.categoryCount} шт · ${datum.percent.toFixed(2)}%`,
             color: '#4a5cff',
           }),
         ],
@@ -248,6 +238,18 @@ const StatisticsPage: React.FC = () => {
             boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
             background: '#ffffff',
           }}
+          extra={
+            <Segmented<'table' | 'list'>
+              value={selectedView}
+              onChange={(v) => {
+                handleViewChange(v);
+              }}
+              options={[
+                { label: 'В столбик', value: 'table', icon: <UnorderedListOutlined /> },
+                { label: 'Две колонки', value: 'list', icon: <TableOutlined /> },
+              ]}
+            />
+          }
         >
           <Row gutter={[16, 16]} align="stretch">
             <Col xs={24} md={8}>
@@ -270,61 +272,83 @@ const StatisticsPage: React.FC = () => {
           </Row>
         </Card>
 
-        <Row gutter={[16, 16]} align="stretch">
-          <Col xs={24} xl={14}>
-            <Space direction="vertical" size={16} style={{ width: '100%', height: '100%' }}>
-              <Suspense fallback={<Skeleton active paragraph={{ rows: 4 }} />}>
-                <RatingCardLazy
-                  data={currentSlide}
-                  columns={columns}
-                  options={options}
-                  title={activeSlideMeta?.title}
-                  tag={activeSlideMeta?.tag}
-                  emptyText={activeSlideMeta?.emptyText ?? 'Нет данных'}
-                  selectedStat={selectedStat}
-                  onSelectStat={handleSelectStat}
-                  loading={allProductsQuery.isFetching || productsPageQuery.isFetching}
-                  countText={`${currentSlide?.length ?? 0} поз.`}
-                />
-              </Suspense>
-
-              <Card
-                variant="borderless"
-                title="Распределение по категориям"
-                styles={{ body: { paddingTop: 8 } }}
-                style={{
-                  borderRadius: 18,
-                  border: '1px solid rgba(5, 5, 5, 0.08)',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
-                  background: '#ffffff',
-                }}
-              >
-                <Suspense fallback={<Skeleton active paragraph={{ rows: 6 }} />}>
-                  <ChartLazy config={config} />
-                </Suspense>
-              </Card>
-            </Space>
-          </Col>
-
-          <Col flex={1} xs={0} xl={10}>
+        {selectedView === 'table' ? (
+          <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <Suspense fallback={<Skeleton active paragraph={{ rows: 4 }} />}>
+              <RatingCardLazy
+                data={currentSlide}
+                columns={columns}
+                options={options}
+                title={activeSlideMeta?.title}
+                tag={activeSlideMeta?.tag}
+                emptyText={activeSlideMeta?.emptyText ?? 'Нет данных'}
+                selectedStat={selectedStat}
+                onSelectStat={handleSelectStat}
+                loading={allProductsQuery.isFetching || productsPageQuery.isFetching}
+                countText={`${currentSlide?.length ?? 0} поз.`}
+              />
+            </Suspense>
             <Card
               variant="borderless"
-              title="Доля категорий"
-              style={{
-                borderRadius: 18,
-                border: '1px solid rgba(5, 5, 5, 0.08)',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
-                background: '#ffffff',
-              }}
+              title="Распределение по категориям"
+              styles={{ body: { paddingTop: 8 } }}
+              style={cardShellStyle}
             >
+              <Suspense fallback={<Skeleton active paragraph={{ rows: 6 }} />}>
+                <ChartLazy config={config} />
+              </Suspense>
+            </Card>
+            <Card variant="borderless" title="Доля категорий" style={cardShellStyle}>
               <Text type="secondary">Показаны категории с количеством товаров больше 1.</Text>
-              <Divider style={{ margin: '12px 0' }} />
               <div style={{ position: 'relative', width: '100%', height: 420 }}>
                 <Pie {...pieConfig} style={{ width: '100%', height: 420 }} />
               </div>
             </Card>
-          </Col>
-        </Row>
+          </Space>
+        ) : (
+          <Space orientation="vertical" size={16} style={{ width: '100%' }}>
+            <Suspense fallback={<Skeleton active paragraph={{ rows: 4 }} />}>
+              <RatingCardLazy
+                data={currentSlide}
+                columns={columns}
+                options={options}
+                title={activeSlideMeta?.title}
+                tag={activeSlideMeta?.tag}
+                emptyText={activeSlideMeta?.emptyText ?? 'Нет данных'}
+                selectedStat={selectedStat}
+                onSelectStat={handleSelectStat}
+                loading={allProductsQuery.isFetching || productsPageQuery.isFetching}
+                countText={`${currentSlide?.length ?? 0} поз.`}
+              />
+            </Suspense>
+            <Row gutter={[16, 16]} align="stretch">
+              <Col xs={24} xl={14}>
+                <Card
+                  variant="borderless"
+                  title="Распределение по категориям"
+                  styles={{ body: { paddingTop: 8 } }}
+                  style={{ ...cardShellStyle, height: '100%' }}
+                >
+                  <Suspense fallback={<Skeleton active paragraph={{ rows: 6 }} />}>
+                    <ChartLazy config={config} />
+                  </Suspense>
+                </Card>
+              </Col>
+              <Col xs={24} xl={10}>
+                <Card
+                  variant="borderless"
+                  title="Доля категорий"
+                  style={{ ...cardShellStyle, height: '100%' }}
+                >
+                  <Text type="secondary">Показаны категории с количеством товаров больше 1.</Text>
+                  <div style={{ position: 'relative', width: '100%', height: 420 }}>
+                    <Pie {...pieConfig} style={{ width: '100%', height: 420 }} />
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Space>
+        )}
       </Flex>
     </div>
   );
