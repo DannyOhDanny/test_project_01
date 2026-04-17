@@ -42,16 +42,14 @@ const RatingsCard: React.FC<RatingsCardProps> = ({
       header: {
         paddingBlock: 16,
         paddingInline: 20,
-        borderBottom: '1px solid rgba(5, 5, 5, 0.06)',
-        background: 'linear-gradient(180deg, #fafafc 0%, #ffffff 100%)',
       },
       body: { margin: 20 },
     }}
     style={{
       borderRadius: 18,
       border: '1px solid rgba(5, 5, 5, 0.08)',
-      background: '#ffffff',
       boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
+      background: '#ffffff',
     }}
   >
     <Table

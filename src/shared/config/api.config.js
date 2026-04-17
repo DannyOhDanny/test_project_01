@@ -1,0 +1,13 @@
+export const API_CONFIG = {
+  BASE_URL: 'https://dummyjson.com/auth',
+  USERS_BASE_URL: 'https://dummyjson.com/users',
+  ENDPOINTS: {
+    LOGIN: '/login',
+    ME: '/me',
+    REFRESH: '/refresh',
+  },
+  DEFAULT_EXPIRES_IN: 60,
+};
+export const PRODUCT_API_CONFIG = {
+  BASE_URL: 'https://dummyjson.com/products',
+};

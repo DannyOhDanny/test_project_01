@@ -1,4 +1,4 @@
-import { Rate, Space, Tag, Typography } from 'antd';
+import { Tag } from 'antd';
 
 import { type Product } from '../../../entities/product/model/types';
 
