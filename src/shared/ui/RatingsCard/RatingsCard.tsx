@@ -1,68 +1,69 @@
-import React, { useMemo } from 'react';
-import { Avatar, Card, List, Space, Tag, Typography } from 'antd';
-
-import { formatPrice } from '../../functions/productFunctions';
+import React from 'react';
+import { Card, Select, Space, Table, Typography } from 'antd';
 
 import type { RatingsCardProps } from './model/types';
-import { RANK_TAG_COLORS, TOP_STATS_LIMIT } from './utils/cardConfig';
-import { sortProducts } from './utils/functions';
-const { Text } = Typography;
+
 import './styles.css';
+const { Text } = Typography;
 
 const RatingsCard: React.FC<RatingsCardProps> = ({
   data,
   title,
+  options,
   tag,
-  sortBy,
-  sortOrder,
   emptyText,
-  renderDescription = (product) => <Text type="secondary">{formatPrice(product.price)} ₽</Text>,
-}) => {
-  const sorted = useMemo(
-    () => sortProducts(data, sortBy, sortOrder).slice(0, TOP_STATS_LIMIT),
-    [data, sortBy, sortOrder]
-  );
-
-  return (
-    <Card
-      variant="borderless"
-      title={
-        <Space wrap>
-          {title}
-          {tag}
-        </Space>
-      }
-      extra={<Text type="secondary">{data.length} поз.</Text>}
-      styles={{ body: { paddingTop: 8 } }}
-      style={{
-        borderRadius: 16,
-        border: '1px solid #f0f0f0',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-      }}
-    >
-      <List
-        itemLayout="horizontal"
-        dataSource={sorted}
-        locale={{ emptyText }}
-        renderItem={(product, index) => (
-          <List.Item style={{ paddingInline: 0 }}>
-            <List.Item.Meta
-              avatar={<Avatar src={product.thumbnail} size={56} style={{ borderRadius: 10 }} />}
-              title={
-                <Space size={8} wrap>
-                  <Tag color={RANK_TAG_COLORS[index % RANK_TAG_COLORS.length]}>#{index + 1}</Tag>
-                  <Text strong ellipsis style={{ maxWidth: '100%' }}>
-                    {product.title}
-                  </Text>
-                </Space>
-              }
-              description={renderDescription(product)}
-            />
-          </List.Item>
-        )}
-      />
-    </Card>
-  );
-};
-
+  columns,
+  selectedStat,
+  onSelectStat,
+  loading,
+  countText,
+}) => (
+  <Card
+    variant="borderless"
+    title={
+      <Space wrap size={8}>
+        {title}
+        {tag}
+      </Space>
+    }
+    extra={
+      <Space size={12} wrap align="center">
+        {countText ? <Text type="secondary">{countText}</Text> : null}
+        <Select
+          options={options}
+          value={selectedStat}
+          onChange={onSelectStat}
+          style={{ minWidth: 220 }}
+          size="middle"
+        />
+      </Space>
+    }
+    styles={{
+      header: {
+        paddingBlock: 16,
+        paddingInline: 20,
+        borderBottom: '1px solid rgba(5, 5, 5, 0.06)',
+        background: 'linear-gradient(180deg, #fafafc 0%, #ffffff 100%)',
+      },
+      body: { margin: 20 },
+    }}
+    style={{
+      borderRadius: 18,
+      border: '1px solid rgba(5, 5, 5, 0.08)',
+      background: '#ffffff',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
+    }}
+  >
+    <Table
+      rowKey="id"
+      size="small"
+      dataSource={data}
+      columns={columns}
+      pagination={false}
+      loading={loading}
+      locale={{ emptyText: emptyText ?? 'Нет данных' }}
+      scroll={{ x: true }}
+    />
+  </Card>
+);
 export { RatingsCard };

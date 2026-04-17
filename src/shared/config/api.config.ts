@@ -10,5 +10,5 @@ export const API_CONFIG = {
 } as const;
 
 export const PRODUCT_API_CONFIG = {
-  BASE_URL: 'https://dummyjson.com/product',
+  BASE_URL: 'https://dummyjson.com/products',
 } as const;

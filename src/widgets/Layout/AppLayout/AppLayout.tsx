@@ -29,6 +29,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       label: 'Профиль',
       onClick: () => navigate('/profile'),
     },
+    {
+      key: '/stats',
+      label: 'Статистика',
+      onClick: () => navigate('/stats'),
+    },
   ];
 
   return (

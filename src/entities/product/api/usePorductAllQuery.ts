@@ -1,20 +1,32 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { useAuthStore } from '../../user/model/authStore';
 import type { Products } from '../model/types';
 import { productKeys } from '../productKeys';
 
 import { productApi } from './productApi';
 
-export const usePorductAllQuery = (params: { total: number; enabled?: boolean }) => {
-  const enabled = (params.enabled ?? true) && params.total > 0;
+type UsePorductAllQueryOptions = {
+  total?: number;
+  enabled?: boolean;
+  isAuthenticated?: boolean;
+};
+
+export const usePorductAllQuery = (options?: UsePorductAllQueryOptions) => {
+  const isAuthenticatedFromStore = useAuthStore((s) => s.isAuthenticated);
+  const isAuthenticated = options?.isAuthenticated ?? isAuthenticatedFromStore;
+  const total = options?.total ?? 0;
 
   return useQuery({
-    queryKey: productKeys.catalogAll(params.total),
+    enabled: (options?.enabled ?? true) && isAuthenticated && total > 0,
+    queryKey: productKeys.catalogAll(total),
     queryFn: async () => {
-      const data: Products = await productApi.getAllProducts(params.total);
+      if (!isAuthenticated) {
+        throw new Error('Unauthorized');
+      }
+      const data: Products = await productApi.getAllProducts(total);
       return data.products ?? [];
     },
-    enabled,
     staleTime: 60_000,
     retry: 2,
     retryDelay: 1000,

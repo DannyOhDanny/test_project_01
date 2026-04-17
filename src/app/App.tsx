@@ -6,6 +6,7 @@ import ruRU from 'antd/locale/ru_RU';
 
 import { LoginPage } from '../pages/auth/LoginPage/ui/LoginPage';
 import { ProfilePage } from '../pages/profile/ProfilePage/ui/ProfilePage';
+import { StatisticsPage } from '../pages/stats/StatisticsPage';
 import { TablePage } from '../pages/table/TablePage';
 import { ProtectedRoute } from '../shared/ui/ProtectedRoute/ProtectedRoute';
 import { AppLayout } from '../widgets/Layout/AppLayout/AppLayout';
@@ -109,6 +110,16 @@ export function App() {
                     <ProtectedRoute>
                       <AppLayout>
                         <TablePage />
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/stats"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout>
+                        <StatisticsPage />
                       </AppLayout>
                     </ProtectedRoute>
                   }
