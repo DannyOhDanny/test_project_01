@@ -8,8 +8,8 @@ _GH-pages: [https://dannyohdanny.github.io/test_project_01/]_
 
 ## Стек
 
-- React 19 + React Compiler / мемоизация
-- TanStack Qiery / кеширование
+- React 19 + React Compiler + lazyLoading/ мемоизация
+- TanStack Quiery / кеширование
 - Vite / сборка rollup
 - TypeScript / строгое типизирование
 - Ant Design + antd-style / UI-библиотека копонентов
