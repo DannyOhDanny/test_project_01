@@ -24,3 +24,33 @@ export const categoryMap: Record<string, string> = {
   'womens-shoes': 'женская обувь',
   'womens-watches': 'женские часы',
 };
+
+export const CategoryNameMapRu = {
+  food: 'Еда',
+  transport: 'Транспорт',
+  entertainment: 'Развлечения',
+  salary: 'Зарплата',
+  gift: 'Подарок',
+  deposit: 'Депозит',
+  clothing: 'Одежда',
+  footwear: 'Обувь',
+  accessories: 'Аксессуары',
+  utilities: 'Услуги',
+  housing: 'Жилье',
+  other: 'Другое',
+};
+
+export const CategoryColorMap = {
+  food: '#fa541c',
+  transport: '#1677ff',
+  entertainment: '#722ed1',
+  salary: '#52c41a',
+  gift: '#eb2f96',
+  deposit: '#13c2c2',
+  clothing: '#faad14',
+  footwear: '#2f54eb',
+  accessories: '#a0d911',
+  utilities: '#fa8c16',
+  housing: '#595959',
+  other: '#8c8c8c',
+} as const;

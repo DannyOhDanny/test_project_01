@@ -23,7 +23,7 @@ import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQu
 import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
 import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
 import { useProductStore } from '../../entities/product/model/productStore';
-import type { Product } from '../../entities/product/model/types';
+import type { Product, Products } from '../../entities/product/model/types';
 import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
 import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
 import { useAuthStore } from '../../entities/user/model/authStore';
@@ -204,6 +204,7 @@ const TablePage: React.FC = () => {
 
   const onFinish: FormProps<ProductFormFieldsType>['onFinish'] = (values) => {
     try {
+      console.log('starting to add product', values);
       addProduct({
         title: values.title,
         brand: values.brand,
@@ -213,12 +214,21 @@ const TablePage: React.FC = () => {
         rating: Number(values.rating),
       });
 
+      console.log('product added', values);
+
       if (!listFromTextSearch && !isIdSearch) {
-        const snapshot = useProductStore.getState().products;
-        if (snapshot) {
-          queryClient.setQueryData([...productsPaginatedQueryKey], snapshot);
-        }
+        queryClient.setQueryData<Products>([...productsPaginatedQueryKey], (old) => {
+          const row = useProductStore.getState().products?.products?.[0];
+          if (!old || !row) return old;
+          return {
+            ...old,
+            products: [row, ...(old.products ?? [])],
+            total: old.total + 1,
+          };
+        });
       }
+
+      console.log('products updated', useProductStore.getState().products);
 
       message.success('Продукт успешно добавлен!');
       setProductPopupOpen(false);
@@ -475,6 +485,7 @@ const TablePage: React.FC = () => {
         closable={true}
         open={poductPopupOpen}
         onCancel={handleModalClose}
+        forceRender
         footer={null}
       >
         <Form

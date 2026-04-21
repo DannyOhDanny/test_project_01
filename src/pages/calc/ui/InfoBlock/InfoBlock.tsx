@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { Card, Col, Row, Statistic, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Divider, Row, Statistic, Typography } from 'antd';
 
 import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
 import { CHART_LINE_COLORS } from '../../utils/pageConfig';
@@ -27,7 +28,13 @@ const statTitle = (label: string, hint: string) => (
   </div>
 );
 
-const InfoBlock = ({ total, income, expenses, expensesDisplay }: InfoBlockProps) => {
+const InfoBlock = ({
+  total,
+  income,
+  expenses,
+  expensesDisplay,
+  onAddOperation,
+}: InfoBlockProps) => {
   return (
     <Row gutter={PAGE_ROW_GUTTER} style={rowWrap}>
       <Col xs={24} lg={8}>
@@ -64,6 +71,15 @@ const InfoBlock = ({ total, income, expenses, expensesDisplay }: InfoBlockProps)
               },
             }}
           />
+          <Divider />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onAddOperation}
+            aria-label="Добавить операцию"
+          >
+            Добвить операцию
+          </Button>
         </Card>
       </Col>
 

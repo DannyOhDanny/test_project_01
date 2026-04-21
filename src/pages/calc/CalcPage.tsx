@@ -1,14 +1,19 @@
 import { useMemo, useState } from 'react';
-import { Button, type TableColumnType, Tag, Typography } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, message, type TableColumnType, Tag, Typography } from 'antd';
 
-import { useCalcQuery } from '../../entities/product/api/useCalcQuery';
+import { type CalcItem, useCalcQuery } from '../../entities/product/api/useCalcQuery';
 import { localDayKeyFromIso } from '../../shared/functions/productFunctions';
+import { CategoryColorMap, CategoryNameMapRu } from '../../shared/lib/categoryConfig';
 import { formatLocalDateRu } from '../../shared/lib/formatLocalDateRu';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
 import type { ChartMode, LineDatum, TableDataType } from './model/types';
+import { BalanceModal } from './ui/BalanceModal/BalanceModal';
+import type { BalanceFormValues } from './ui/BalanceModal/model/types';
 import { BalanceTable } from './ui/BalanceTable/BalanceTable';
 import { DynamicsChart } from './ui/DynamicsChart/DynamicsChart';
+import { selectOptions } from './ui/DynamicsChart/utils/selectConfig';
 import { InfoBlock } from './ui/InfoBlock/InfoBlock';
 import {
   baselineForTooltipDelta,
@@ -22,20 +27,59 @@ import { CHART_LINE_COLORS, SERIES, SERIES_LABEL } from './utils/pageConfig';
 
 const { Text } = Typography;
 
+function normalizeAmountByType(amount: number, type: CalcItem['type']): number {
+  if (type === 'expenses') return -Math.abs(amount);
+  return Math.abs(amount);
+}
+
 const CalcPage = () => {
   const { data } = useCalcQuery();
   const [chartMode, setChartMode] = useState<ChartMode>('all');
+  const [isEditOperationModalOpen, setIsEditOperationModalOpen] = useState(false);
+  const [initialValues, setInitialValues] = useState<BalanceFormValues | null>(null);
+  const [localAdditions, setLocalAdditions] = useState<CalcItem[]>([]);
+  const [overridesById, setOverridesById] = useState<
+    Record<number, Partial<Pick<CalcItem, 'amount' | 'date' | 'notes' | 'category' | 'type'>>>
+  >({});
+
+  const mergedData = useMemo(() => {
+    // Локальные добавления должны перекрывать базовые строки с тем же id (если вдруг совпали).
+    const byId = new Map<number, CalcItem>();
+    for (const item of [...(data ?? []), ...localAdditions]) {
+      byId.set(item.id, item);
+    }
+
+    return [...byId.values()].map((item) => {
+      const override = overridesById[item.id];
+      const patched = override ? { ...item, ...override } : item;
+      return {
+        ...patched,
+        amount: normalizeAmountByType(patched.amount ?? 0, patched.type),
+      };
+    });
+  }, [data, localAdditions, overridesById]);
+
+  const draftOperationId = useMemo(() => {
+    const ids = [...(data ?? []), ...localAdditions].map((x) => x.id);
+    const max = ids.length ? Math.max(...ids) : 0;
+    return max + 1;
+  }, [data, localAdditions]);
+
   const income = useMemo(
     () =>
-      data?.reduce((acc, item) => (item.type === 'income' ? acc + (item.amount ?? 0) : acc), 0) ||
-      0,
-    [data]
+      mergedData.reduce(
+        (acc, item) => (item.type === 'income' ? acc + (item.amount ?? 0) : acc),
+        0
+      ) || 0,
+    [mergedData]
   );
   const expenses = useMemo(
     () =>
-      data?.reduce((acc, item) => (item.type === 'expenses' ? acc + (item.amount ?? 0) : acc), 0) ||
-      0,
-    [data]
+      mergedData.reduce(
+        (acc, item) => (item.type === 'expenses' ? acc + (item.amount ?? 0) : acc),
+        0
+      ) || 0,
+    [mergedData]
   );
   const expensesDisplay = useMemo(() => (expenses < 0 ? -expenses : 0), [expenses]);
 
@@ -43,7 +87,7 @@ const CalcPage = () => {
     const byDayNet = new Map<string, number>();
     const byDayIncome = new Map<string, number>();
     const byDayExpenses = new Map<string, number>();
-    for (const item of data ?? []) {
+    for (const item of mergedData) {
       if (item.type !== 'income' && item.type !== 'expenses') continue;
       const key = localDayKeyFromIso(item.date);
       if (!key) continue;
@@ -62,7 +106,7 @@ const CalcPage = () => {
       byDayExpenses,
       sortedKeys: [...byDayNet.keys()].sort(),
     };
-  }, [data]);
+  }, [mergedData]);
 
   const lineDataByDayAndType = useMemo(() => {
     const out: LineDatum[] = [];
@@ -155,12 +199,17 @@ const CalcPage = () => {
   }, [chartMode, balanceCumulativeData, lineDataByDayAndType]);
 
   const tableData = useMemo(() => {
-    return data?.map((item) => ({
-      date: item.date,
-      amount: item.amount,
-      type: item.type,
-    }));
-  }, [data]);
+    return mergedData.map((item) => {
+      return {
+        id: item.id,
+        date: item.date,
+        amount: item.amount,
+        type: item.type,
+        notes: item.notes,
+        category: item.category,
+      } as TableDataType;
+    });
+  }, [mergedData]);
 
   const lineChartConfig = useMemo(
     () => ({
@@ -186,16 +235,22 @@ const CalcPage = () => {
     }),
     [balanceCumulativeData, lineDataByDayAndType]
   );
+  const onEditOperation = (record: TableDataType) => {
+    setIsEditOperationModalOpen(true);
+    setInitialValues({
+      id: Number(record.id),
+      date: record.date,
+      amount: record.amount,
+      notes: record.notes,
+      category: record.category,
+      type: record.type,
+    });
+  };
+  const onAddOperation = () => {
+    setInitialValues(null);
+    setIsEditOperationModalOpen(true);
+  };
 
-  const selectOptions = useMemo(
-    () => [
-      { label: 'Баланс', value: 'balance' as const },
-      { label: 'Доходы', value: 'income' as const },
-      { label: 'Расходы', value: 'expenses' as const },
-      { label: 'Все', value: 'all' as const },
-    ],
-    []
-  );
   const tableColumns: TableColumnType<TableDataType>[] = [
     {
       key: 'date',
@@ -218,7 +273,6 @@ const CalcPage = () => {
       sorter: (a: TableDataType, b: TableDataType) => a.amount - b.amount,
       render: (value: number) => (
         <Text
-          strong
           style={{
             fontVariantNumeric: 'tabular-nums',
             letterSpacing: '-0.01em',
@@ -236,10 +290,49 @@ const CalcPage = () => {
       dataIndex: 'type',
       sorter: (a: TableDataType, b: TableDataType) => a.type.localeCompare(b.type) as number,
       render: (value: 'balance' | 'income' | 'expenses' | 'all') => (
-        <Tag color={value === 'income' ? '#3f8600' : value === 'expenses' ? '#cf1322' : '#8c8c8c'}>
+        <Tag
+          icon={value === 'income' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+          variant="outlined"
+          styles={{
+            root: {
+              borderWidth: '1px',
+              borderColor:
+                value === 'income' ? '#3f8600' : value === 'expenses' ? '#cf1322' : '#8c8c8c',
+            },
+          }}
+          color={value === 'income' ? '#3f8600' : value === 'expenses' ? '#cf1322' : '#8c8c8c'}
+        >
           {value in SERIES_LABEL ? SERIES_LABEL[value as 'balance' | 'income' | 'expenses'] : value}
         </Tag>
       ),
+      align: 'center',
+    },
+
+    {
+      key: 'notes',
+      title: 'Примечание',
+      dataIndex: 'notes',
+      render: (value: string) => <Text>{value}</Text>,
+      width: 200,
+      minWidth: 150,
+      align: 'center',
+    },
+    {
+      key: 'category',
+      title: 'Категория',
+      dataIndex: 'category',
+      render: (value: string) => {
+        const key = value?.toLocaleLowerCase() as keyof typeof CategoryNameMapRu;
+        const label = CategoryNameMapRu[key] ?? value ?? '—';
+        const color = CategoryColorMap[key as keyof typeof CategoryColorMap] ?? '#8c8c8c';
+        return (
+          <Tag color={color} styles={{ root: { borderWidth: '1px' } }} variant="outlined">
+            {label}
+          </Tag>
+        );
+      },
+      width: 200,
+      minWidth: 150,
       align: 'center',
     },
     {
@@ -247,9 +340,12 @@ const CalcPage = () => {
       title: 'Действие',
       dataIndex: 'action',
       render: (_value: string, _record: TableDataType) => (
-        <Button type="primary" style={{ width: 150, minWidth: 100 }}>
-          Изменить
-        </Button>
+        <Button
+          aria-label="Изменить операцию"
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => onEditOperation(_record)}
+        />
       ),
       align: 'center',
     },
@@ -265,6 +361,7 @@ const CalcPage = () => {
         income={income}
         expenses={expenses}
         expensesDisplay={expensesDisplay}
+        onAddOperation={onAddOperation}
       />
 
       <DynamicsChart
@@ -275,6 +372,52 @@ const CalcPage = () => {
         selectOptions={selectOptions}
       />
       <BalanceTable tableData={tableData} tableColumns={tableColumns} />
+      <BalanceModal
+        open={isEditOperationModalOpen}
+        draftOperationId={initialValues ? undefined : draftOperationId}
+        onCancel={() => setIsEditOperationModalOpen(false)}
+        onSubmit={(values) => {
+          const id = Number(values.id);
+          const existsInBase = (data ?? []).some((item) => item.id === id);
+          const existsInLocal = localAdditions.some((item) => item.id === id);
+
+          if (existsInBase || existsInLocal) {
+            setOverridesById((prev) => ({
+              ...prev,
+              [id]: {
+                amount: normalizeAmountByType(values.amount, values.type),
+                date: values.date,
+                notes: values.notes,
+                category: values.category,
+                type: values.type,
+              },
+            }));
+          } else {
+            const categoryRu = CategoryNameMapRu[values.category];
+            const next: CalcItem = {
+              id,
+              date: values.date,
+              descriptionEn: values.category,
+              descriptionRu: categoryRu,
+              amount: normalizeAmountByType(values.amount, values.type),
+              type: values.type,
+              notes: values.notes,
+              category: values.category,
+            };
+            setLocalAdditions((prev) => {
+              const idx = prev.findIndex((x) => x.id === id);
+              if (idx === -1) return [...prev, next];
+              const copy = [...prev];
+              copy[idx] = next;
+              return copy;
+            });
+          }
+
+          setIsEditOperationModalOpen(false);
+          message.success('Изменения успешно внесены в таблицу');
+        }}
+        initialValues={initialValues ?? undefined}
+      />
     </PageShell>
   );
 };

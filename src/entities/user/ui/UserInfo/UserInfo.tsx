@@ -236,6 +236,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
         okText="Сохранить"
         cancelText="Отменить"
         open={openEditProfileModal}
+        forceRender
         onCancel={handleEditProfileClose}
         onOk={() =>
           editProfileForm.validateFields().then((values) => {

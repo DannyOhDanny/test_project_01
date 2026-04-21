@@ -30,12 +30,11 @@ const lineChartConfigBase: Partial<LineConfig> = {
     y: { title: 'Сумма, ₽' },
   },
   legend: {
-    position: 'bottom',
     color: {
-      itemLabel: (channel: { value?: string }) =>
-        (channel.value && SERIES_LABEL[channel.value as 'balance' | 'income' | 'expenses']) ||
-        channel.value ||
-        '',
+      position: 'bottom',
+      itemValueText: (datum: { label?: string }) => {
+        return SERIES_LABEL[datum.label as keyof typeof SERIES_LABEL] || '';
+      },
     },
   },
 

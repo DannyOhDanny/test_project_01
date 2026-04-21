@@ -29,7 +29,7 @@ const BalanceTable = ({ tableData, tableColumns }: BalanceTableProps) => {
           <Table<TableDataType>
             dataSource={tableData ?? []}
             columns={tableColumns}
-            rowKey={(_, index) => String(index)}
+            rowKey={(record) => String(record.id)}
             pagination={{ pageSize: 8, showSizeChanger: false }}
             size="middle"
             styles={{

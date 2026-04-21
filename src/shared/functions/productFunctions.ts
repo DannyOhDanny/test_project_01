@@ -31,5 +31,7 @@ function localDayKeyFromIso(iso: string): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
-
-export { formatPrice, getCategory, getRatingColor, localDayKeyFromIso };
+const getRandomInt = (max: number) => {
+  return Math.floor(Math.random() * max);
+};
+export { formatPrice, getCategory, getRandomInt, getRatingColor, localDayKeyFromIso };
