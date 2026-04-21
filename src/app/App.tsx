@@ -26,6 +26,9 @@ const TablePageLazy = lazy(() =>
 const StatisticsPageLazy = lazy(() =>
   import('../pages/stats/StatisticsPage').then((m) => ({ default: m.StatisticsPage }))
 );
+const CalcPageLazy = lazy(() =>
+  import('../pages/calc/CalcPage').then((m) => ({ default: m.CalcPage }))
+);
 
 export function App() {
   return (
@@ -143,6 +146,16 @@ export function App() {
                         <ProtectedRoute>
                           <AppLayout>
                             <Navigate to="/profile" replace />
+                          </AppLayout>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/calc"
+                      element={
+                        <ProtectedRoute>
+                          <AppLayout>
+                            <CalcPageLazy />
                           </AppLayout>
                         </ProtectedRoute>
                       }

@@ -22,4 +22,14 @@ const formatPrice = (value?: number | string | undefined | null): string => {
     maximumFractionDigits: 2,
   }).format(numberValue);
 };
-export { formatPrice, getCategory, getRatingColor };
+
+function localDayKeyFromIso(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export { formatPrice, getCategory, getRatingColor, localDayKeyFromIso };

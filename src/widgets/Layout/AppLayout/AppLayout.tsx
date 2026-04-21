@@ -24,16 +24,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       label: 'Таблица',
       onClick: () => navigate('/table'),
     },
-    {
-      key: '/profile',
-      label: 'Профиль',
-      onClick: () => navigate('/profile'),
-    },
+
     {
       key: '/stats',
       label: 'Статистика',
       onClick: () => navigate('/stats'),
     },
+    {
+      key: '/profile',
+      label: 'Профиль',
+      onClick: () => navigate('/profile'),
+    },
+    { key: '/calc', label: 'Калькулятор', onClick: () => navigate('/calc') },
   ];
 
   return (

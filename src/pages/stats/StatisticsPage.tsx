@@ -216,7 +216,6 @@ const StatisticsPage: React.FC = () => {
         width: '100%',
         minHeight: '100%',
         padding: '24px 16px 40px',
-        background: 'linear-gradient(180deg, #fafafc 0%, #ffffff 55%, #ffffff 100%)',
       }}
     >
       <Flex vertical style={{ width: '100%', maxWidth: 1200, margin: '0 auto', gap: 16 }}>
