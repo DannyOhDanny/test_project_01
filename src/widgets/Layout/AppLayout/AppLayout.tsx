@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { UserOutlined } from '@ant-design/icons';
 import { Flex, Layout, Menu } from 'antd';
@@ -17,7 +17,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUserStore();
-
+  const [isHovered, setIsHovered] = useState(false);
   const menuItems = [
     {
       key: '/table',
@@ -29,11 +29,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       key: '/stats',
       label: 'Статистика',
       onClick: () => navigate('/stats'),
-    },
-    {
-      key: '/profile',
-      label: 'Профиль',
-      onClick: () => navigate('/profile'),
     },
     { key: '/calc', label: 'Калькулятор', onClick: () => navigate('/calc') },
   ];
@@ -58,7 +53,15 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         />
 
         {user && (
-          <Flex gap={12} align="center">
+          <Flex
+            gap={12}
+            align="center"
+            className={isHovered ? 'app-layout-header-user-hovered' : ''}
+            onClick={() => navigate('/profile')}
+            style={{ cursor: 'pointer', marginRight: `clamp(0px, 3vw, 12px)` }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <UserOutlined />
             {user.firstName} {user.lastName}
             <LogoutButton />
@@ -66,7 +69,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         )}
       </Header>
 
-      <Content style={{ padding: '24px 50px', border: 'none' }}>{children}</Content>
+      <Content
+        style={{
+          padding: 'clamp(16px, 2.5vw, 28px) clamp(14px, 4vw, 40px)',
+          border: 'none',
+        }}
+      >
+        {children}
+      </Content>
 
       <Footer style={{ textAlign: 'center', color: 'grey' }}>
         Table App v.01 ©{new Date().getFullYear()}

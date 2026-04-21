@@ -4,6 +4,7 @@ import { Button, type TableColumnType, Tag, Typography } from 'antd';
 import { useCalcQuery } from '../../entities/product/api/useCalcQuery';
 import { localDayKeyFromIso } from '../../shared/functions/productFunctions';
 import { formatLocalDateRu } from '../../shared/lib/formatLocalDateRu';
+import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
 import type { ChartMode, LineDatum, TableDataType } from './model/types';
 import { BalanceTable } from './ui/BalanceTable/BalanceTable';
@@ -19,15 +20,7 @@ import {
 import { lineChartConfigBase, lineChartTooltipTitle } from './utils/lineChartConfig';
 import { CHART_LINE_COLORS, SERIES, SERIES_LABEL } from './utils/pageConfig';
 
-const { Title, Text, Paragraph } = Typography;
-
-const pageHeaderWrap = {
-  maxWidth: 1200,
-  margin: '0 auto',
-  padding: '8px clamp(12px, 3vw, 24px) 4px',
-} as const;
-
-const sectionTitleStyle = { margin: 0, letterSpacing: '-0.02em', fontWeight: 600 } as const;
+const { Text } = Typography;
 
 const CalcPage = () => {
   const { data } = useCalcQuery();
@@ -261,36 +254,12 @@ const CalcPage = () => {
       align: 'center',
     },
   ];
-  return (
-    <div style={{ WebkitFontSmoothing: 'antialiased' }}>
-      <header style={pageHeaderWrap}>
-        <Title
-          level={2}
-          style={{
-            ...sectionTitleStyle,
-            marginBottom: 8,
-            fontSize: 26,
-            marginLeft: `clamp(0px, 3vw, 12px)`,
-          }}
-        >
-          <Title level={2} style={{ ...sectionTitleStyle, marginBottom: 8, fontSize: 26 }}>
-            Калькулятор
-          </Title>
-        </Title>
-        <Paragraph
-          type="secondary"
-          style={{
-            marginBottom: 0,
-            maxWidth: 720,
-            fontSize: 15,
-            lineHeight: 1.55,
-            marginLeft: `clamp(9px, 3vw, 12px)`,
-          }}
-        >
-          Сводка по балансу, доходам и расходам; ниже — динамика по дням и список операций.
-        </Paragraph>
-      </header>
 
+  return (
+    <PageShell
+      title="Калькулятор"
+      description="Сводка по балансу, доходам и расходам; ниже — динамика по дням и список операций."
+    >
       <InfoBlock
         total={total}
         income={income}
@@ -306,7 +275,7 @@ const CalcPage = () => {
         selectOptions={selectOptions}
       />
       <BalanceTable tableData={tableData} tableColumns={tableColumns} />
-    </div>
+    </PageShell>
   );
 };
 

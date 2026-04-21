@@ -17,8 +17,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: unknown) {
-    // Keep minimal logging; useful during development.
-
     console.error('Unhandled error in UI:', error);
   }
 

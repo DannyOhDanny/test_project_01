@@ -2,18 +2,14 @@ import type { CSSProperties } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { Card, Col, Row, Statistic, Typography } from 'antd';
 
-import { cardShellStyle } from '../../../stats/utils/styles';
+import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
 import { CHART_LINE_COLORS } from '../../utils/pageConfig';
 
 import type { InfoBlockProps } from './model/type';
 
 const { Text } = Typography;
 
-const pageWrap: CSSProperties = {
-  maxWidth: 1200,
-  margin: '16px auto 0 auto',
-  padding: '0 clamp(12px, 3vw, 24px) 8px',
-};
+const rowWrap: CSSProperties = { width: '100%' };
 
 const cardBody = { padding: '22px 24px 24px' };
 
@@ -33,7 +29,7 @@ const statTitle = (label: string, hint: string) => (
 
 const InfoBlock = ({ total, income, expenses, expensesDisplay }: InfoBlockProps) => {
   return (
-    <Row gutter={[20, 20]} style={pageWrap}>
+    <Row gutter={PAGE_ROW_GUTTER} style={rowWrap}>
       <Col xs={24} lg={8}>
         <Card
           variant="borderless"

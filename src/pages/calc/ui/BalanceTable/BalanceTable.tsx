@@ -1,27 +1,26 @@
 import { Card, Col, Row, Table, Typography } from 'antd';
 
-import { cardShellStyle } from '../../../stats/utils/styles';
+import {
+  cardShellStyle,
+  PAGE_ROW_GUTTER,
+  sectionBlockTitleStyle,
+} from '../../../../shared/styles/shell';
 import type { TableDataType } from '../../model/types';
 
 import type { BalanceTableProps } from './model/types';
 
 const { Title, Text } = Typography;
 
-const sectionTitleStyle = { margin: 0, letterSpacing: '-0.02em', fontWeight: 600 } as const;
-
 const BalanceTable = ({ tableData, tableColumns }: BalanceTableProps) => {
   return (
-    <Row
-      gutter={[20, 20]}
-      style={{ maxWidth: 1200, margin: '0 auto', padding: '8px clamp(12px, 3vw, 24px) 24px' }}
-    >
+    <Row gutter={PAGE_ROW_GUTTER} style={{ width: '100%' }}>
       <Col span={24}>
         <Card
           variant="borderless"
           styles={{ body: { padding: '20px 22px 24px' } }}
           style={cardShellStyle}
         >
-          <Title level={4} style={{ ...sectionTitleStyle, marginBottom: 6 }}>
+          <Title level={4} style={{ ...sectionBlockTitleStyle, marginBottom: 6 }}>
             Журнал операций
           </Title>
           <Text type="secondary" style={{ fontSize: 13, display: 'block', marginBottom: 16 }}>

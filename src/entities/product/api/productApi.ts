@@ -19,7 +19,6 @@ export const productApi = {
       throw new Error('Error fetching products');
     }
   },
-  /** Постраничная выборка; на странице `/table` вызывается через TanStack Query (useQuery), а не напрямую из компонента. */
   getProductsByPage: (
     limit: number,
     skip: number,

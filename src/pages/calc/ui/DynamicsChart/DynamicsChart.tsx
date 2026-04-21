@@ -3,12 +3,14 @@ import type { LineConfig } from '@ant-design/charts';
 import { Line } from '@ant-design/charts';
 import { Card, Col, Flex, Row, Select, Typography } from 'antd';
 
-import { cardShellStyle } from '../../../stats/utils/styles';
+import {
+  cardShellStyle,
+  PAGE_ROW_GUTTER,
+  sectionBlockTitleStyle,
+} from '../../../../shared/styles/shell';
 import type { ChartMode, LineDatum } from '../../model/types';
 
 const { Title, Text } = Typography;
-
-const sectionTitleStyle = { margin: 0, letterSpacing: '-0.02em', fontWeight: 600 } as const;
 
 type DynamicsChartProps = {
   chartMode: ChartMode;
@@ -36,10 +38,7 @@ const DynamicsChart = ({
   );
 
   return (
-    <Row
-      gutter={[20, 20]}
-      style={{ maxWidth: 1200, margin: '0 auto', padding: '16px clamp(12px, 3vw, 24px) 0' }}
-    >
+    <Row gutter={PAGE_ROW_GUTTER} style={{ width: '100%' }}>
       <Col span={24}>
         <Card
           variant="borderless"
@@ -54,7 +53,7 @@ const DynamicsChart = ({
             style={{ marginBottom: 16 }}
           >
             <div style={{ minWidth: 0, flex: '1 1 220px' }}>
-              <Title level={4} style={sectionTitleStyle}>
+              <Title level={4} style={sectionBlockTitleStyle}>
                 Динамика
               </Title>
               <Text type="secondary" style={{ fontSize: 13, lineHeight: 1.5, display: 'block' }}>

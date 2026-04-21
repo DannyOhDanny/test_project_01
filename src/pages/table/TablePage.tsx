@@ -30,10 +30,11 @@ import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
+import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
 import './TablePage.css';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 function getQueryErrorMessage(error: unknown): string {
   if (error !== null && typeof error === 'object' && 'userMessage' in error) {
@@ -429,23 +430,15 @@ const TablePage: React.FC = () => {
   };
 
   return (
-    <Flex vertical gap={30}>
-      <Flex
-        className="table-search"
-        justify="space-between"
-        align="center"
-        style={{ width: '100%' }}
-        gap={20}
-      >
-        <Text className="search-title" style={{ textAlign: 'left', flex: '0 0 auto' }}>
-          Товары
-        </Text>
-
+    <PageShell
+      title="Товары"
+      description="Поиск по каталогу, таблица позиций и добавление записей."
+      headerExtra={
         <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
-      </Flex>
-
+      }
+    >
       <Flex vertical gap={0} style={{ width: '100%' }}>
-        <Flex justify="space-between" gap={0}>
+        <Flex justify="space-between" gap={0} wrap="wrap" align="center">
           <Title className="table-title">
             Все позиции: {effectiveTotal > 0 ? effectiveTotal : '0'}
           </Title>
@@ -635,7 +628,7 @@ const TablePage: React.FC = () => {
           </>
         )}
       </Modal>
-    </Flex>
+    </PageShell>
   );
 };
 

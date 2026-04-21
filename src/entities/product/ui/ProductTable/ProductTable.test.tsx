@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest'; // ← добавляем vi
+import { describe, expect, it, vi } from 'vitest';
 
 import { formatPrice } from '../../../../shared/functions/productFunctions';
 import type { Dimensions, Meta, Product, Review } from '../../model/types';

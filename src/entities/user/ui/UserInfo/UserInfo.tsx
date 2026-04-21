@@ -20,6 +20,7 @@ import {
   Typography,
 } from 'antd';
 
+import { pageContentContainerStyle } from '../../../../shared/styles/shell';
 import { userApi } from '../../model/api/userApi';
 import { useUserStore } from '../../model/userStore';
 const { Title, Text } = Typography;
@@ -72,7 +73,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
       <Card
         loading
         variant="borderless"
-        style={{ borderRadius: 16, maxWidth: 980, margin: '0 auto' }}
+        style={{ borderRadius: 16, ...pageContentContainerStyle }}
       />
     );
   }
@@ -125,14 +126,14 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
         showIcon={true}
         title="Не удалось загрузить профиль"
         description={error}
-        style={{ maxWidth: 980, margin: '0 auto' }}
+        style={pageContentContainerStyle}
       />
     );
   }
 
   if (!user) {
     return (
-      <Card variant="borderless" style={{ borderRadius: 16, maxWidth: 980, margin: '0 auto' }}>
+      <Card variant="borderless" style={{ borderRadius: 16, ...pageContentContainerStyle }}>
         <Empty description="Профиль недоступен. Повторите авторизацию." />
       </Card>
     );
@@ -330,7 +331,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
   );
 
   return (
-    <Flex vertical gap={16} style={{ maxWidth: 980, margin: '0 auto' }}>
+    <Flex vertical gap={16} style={pageContentContainerStyle}>
       {profileHeader}
 
       <Card

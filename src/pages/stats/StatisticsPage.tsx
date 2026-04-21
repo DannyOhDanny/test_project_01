@@ -9,6 +9,7 @@ import type { Product } from '../../entities/product/model/types';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
 import { getCategory } from '../../shared/functions/productFunctions';
+import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
 import type { ProductStatistics } from './model/types';
 import type { PieDatum } from './model/types';
@@ -17,9 +18,9 @@ import { computeProductStatistics } from './utils/functions';
 import { options } from './utils/optionsConfig';
 import { PIE_PALETTE } from './utils/pieConfig';
 import { genereteSlidesConfig } from './utils/slidesConfig';
-import { cardShellStyle } from './utils/styles';
+import { cardShellStyle, PAGE_ROW_GUTTER } from './utils/styles';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const RatingCardLazy = lazy(() =>
   import('../../shared/ui/RatingsCard/RatingsCard').then((module) => ({
@@ -211,32 +212,15 @@ const StatisticsPage: React.FC = () => {
     };
   }, [pieData]);
   return (
-    <div
-      style={{
-        width: '100%',
-        minHeight: '100%',
-        padding: '24px 16px 40px',
-      }}
+    <PageShell
+      title="Статистика"
+      description="Сводка по выбранным срезам каталога и распределение товаров по категориям."
     >
-      <Flex vertical style={{ width: '100%', maxWidth: 1200, margin: '0 auto', gap: 16 }}>
-        <Flex vertical gap={6}>
-          <Title level={3} style={{ margin: 0 }}>
-            Статистика
-          </Title>
-          <Text type="secondary">
-            Сводка по выбранным срезам каталога и распределение товаров по категориям.
-          </Text>
-        </Flex>
-
+      <Flex vertical style={{ width: '100%', gap: 16 }}>
         <Card
           variant="borderless"
           styles={{ body: { padding: 16 } }}
-          style={{
-            borderRadius: 18,
-            border: '1px solid rgba(5, 5, 5, 0.08)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
-            background: '#ffffff',
-          }}
+          style={cardShellStyle}
           extra={
             <Segmented<'table' | 'list'>
               value={selectedView}
@@ -250,7 +234,7 @@ const StatisticsPage: React.FC = () => {
             />
           }
         >
-          <Row gutter={[16, 16]} align="stretch">
+          <Row gutter={PAGE_ROW_GUTTER} align="stretch">
             <Col xs={24} md={8}>
               <Statistic
                 title="В каталоге (API)"
@@ -320,7 +304,7 @@ const StatisticsPage: React.FC = () => {
                 countText={`${currentSlide?.length ?? 0} поз.`}
               />
             </Suspense>
-            <Row gutter={[16, 16]} align="stretch">
+            <Row gutter={PAGE_ROW_GUTTER} align="stretch">
               <Col xs={24} xl={14}>
                 <Card
                   variant="borderless"
@@ -349,7 +333,7 @@ const StatisticsPage: React.FC = () => {
           </Space>
         )}
       </Flex>
-    </div>
+    </PageShell>
   );
 };
 export { StatisticsPage };
