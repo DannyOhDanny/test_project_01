@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import type { TableProps } from 'antd';
 import type { FormProps } from 'antd';
 import {
   Button,
@@ -17,10 +16,9 @@ import {
   Typography,
 } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
-import axios from 'axios';
 
-import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQuery';
 import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
+import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery';
 import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
 import { useProductStore } from '../../entities/product/model/productStore';
 import type { Product, Products } from '../../entities/product/model/types';
@@ -32,45 +30,14 @@ import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
+import { useTablePaginationSort } from './hooks/useTablePaginationSort';
+import type { ProductFormFieldsType, TableRowSelection } from './model/types';
+import { getQueryErrorMessage } from './utils/tableFunctions';
+
 import './TablePage.css';
 
 const { Title } = Typography;
 
-function getQueryErrorMessage(error: unknown): string {
-  if (error !== null && typeof error === 'object' && 'userMessage' in error) {
-    const userMessage = (error as { userMessage?: unknown }).userMessage;
-    if (typeof userMessage === 'string' && userMessage.length > 0) {
-      return userMessage;
-    }
-  }
-  if (axios.isAxiosError(error)) {
-    const data = error.response?.data;
-    if (data && typeof data === 'object' && 'message' in data) {
-      const msg = (data as { message?: unknown }).message;
-      if (typeof msg === 'string' && msg.length > 0) {
-        return msg;
-      }
-    }
-    if (typeof error.message === 'string' && error.message.length > 0) {
-      return error.message;
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
-
-type ProductFormFieldsType = {
-  title: string;
-  brand: string;
-  category: string;
-  sku: string;
-  price: string;
-  rating: string;
-};
 const TablePage: React.FC = () => {
   const isAuthenticatedAuth = useAuthStore((s) => s.isAuthenticated);
   const isAuthenticatedUser = useUserStore((s) => s.isAuthenticated);
@@ -80,19 +47,16 @@ const TablePage: React.FC = () => {
   const [listFromTextSearch, setListFromTextSearch] = useState(false);
   const [isIdSearch, setIsIdSearch] = useState(false);
 
-  const getInitialSort = (): SorterResult<Product> | null => {
-    const savedSort = localStorage.getItem('sortOrder');
+  const {
+    pagination,
+    pageSkip,
+    sortedInfo,
+    apiSortBy,
+    apiOrder,
+    handleTableChange,
+    setPagination,
+  } = useTablePaginationSort<Product>();
 
-    if (!savedSort) return null;
-
-    try {
-      return JSON.parse(savedSort);
-    } catch {
-      return null;
-    }
-  };
-
-  const [sortedInfo, setSortedInfo] = useState<SorterResult<Product> | null>(getInitialSort);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -101,23 +65,10 @@ const TablePage: React.FC = () => {
 
   const [form] = Form.useForm<ProductFormFieldsType>();
 
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: Number(localStorage.getItem('tablePageSize')) || 5,
-  });
-  const pageSkip = (pagination.current - 1) * pagination.pageSize;
-
   const [searchText, setSearchText] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  let apiSortBy: string | undefined;
-  let apiOrder: 'asc' | 'desc' | undefined;
-  if (sortedInfo?.order) {
-    apiSortBy = sortedInfo.columnKey?.toString();
-    apiOrder = sortedInfo.order === 'ascend' ? 'asc' : 'desc';
-  }
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearchText(searchText), 300);
@@ -153,7 +104,7 @@ const TablePage: React.FC = () => {
     listFromTextSearch,
   });
 
-  const productsPageQuery = usePorductPageQuery({
+  const productsPageQuery = useProductPageQuery({
     isAuthenticated: isSessionAuthenticated,
     listFromTextSearch,
     selectedId,
@@ -204,7 +155,6 @@ const TablePage: React.FC = () => {
 
   const onFinish: FormProps<ProductFormFieldsType>['onFinish'] = (values) => {
     try {
-      console.log('starting to add product', values);
       addProduct({
         title: values.title,
         brand: values.brand,
@@ -213,8 +163,6 @@ const TablePage: React.FC = () => {
         price: Number(values.price),
         rating: Number(values.rating),
       });
-
-      console.log('product added', values);
 
       if (!listFromTextSearch && !isIdSearch) {
         queryClient.setQueryData<Products>([...productsPaginatedQueryKey], (old) => {
@@ -227,8 +175,6 @@ const TablePage: React.FC = () => {
           };
         });
       }
-
-      console.log('products updated', useProductStore.getState().products);
 
       message.success('Продукт успешно добавлен!');
       setProductPopupOpen(false);
@@ -295,35 +241,7 @@ const TablePage: React.FC = () => {
   })();
 
   const sorterForTable: SorterResult<Product> =
-    sortedInfo ??
-    ({
-      columnKey: undefined,
-      order: null,
-    } as unknown as SorterResult<Product>);
-
-  const handleTableChange: TableProps<Product>['onChange'] = (
-    newPagination,
-    _filters,
-    sorter,
-    _extra
-  ) => {
-    clearTableSearchView();
-
-    if (!Array.isArray(sorter) && sorter && sorter.order) {
-      setSortedInfo(sorter);
-      localStorage.setItem('sortOrder', JSON.stringify(sorter));
-    } else {
-      setSortedInfo(null);
-      localStorage.removeItem('sortOrder');
-    }
-
-    setPagination({
-      current: newPagination.current ?? 1,
-      pageSize: newPagination.pageSize ?? pagination.pageSize,
-    });
-
-    localStorage.setItem('tablePageSize', String(newPagination.pageSize));
-  };
+    sortedInfo ?? ({ columnKey: undefined, order: null } as SorterResult<Product>);
 
   const paginationConfig = {
     className: 'custom-pagination',
@@ -443,26 +361,37 @@ const TablePage: React.FC = () => {
     <PageShell
       title="Товары"
       description="Поиск по каталогу, таблица позиций и добавление записей."
-      headerExtra={
-        <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
-      }
     >
+      <Flex justify="space-between" gap={0} wrap="wrap" align="center">
+        <Flex
+          gap={8}
+          align="center"
+          wrap="wrap"
+          style={{
+            borderRadius: '12px',
+            width: '100%',
+            maxWidth: '100%',
+            backgroundColor: '#fff',
+            padding: '12px 16px',
+          }}
+        >
+          <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
+          <Button
+            aria-label="Обновить список товаров"
+            icon={<RefreshIcon />}
+            className="table-refresh-btn"
+            onClick={handleRefresh}
+          ></Button>
+          <Button type="primary" icon={<AddIcon />} className="table-add-btn" onClick={showModal}>
+            Добавить
+          </Button>
+        </Flex>
+      </Flex>
       <Flex vertical gap={0} style={{ width: '100%' }}>
         <Flex justify="space-between" gap={0} wrap="wrap" align="center">
           <Title className="table-title">
             Все позиции: {effectiveTotal > 0 ? effectiveTotal : '0'}
           </Title>
-          <Flex gap={8}>
-            <Button
-              aria-label="Обновить список товаров"
-              icon={<RefreshIcon />}
-              className="table-refresh-btn"
-              onClick={handleRefresh}
-            ></Button>
-            <Button type="primary" icon={<AddIcon />} className="table-add-btn" onClick={showModal}>
-              Добавить
-            </Button>
-          </Flex>
         </Flex>
 
         <Skeleton active loading={tableLoading} paragraph={{ rows: 6 }}>
@@ -471,8 +400,11 @@ const TablePage: React.FC = () => {
             isLoading={false}
             onOpenInfoModal={openInfoModal}
             data={dataSource}
-            sortedInfo={sorterForTable}
-            onChange={handleTableChange}
+            sortedInfo={sorterForTable ?? { columnKey: undefined, order: undefined }}
+            onChange={(...args) => {
+              clearTableSearchView();
+              handleTableChange(...args);
+            }}
             rowSelection={rowSelection}
             paginationConfig={paginationConfig}
           />

@@ -1,6 +1,5 @@
 import { lazy, StrictMode, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConfigProvider } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
 
@@ -29,7 +28,9 @@ const StatisticsPageLazy = lazy(() =>
 const CalcPageLazy = lazy(() =>
   import('../pages/calc/CalcPage').then((m) => ({ default: m.CalcPage }))
 );
-
+const ReactQueryDevtoolsLazy = lazy(() =>
+  import('@tanstack/react-query-devtools').then((m) => ({ default: m.ReactQueryDevtools }))
+);
 export function App() {
   return (
     <StrictMode>
@@ -46,7 +47,7 @@ export function App() {
               fontSizeHeading5: 20,
               fontWeightStrong: 600,
               paddingSM: 12,
-              lineWidth: 2,
+              lineWidth: 1,
               controlInteractiveSize: 24,
               colorPrimary: '#4a5cff',
               colorBorder: '#d9d9d9',
@@ -101,8 +102,7 @@ export function App() {
           }}
         >
           <QueryProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-
+            {import.meta.env.DEV ? <ReactQueryDevtoolsLazy initialIsOpen={false} /> : null}
             <StoreProvider>
               <BrowserRouter>
                 <ErrorBoundary>

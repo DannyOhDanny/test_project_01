@@ -3,8 +3,8 @@ import { Pie, type PieConfig } from '@ant-design/charts';
 import { TableOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { Card, Col, Flex, Row, Segmented, Skeleton, Space, Statistic, Typography } from 'antd';
 
-import { usePorductAllQuery } from '../../entities/product/api/usePorductAllQuery';
-import { usePorductPageQuery } from '../../entities/product/api/usePorductPageQuery';
+import { useProductAllQuery } from '../../entities/product/api/useProductAllQuery.ts';
+import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery.ts';
 import type { Product } from '../../entities/product/model/types';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
@@ -43,7 +43,7 @@ const StatisticsPage: React.FC = () => {
   const isSessionAuthenticated = isAuthenticatedAuth || isAuthenticatedUser;
   const [selectedView, setSelectedView] = useState<'table' | 'list'>('table');
 
-  const productsPageQuery = usePorductPageQuery({
+  const productsPageQuery = useProductPageQuery({
     isAuthenticated: isSessionAuthenticated,
     listFromTextSearch: false,
     selectedId: null,
@@ -54,7 +54,7 @@ const StatisticsPage: React.FC = () => {
   });
 
   const total = productsPageQuery.data?.total ?? 0;
-  const allProductsQuery = usePorductAllQuery({
+  const allProductsQuery = useProductAllQuery({
     total,
     enabled: isSessionAuthenticated && productsPageQuery.isSuccess,
     isAuthenticated: isSessionAuthenticated,
@@ -214,7 +214,7 @@ const StatisticsPage: React.FC = () => {
   return (
     <PageShell
       title="Статистика"
-      description="Сводка по выбранным срезам каталога и распределение товаров по категориям."
+      description="Сводка по выбранным срезам каталога, распределение товаров по категориям."
     >
       <Flex vertical style={{ width: '100%', gap: 16 }}>
         <Card

@@ -6,13 +6,13 @@ import { productKeys } from '../productKeys';
 
 import { productApi } from './productApi';
 
-type UsePorductAllQueryOptions = {
+type UseProductAllQueryOptions = {
   total?: number;
   enabled?: boolean;
   isAuthenticated?: boolean;
 };
 
-export const usePorductAllQuery = (options?: UsePorductAllQueryOptions) => {
+export const useProductAllQuery = (options?: UseProductAllQueryOptions) => {
   const isAuthenticatedFromStore = useAuthStore((s) => s.isAuthenticated);
   const isAuthenticated = options?.isAuthenticated ?? isAuthenticatedFromStore;
   const total = options?.total ?? 0;

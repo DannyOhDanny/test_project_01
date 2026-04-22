@@ -4,7 +4,7 @@ import { productKeys } from '../productKeys';
 
 import { productApi } from './productApi';
 
-export const usePorductPageQuery = (params: {
+export const useProductPageQuery = (params: {
   isAuthenticated: boolean;
   listFromTextSearch: boolean;
   selectedId: string | null;

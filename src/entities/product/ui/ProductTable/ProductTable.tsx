@@ -157,7 +157,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         columns={tableColumns}
         onChange={onChange}
         rowSelection={rowSelection}
-        style={{ marginTop: 40 }}
+        style={{ marginTop: 20 }}
         scroll={{ x: 'max-content' }}
         pagination={paginationConfig}
       />

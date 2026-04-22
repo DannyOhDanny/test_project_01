@@ -342,7 +342,7 @@ const CalcPage = () => {
       render: (_value: string, _record: TableDataType) => (
         <Button
           aria-label="Изменить операцию"
-          type="primary"
+          type="default"
           icon={<EditOutlined />}
           onClick={() => onEditOperation(_record)}
         />
@@ -354,7 +354,7 @@ const CalcPage = () => {
   return (
     <PageShell
       title="Калькулятор"
-      description="Сводка по балансу, доходам и расходам; ниже — динамика по дням и список операций."
+      description="Сводка по балансу, доходам и расходам, динамика по дням, список операций."
     >
       <InfoBlock
         total={total}
