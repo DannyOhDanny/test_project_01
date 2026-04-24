@@ -19,6 +19,17 @@ export const productApi = {
       throw new Error('Error fetching products');
     }
   },
+  getProductByCategory: async (category: string): Promise<Products> => {
+    try {
+      const { data } = await axiosProductInstance.get<Products>(
+        `/category/${encodeURIComponent(category)}`
+      );
+      return data;
+    } catch (error) {
+      console.error('Error fetching products by category', error);
+      throw new Error('Error fetching products');
+    }
+  },
   getProductsByPage: (
     limit: number,
     skip: number,

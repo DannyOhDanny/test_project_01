@@ -8,6 +8,7 @@ export const useProductPageQuery = (params: {
   isAuthenticated: boolean;
   listFromTextSearch: boolean;
   selectedId: string | null;
+  selectedCategory: string | null;
   pageSize: number;
   pageSkip: number;
   sortBy?: string | undefined;
@@ -29,7 +30,11 @@ export const useProductPageQuery = (params: {
       );
       return data;
     },
-    enabled: params.isAuthenticated && !params.listFromTextSearch && params.selectedId === null,
+    enabled:
+      params.isAuthenticated &&
+      !params.listFromTextSearch &&
+      params.selectedId === null &&
+      params.selectedCategory === null,
     placeholderData: (previousData) => previousData,
     staleTime: 60_000,
     retry: 2,

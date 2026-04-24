@@ -43,7 +43,6 @@ const CalcPage = () => {
   >({});
 
   const mergedData = useMemo(() => {
-    // Локальные добавления должны перекрывать базовые строки с тем же id (если вдруг совпали).
     const byId = new Map<number, CalcItem>();
     for (const item of [...(data ?? []), ...localAdditions]) {
       byId.set(item.id, item);

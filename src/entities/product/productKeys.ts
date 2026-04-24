@@ -13,4 +13,6 @@ export const productKeys = {
   search: (params: { query: string }) =>
     [...productKeys.all(), 'search', params.query.trim().toLowerCase()] as const,
   byId: (id: string) => ['product', id] as const,
+  byCategory: (params: { category: string }) =>
+    [...productKeys.all(), 'category', params.category] as const,
 };

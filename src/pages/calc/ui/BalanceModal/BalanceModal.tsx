@@ -42,8 +42,6 @@ const BalanceModal = ({
         category: initialValues.category,
       });
     } else {
-      // Новая операция: сначала сбрасываем форму, затем выставляем дефолты.
-      // Нельзя делать `setFieldsValue({ id })` и сразу `resetFields()` — id сотрётся.
       balanceForm.resetFields();
       balanceForm.setFieldsValue({
         id: draftOperationId,

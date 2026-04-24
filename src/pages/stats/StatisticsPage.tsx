@@ -47,6 +47,7 @@ const StatisticsPage: React.FC = () => {
     isAuthenticated: isSessionAuthenticated,
     listFromTextSearch: false,
     selectedId: null,
+    selectedCategory: null,
     pageSize: 1,
     pageSkip: 0,
     sortBy: undefined,

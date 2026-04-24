@@ -57,7 +57,7 @@ const DynamicsChart = ({
                 Динамика
               </Title>
               <Text type="secondary" style={{ fontSize: 13, lineHeight: 1.5, display: 'block' }}>
-                Кумулятивный баланс и дневные суммы; переключение серий — справа.
+                Кумулятивный баланс и дневные суммы, переключение серий данных.
               </Text>
             </div>
             <Select

@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
 
+import { useProductByCategoryQuery } from '../../entities/product/api/useProductByCategoryQuery';
 import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
 import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery';
 import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
@@ -28,7 +29,9 @@ import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
 import AddIcon from '../../shared/assets/add-icon.svg?react';
 import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
+import { categoryMap } from '../../shared/lib/categoryConfig';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
+import { pageTitleStyle } from '../stats/utils/styles';
 
 import { useTablePaginationSort } from './hooks/useTablePaginationSort';
 import type { ProductFormFieldsType, TableRowSelection } from './model/types';
@@ -59,6 +62,7 @@ const TablePage: React.FC = () => {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
   const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
@@ -69,12 +73,33 @@ const TablePage: React.FC = () => {
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const {
+    data: productsByCategory,
+    isPending: isCategoryPending,
+    isLoading: isCategoryLoading,
+    isFetching: isCategoryFetching,
+    isError: isCategoryError,
+    error: categoryError,
+    refetch: refetchCategory,
+  } = useProductByCategoryQuery(selectedCategory ?? '');
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearchText(searchText), 300);
     return () => clearTimeout(t);
   }, [searchText]);
 
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    setListFromTextSearch(false);
+    setIsIdSearch(false);
+    setSelectedId(null);
+    setSearchText('');
+  };
+  const handleAllCategoriesClick = () => {
+    setSelectedCategory(null);
+    setPagination((prev) => ({ ...prev, current: 1 }));
+  };
   const productsPaginatedQueryKey = useMemo(
     () =>
       [
@@ -106,6 +131,7 @@ const TablePage: React.FC = () => {
 
   const productsPageQuery = useProductPageQuery({
     isAuthenticated: isSessionAuthenticated,
+    selectedCategory,
     listFromTextSearch,
     selectedId,
     pageSize: pagination.pageSize,
@@ -164,7 +190,7 @@ const TablePage: React.FC = () => {
         rating: Number(values.rating),
       });
 
-      if (!listFromTextSearch && !isIdSearch) {
+      if (!listFromTextSearch && !isIdSearch && !selectedCategory) {
         queryClient.setQueryData<Products>([...productsPaginatedQueryKey], (old) => {
           const row = useProductStore.getState().products?.products?.[0];
           if (!old || !row) return old;
@@ -196,6 +222,7 @@ const TablePage: React.FC = () => {
     setIsIdSearch(false);
     setSelectedId(null);
     setSearchText('');
+    setSelectedCategory(null);
   };
 
   const dataSource = isIdSearch
@@ -204,13 +231,17 @@ const TablePage: React.FC = () => {
       : []
     : listFromTextSearch
       ? productSearchQuery.data?.products || []
-      : productsPageQuery.data?.products || [];
+      : selectedCategory
+        ? productsByCategory?.products || []
+        : productsPageQuery.data?.products || [];
 
   const effectiveTotal = isIdSearch
     ? 1
     : listFromTextSearch
       ? (productSearchQuery.data?.total ?? 0)
-      : (productsPageQuery.data?.total ?? 0);
+      : selectedCategory
+        ? (productsByCategory?.total ?? 0)
+        : (productsPageQuery.data?.total ?? 0);
 
   const displayError = isIdSearch
     ? isProductIdSearchError
@@ -220,15 +251,21 @@ const TablePage: React.FC = () => {
       ? isProductsSearchError
         ? getQueryErrorMessage(productsSearchError)
         : null
-      : isProductsPageError
-        ? getQueryErrorMessage(productsPageError)
-        : null;
+      : selectedCategory
+        ? isCategoryError
+          ? getQueryErrorMessage(categoryError)
+          : null
+        : isProductsPageError
+          ? getQueryErrorMessage(productsPageError)
+          : null;
 
   const tableLoading = isIdSearch
     ? isProductIdSearchPending || isProductIdSearchLoading || isProductIdSearchFetching
     : listFromTextSearch
       ? isProductsSearchPending || isProductsSearchLoading || isProductsSearchFetching
-      : isProductsPagePending || isProductsPageLoading || isProductsPageFetching;
+      : selectedCategory
+        ? isCategoryPending || isCategoryLoading || isCategoryFetching
+        : isProductsPagePending || isProductsPageLoading || isProductsPageFetching;
 
   const tableEmptyText = (() => {
     if (tableLoading) return 'Загрузка…';
@@ -236,7 +273,12 @@ const TablePage: React.FC = () => {
     if (displayError) return `Не удалось загрузить данные: ${displayError}`;
     if (isIdSearch && dataSource.length === 0) return 'Товар не найден';
     if (listFromTextSearch && dataSource.length === 0) return 'Ничего не найдено';
-    if (!listFromTextSearch && !isIdSearch && dataSource.length === 0) return 'Нет данных';
+    if (selectedCategory && !listFromTextSearch && !isIdSearch && dataSource.length === 0) {
+      return 'В этой категории нет данных';
+    }
+    if (!listFromTextSearch && !isIdSearch && !selectedCategory && dataSource.length === 0) {
+      return 'Нет данных';
+    }
     return '';
   })();
 
@@ -332,7 +374,10 @@ const TablePage: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    clearTableSearchView();
+    if (selectedCategory) {
+      void refetchCategory();
+      return;
+    }
     void productsPageQuery.refetch();
   };
 
@@ -340,29 +385,38 @@ const TablePage: React.FC = () => {
     const numericId = Number(data);
     setPagination((prev) => ({ ...prev, current: 1 }));
     if (!isNaN(numericId) && numericId > 0) {
+      setSelectedCategory(null);
       setListFromTextSearch(false);
       setSelectedId(numericId.toString());
       setIsIdSearch(true);
       setSearchText('');
     } else if (data.length > 0 || data.trim() !== '') {
+      setSelectedCategory(null);
       setSelectedId(null);
       setListFromTextSearch(true);
       setIsIdSearch(false);
       setSearchText(data);
     } else {
+      setSelectedCategory(null);
       setSelectedId(null);
       setListFromTextSearch(false);
       setIsIdSearch(false);
       setSearchText('');
     }
   };
+  const categoryOptions = useMemo(() => {
+    return Object.entries(categoryMap).map(([key, value]) => ({
+      label: value,
+      value: key,
+    }));
+  }, []);
 
   return (
     <PageShell
       title="Товары"
       description="Поиск по каталогу, таблица позиций и добавление записей."
     >
-      <Flex justify="space-between" gap={0} wrap="wrap" align="center">
+      <Flex justify="space-between" gap={12} wrap="wrap" align="stretch">
         <Flex
           gap={8}
           align="center"
@@ -385,6 +439,41 @@ const TablePage: React.FC = () => {
           <Button type="primary" icon={<AddIcon />} className="table-add-btn" onClick={showModal}>
             Добавить
           </Button>
+        </Flex>
+
+        <Flex
+          vertical
+          gap={0}
+          style={{
+            borderRadius: '12px',
+            width: '100%',
+            maxWidth: '100%',
+            backgroundColor: '#fff',
+            padding: '12px 16px',
+          }}
+        >
+          <Title level={4} style={pageTitleStyle}>
+            Категория
+          </Title>
+          <Flex gap={6} wrap="wrap" justify="center" align="center">
+            <Button type="primary" onClick={handleAllCategoriesClick}>
+              Все категории
+            </Button>
+
+            {categoryOptions.length > 0 &&
+              categoryOptions.map(({ value, label }) => {
+                return (
+                  <Button
+                    key={value}
+                    aria-label={label}
+                    onClick={() => handleCategoryClick(value)}
+                    className={selectedCategory === value ? 'table-category-btn-active' : ''}
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
+          </Flex>
         </Flex>
       </Flex>
       <Flex vertical gap={0} style={{ width: '100%' }}>
