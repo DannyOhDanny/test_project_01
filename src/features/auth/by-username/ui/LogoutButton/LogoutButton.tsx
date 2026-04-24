@@ -3,18 +3,16 @@ import { useNavigate } from 'react-router';
 import { LogoutOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-import { useUserStore } from '../../../../../entities/user/model/userStore';
+import { useAuthStore } from '../../../../../entities/user/model/authStore';
 
 export const LogoutButton: React.FC = React.memo(() => {
   const navigate = useNavigate();
-  const setUser = useUserStore((state: any) => state.setUser);
+  const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
+    logout();
     navigate('/login');
-  }, [navigate, setUser]);
+  }, [navigate, logout]);
 
   return (
     <Button

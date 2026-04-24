@@ -141,16 +141,6 @@ export function App() {
                       }
                     />
                     <Route
-                      path="/"
-                      element={
-                        <ProtectedRoute>
-                          <AppLayout>
-                            <Navigate to="/profile" replace />
-                          </AppLayout>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
                       path="/calc"
                       element={
                         <ProtectedRoute>
@@ -160,7 +150,16 @@ export function App() {
                         </ProtectedRoute>
                       }
                     />
-
+                    <Route
+                      path="/"
+                      element={
+                        <ProtectedRoute>
+                          <AppLayout>
+                            <Navigate to="/table" replace />
+                          </AppLayout>
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </ErrorBoundary>
