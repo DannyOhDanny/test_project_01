@@ -11,16 +11,10 @@ import {
   Input,
   message,
   Modal,
-  Skeleton,
   Table,
   Typography,
 } from 'antd';
-import type { SorterResult } from 'antd/es/table/interface';
 
-import { useProductByCategoryQuery } from '../../entities/product/api/useProductByCategoryQuery';
-import { useProductByIdQuery } from '../../entities/product/api/useProductByIdQuery';
-import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery';
-import { useProductSearchQuery } from '../../entities/product/api/useProductSearchQuery';
 import { useProductStore } from '../../entities/product/model/productStore';
 import type { Product, Products } from '../../entities/product/model/types';
 import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
@@ -33,9 +27,14 @@ import { categoryMap } from '../../shared/lib/categoryConfig';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
 import { pageTitleStyle } from '../stats/utils/styles';
 
+import { useProductsTableData } from './hooks/useProductTableData';
 import { useTablePaginationSort } from './hooks/useTablePaginationSort';
-import type { ProductFormFieldsType, TableRowSelection } from './model/types';
-import { getQueryErrorMessage } from './utils/tableFunctions';
+import type {
+  FiltersPropsType,
+  ProductFormFieldsType,
+  TableRowSelection,
+  ViewModeType,
+} from './model/types';
 
 import './TablePage.css';
 
@@ -46,9 +45,6 @@ const TablePage: React.FC = () => {
   const isAuthenticatedUser = useUserStore((s) => s.isAuthenticated);
   const isSessionAuthenticated = isAuthenticatedAuth || isAuthenticatedUser;
   const { addProduct } = useProductStore();
-
-  const [listFromTextSearch, setListFromTextSearch] = useState(false);
-  const [isIdSearch, setIsIdSearch] = useState(false);
 
   const {
     pagination,
@@ -62,43 +58,42 @@ const TablePage: React.FC = () => {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewModeType>('page');
+  const [filters, setFilters] = useState<FiltersPropsType>({
+    category: null,
+    query: null,
+    id: null,
+  });
 
-  const [poductPopupOpen, setProductPopupOpen] = useState<boolean>(false);
+  const [isProductPopupOpen, setIsProductPopupOpen] = useState<boolean>(false);
   const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
 
   const [form] = Form.useForm<ProductFormFieldsType>();
 
   const [searchText, setSearchText] = useState('');
-  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
-
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const {
-    data: productsByCategory,
-    isPending: isCategoryPending,
-    isLoading: isCategoryLoading,
-    isFetching: isCategoryFetching,
-    isError: isCategoryError,
-    error: categoryError,
-    refetch: refetchCategory,
-  } = useProductByCategoryQuery(selectedCategory ?? '');
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearchText(searchText), 300);
-    return () => clearTimeout(t);
-  }, [searchText]);
+    if (viewMode !== 'text') return;
 
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
+    const timeout = setTimeout(() => {
+      const normalizedQuery = searchText.trim().toLowerCase();
+      setFilters((prev) => ({ ...prev, query: normalizedQuery.length ? normalizedQuery : null }));
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchText, viewMode]);
+
+  const handleCategoryClick = (newCategory: string) => {
     setPagination((prev) => ({ ...prev, current: 1 }));
-    setListFromTextSearch(false);
-    setIsIdSearch(false);
-    setSelectedId(null);
     setSearchText('');
+    setFilters({ category: newCategory, query: null, id: null });
+    setViewMode('category');
   };
   const handleAllCategoriesClick = () => {
-    setSelectedCategory(null);
     setPagination((prev) => ({ ...prev, current: 1 }));
+    setSearchText('');
+    setViewMode('page');
+    setFilters({ category: null, query: null, id: null });
   };
   const productsPaginatedQueryKey = useMemo(
     () =>
@@ -115,48 +110,15 @@ const TablePage: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  const normalized = debouncedSearchText.trim().toLowerCase();
-
-  const productSearchQuery = useProductSearchQuery({
-    isAuthenticated: isSessionAuthenticated,
-    listFromTextSearch,
-    query: normalized,
-  });
-
-  const productIdSearchQuery = useProductByIdQuery({
-    isAuthenticated: isSessionAuthenticated,
-    selectedId,
-    listFromTextSearch,
-  });
-
-  const productsPageQuery = useProductPageQuery({
-    isAuthenticated: isSessionAuthenticated,
-    selectedCategory,
-    listFromTextSearch,
-    selectedId,
-    pageSize: pagination.pageSize,
+  const productsTableData = useProductsTableData(
+    viewMode,
+    filters,
+    isSessionAuthenticated,
+    pagination.pageSize,
     pageSkip,
-    sortBy: apiSortBy,
-    order: apiOrder,
-  });
-
-  const isProductsPagePending = productsPageQuery.isPending;
-  const isProductsPageLoading = productsPageQuery.isLoading;
-  const isProductsPageError = productsPageQuery.isError;
-  const isProductsPageFetching = productsPageQuery.isFetching;
-  const productsPageError = productsPageQuery.error;
-
-  const isProductsSearchPending = productSearchQuery.isPending;
-  const isProductsSearchLoading = productSearchQuery.isLoading;
-  const isProductsSearchError = productSearchQuery.isError;
-  const isProductsSearchFetching = productSearchQuery.isFetching;
-  const productsSearchError = productSearchQuery.error;
-
-  const isProductIdSearchPending = productIdSearchQuery.isPending;
-  const isProductIdSearchLoading = productIdSearchQuery.isLoading;
-  const isProductIdSearchError = productIdSearchQuery.isError;
-  const isProductIdSearchFetching = productIdSearchQuery.isFetching;
-  const productIdSearchError = productIdSearchQuery.error;
+    apiSortBy,
+    apiOrder
+  );
 
   const openInfoModal = (product: Product) => {
     setSelectedProduct(product);
@@ -169,10 +131,10 @@ const TablePage: React.FC = () => {
   };
 
   const showModal = () => {
-    setProductPopupOpen(true);
+    setIsProductPopupOpen(true);
   };
   const handleModalClose = () => {
-    setProductPopupOpen(false);
+    setIsProductPopupOpen(false);
   };
 
   const handleReset = () => {
@@ -190,7 +152,7 @@ const TablePage: React.FC = () => {
         rating: Number(values.rating),
       });
 
-      if (!listFromTextSearch && !isIdSearch && !selectedCategory) {
+      if (viewMode === 'page') {
         queryClient.setQueryData<Products>([...productsPaginatedQueryKey], (old) => {
           const row = useProductStore.getState().products?.products?.[0];
           if (!old || !row) return old;
@@ -203,7 +165,7 @@ const TablePage: React.FC = () => {
       }
 
       message.success('Продукт успешно добавлен!');
-      setProductPopupOpen(false);
+      setIsProductPopupOpen(false);
       form.resetFields();
     } catch (err) {
       console.error(err);
@@ -217,84 +179,23 @@ const TablePage: React.FC = () => {
 
   const searchQuoteRef = useRef(null);
 
-  const clearTableSearchView = () => {
-    setListFromTextSearch(false);
-    setIsIdSearch(false);
-    setSelectedId(null);
+  const clearFiltersToPage = () => {
+    setPagination((p) => ({ ...p, current: 1 }));
     setSearchText('');
-    setSelectedCategory(null);
+    setViewMode('page');
+    setFilters({ category: null, query: null, id: null });
   };
-
-  const dataSource = isIdSearch
-    ? productIdSearchQuery.data
-      ? [productIdSearchQuery.data]
-      : []
-    : listFromTextSearch
-      ? productSearchQuery.data?.products || []
-      : selectedCategory
-        ? productsByCategory?.products || []
-        : productsPageQuery.data?.products || [];
-
-  const effectiveTotal = isIdSearch
-    ? 1
-    : listFromTextSearch
-      ? (productSearchQuery.data?.total ?? 0)
-      : selectedCategory
-        ? (productsByCategory?.total ?? 0)
-        : (productsPageQuery.data?.total ?? 0);
-
-  const displayError = isIdSearch
-    ? isProductIdSearchError
-      ? getQueryErrorMessage(productIdSearchError)
-      : null
-    : listFromTextSearch
-      ? isProductsSearchError
-        ? getQueryErrorMessage(productsSearchError)
-        : null
-      : selectedCategory
-        ? isCategoryError
-          ? getQueryErrorMessage(categoryError)
-          : null
-        : isProductsPageError
-          ? getQueryErrorMessage(productsPageError)
-          : null;
-
-  const tableLoading = isIdSearch
-    ? isProductIdSearchPending || isProductIdSearchLoading || isProductIdSearchFetching
-    : listFromTextSearch
-      ? isProductsSearchPending || isProductsSearchLoading || isProductsSearchFetching
-      : selectedCategory
-        ? isCategoryPending || isCategoryLoading || isCategoryFetching
-        : isProductsPagePending || isProductsPageLoading || isProductsPageFetching;
-
-  const tableEmptyText = (() => {
-    if (tableLoading) return 'Загрузка…';
-    if (isIdSearch && displayError) return displayError;
-    if (displayError) return `Не удалось загрузить данные: ${displayError}`;
-    if (isIdSearch && dataSource.length === 0) return 'Товар не найден';
-    if (listFromTextSearch && dataSource.length === 0) return 'Ничего не найдено';
-    if (selectedCategory && !listFromTextSearch && !isIdSearch && dataSource.length === 0) {
-      return 'В этой категории нет данных';
-    }
-    if (!listFromTextSearch && !isIdSearch && !selectedCategory && dataSource.length === 0) {
-      return 'Нет данных';
-    }
-    return '';
-  })();
-
-  const sorterForTable: SorterResult<Product> =
-    sortedInfo ?? ({ columnKey: undefined, order: null } as SorterResult<Product>);
 
   const paginationConfig = {
     className: 'custom-pagination',
     current: pagination.current,
     pageSize: pagination.pageSize,
-    total: effectiveTotal,
+    total: productsTableData.total,
     showQuickJumper: false,
     showSizeChanger: true,
     pageSizeOptions: ['5', '10', '20', '50', '100'],
     onChange: (page: number, pageSize: number) => {
-      clearTableSearchView();
+      clearFiltersToPage();
       setPagination({ current: page, pageSize });
     },
     showTotal: (total: number, range: number[]) => (
@@ -374,36 +275,32 @@ const TablePage: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    if (selectedCategory) {
-      void refetchCategory();
-      return;
-    }
-    void productsPageQuery.refetch();
+    productsTableData.refetch();
   };
 
-  const handleSearch = (data: string) => {
-    const numericId = Number(data);
-    setPagination((prev) => ({ ...prev, current: 1 }));
-    if (!isNaN(numericId) && numericId > 0) {
-      setSelectedCategory(null);
-      setListFromTextSearch(false);
-      setSelectedId(numericId.toString());
-      setIsIdSearch(true);
+  const handleSearch = (raw: string) => {
+    const text = raw.trim();
+    setPagination((p) => ({ ...p, current: 1 }));
+    if (text === '') {
+      setViewMode('page');
+      setFilters({ category: null, query: null, id: null });
       setSearchText('');
-    } else if (data.length > 0 || data.trim() !== '') {
-      setSelectedCategory(null);
-      setSelectedId(null);
-      setListFromTextSearch(true);
-      setIsIdSearch(false);
-      setSearchText(data);
-    } else {
-      setSelectedCategory(null);
-      setSelectedId(null);
-      setListFromTextSearch(false);
-      setIsIdSearch(false);
-      setSearchText('');
+      return;
     }
+
+    const numericId = Number(text);
+    if (!Number.isNaN(numericId) && numericId > 0) {
+      setFilters({ id: String(numericId), query: null, category: null });
+      setViewMode('id');
+      setSearchText('');
+      return;
+    }
+
+    setViewMode('text');
+    setSearchText(text);
+    setFilters({ category: null, query: null, id: null });
   };
+
   const categoryOptions = useMemo(() => {
     return Object.entries(categoryMap).map(([key, value]) => ({
       label: value,
@@ -429,7 +326,12 @@ const TablePage: React.FC = () => {
             padding: '12px 16px',
           }}
         >
-          <ProductSearch ref={searchQuoteRef} onSearch={(value: string) => handleSearch(value)} />
+          <ProductSearch
+            ref={searchQuoteRef}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onSearch={(value: string) => handleSearch(value)}
+          />
           <Button
             aria-label="Обновить список товаров"
             icon={<RefreshIcon />}
@@ -467,7 +369,7 @@ const TablePage: React.FC = () => {
                     key={value}
                     aria-label={label}
                     onClick={() => handleCategoryClick(value)}
-                    className={selectedCategory === value ? 'table-category-btn-active' : ''}
+                    className={filters.category === value ? 'table-category-btn-active' : ''}
                   >
                     {label}
                   </Button>
@@ -479,32 +381,31 @@ const TablePage: React.FC = () => {
       <Flex vertical gap={0} style={{ width: '100%' }}>
         <Flex justify="space-between" gap={0} wrap="wrap" align="center">
           <Title className="table-title">
-            Все позиции: {effectiveTotal > 0 ? effectiveTotal : '0'}
+            Все позиции: {productsTableData.total > 0 ? productsTableData.total : '0'}
           </Title>
         </Flex>
 
-        <Skeleton active loading={tableLoading} paragraph={{ rows: 6 }}>
-          <ProductTable
-            emptyText={tableEmptyText}
-            isLoading={false}
-            onOpenInfoModal={openInfoModal}
-            data={dataSource}
-            sortedInfo={sorterForTable ?? { columnKey: undefined, order: undefined }}
-            onChange={(...args) => {
-              clearTableSearchView();
-              handleTableChange(...args);
-            }}
-            rowSelection={rowSelection}
-            paginationConfig={paginationConfig}
-          />
-        </Skeleton>
+        <ProductTable
+          emptyText={productsTableData.emptyText}
+          isLoading={productsTableData.loading}
+          onOpenInfoModal={openInfoModal}
+          data={productsTableData.data}
+          sortedInfo={sortedInfo ?? { columnKey: undefined, order: undefined }}
+          errorMessage={productsTableData.errorMessage}
+          onChange={(...args) => {
+            clearFiltersToPage();
+            handleTableChange(...args);
+          }}
+          rowSelection={rowSelection}
+          paginationConfig={paginationConfig}
+        />
       </Flex>
 
       <Modal
         centered={true}
         title="Добавить товар"
         closable={true}
-        open={poductPopupOpen}
+        open={isProductPopupOpen}
         onCancel={handleModalClose}
         forceRender
         footer={null}

@@ -9,7 +9,7 @@ import {
   getCategory,
   getRatingColor,
 } from '../../../../shared/functions/productFunctions';
-import { Product } from '../../model/types';
+import type { Product } from '../../model/types';
 
 import type { ProductTableProps } from './model/types';
 
@@ -19,6 +19,7 @@ const { Text } = Typography;
 
 const ProductTable: React.FC<ProductTableProps> = ({
   emptyText,
+  errorMessage,
   data,
   sortedInfo,
   onChange,
@@ -27,6 +28,13 @@ const ProductTable: React.FC<ProductTableProps> = ({
   onOpenInfoModal,
   isLoading,
 }) => {
+  const emptyStateText =
+    emptyText && emptyText.length > 0
+      ? emptyText
+      : errorMessage && errorMessage.length > 0
+        ? errorMessage
+        : '';
+
   const tableColumns: TableColumnsType<Product> = [
     {
       title: 'Наименование',
@@ -145,11 +153,12 @@ const ProductTable: React.FC<ProductTableProps> = ({
     <>
       <Table
         locale={{
-          emptyText: emptyText ? (
-            <div role="status" aria-live="polite">
-              {emptyText}
-            </div>
-          ) : undefined,
+          emptyText:
+            emptyStateText.length > 0 ? (
+              <div role="status" aria-live="polite">
+                {emptyStateText}
+              </div>
+            ) : undefined,
         }}
         loading={isLoading}
         rowKey="sku"

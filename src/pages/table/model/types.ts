@@ -10,4 +10,12 @@ type ProductFormFieldsType = {
   price: string;
   rating: string;
 };
-export type { ProductFormFieldsType, TableRowSelection };
+
+type ViewModeType = 'page' | 'category' | 'text' | 'id';
+
+type FiltersPropsType = {
+  category: string | null;
+  query: string | null;
+  id: string | null;
+};
+export type { FiltersPropsType, ProductFormFieldsType, TableRowSelection, ViewModeType };

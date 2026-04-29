@@ -48,14 +48,21 @@ const stylesFnSearch: SearchProps['styles'] = (info) => {
 
 type Props = {
   onSearch: SearchProps['onSearch'];
+  value?: SearchProps['value'];
+  onChange?: SearchProps['onChange'];
 };
 
-const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch({ onSearch }, ref) {
+const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch(
+  { onSearch, value, onChange },
+  ref
+) {
   return (
     <Flex justify="center" style={{ flex: 1 }}>
       <Search
         tabIndex={0}
         ref={ref}
+        value={value}
+        onChange={onChange}
         onSearch={onSearch}
         onPressEnter={(e: KeyboardEvent<HTMLInputElement>) => {
           onSearch?.(e.currentTarget.value, e);
