@@ -74,7 +74,7 @@ const ProductSearch = forwardRef<InputRef, Props>(function ProductSearch(
         placeholder="Найти"
         name="search-fn"
         allowClear={{ clearIcon: <CloseIcon /> }}
-        style={{ maxWidth: '1023px', width: '100%' }}
+        style={{ maxWidth: '1123px', width: '100%' }}
         aria-label="Поиск товара"
       />
     </Flex>

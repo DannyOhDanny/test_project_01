@@ -6,6 +6,7 @@
   color: #333;
   margin: 0;
 }
+
 .table-refresh-btn {
   border: 1px solid #ececeb;
   border-radius: 8px !important;
@@ -13,10 +14,10 @@
   width: 42px !important;
   height: 42px !important;
 }
+
 .table-add-btn {
   border-radius: 6px;
   padding: 10px 20px;
-  width: 147px;
   height: 42px;
   min-height: 42px;
   background: var(--bg-color);

@@ -1,31 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import type { InputRef } from 'antd';
 import type { FormProps } from 'antd';
-import {
-  Button,
-  Carousel,
-  Descriptions,
-  Flex,
-  Form,
-  Image,
-  Input,
-  message,
-  Modal,
-  Table,
-  Typography,
-} from 'antd';
+import type { TablePaginationConfig } from 'antd';
+import { Form, message, Table } from 'antd';
 
 import { useProductStore } from '../../entities/product/model/productStore';
 import type { Product, Products } from '../../entities/product/model/types';
-import { ProductSearch } from '../../entities/product/ui/ProductSearch/ProductSearch';
-import { ProductTable } from '../../entities/product/ui/ProductTable/ProductTable';
+import { productKeys } from '../../entities/product/productKeys';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
-import AddIcon from '../../shared/assets/add-icon.svg?react';
-import RefreshIcon from '../../shared/assets/refresh-icon.svg?react';
 import { categoryMap } from '../../shared/lib/categoryConfig';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
-import { pageTitleStyle } from '../stats/utils/styles';
 
 import { useProductsTableData } from './hooks/useProductTableData';
 import { useTablePaginationSort } from './hooks/useTablePaginationSort';
@@ -35,10 +21,20 @@ import type {
   TableRowSelection,
   ViewModeType,
 } from './model/types';
+import { ProductTableBlock } from './ui/ProductTableBlock';
+import { TableCategoriesBlock } from './ui/TableCategoriesBlock';
+import { TableSearchBlock } from './ui/TableSearchBlock';
 
 import './TablePage.css';
 
-const { Title } = Typography;
+export interface ProductsTableDataProps {
+  total: number;
+  emptyText: string;
+  loading: boolean;
+  data: Product[];
+  errorMessage: string | null;
+  refetch: () => Promise<unknown>;
+}
 
 const TablePage: React.FC = () => {
   const isAuthenticatedAuth = useAuthStore((s) => s.isAuthenticated);
@@ -69,6 +65,7 @@ const TablePage: React.FC = () => {
   const [infoModalOpen, setInfoModalOpen] = useState<boolean>(false);
 
   const [form] = Form.useForm<ProductFormFieldsType>();
+  const searchQuoteRef = useRef<InputRef | null>(null);
 
   const [searchText, setSearchText] = useState('');
 
@@ -83,6 +80,16 @@ const TablePage: React.FC = () => {
     return () => clearTimeout(timeout);
   }, [searchText, viewMode]);
 
+  const handleSearchTextChange = (next: string) => {
+    setSearchText(next);
+
+    if (next.trim() === '') {
+      setPagination((p) => ({ ...p, current: 1 }));
+      setViewMode('page');
+      setFilters({ category: null, query: null, id: null });
+    }
+  };
+
   const handleCategoryClick = (newCategory: string) => {
     setPagination((prev) => ({ ...prev, current: 1 }));
     setSearchText('');
@@ -95,22 +102,10 @@ const TablePage: React.FC = () => {
     setViewMode('page');
     setFilters({ category: null, query: null, id: null });
   };
-  const productsPaginatedQueryKey = useMemo(
-    () =>
-      [
-        'products',
-        'paginated',
-        pagination.pageSize,
-        pageSkip,
-        apiSortBy ?? '',
-        apiOrder ?? '',
-      ] as const,
-    [pagination.pageSize, pageSkip, apiSortBy, apiOrder]
-  );
 
   const queryClient = useQueryClient();
 
-  const productsTableData = useProductsTableData(
+  const productsTableData: ProductsTableDataProps = useProductsTableData(
     viewMode,
     filters,
     isSessionAuthenticated,
@@ -152,24 +147,40 @@ const TablePage: React.FC = () => {
         rating: Number(values.rating),
       });
 
-      if (viewMode === 'page') {
-        queryClient.setQueryData<Products>([...productsPaginatedQueryKey], (old) => {
-          const row = useProductStore.getState().products?.products?.[0];
-          if (!old || !row) return old;
-          return {
-            ...old,
-            products: [row, ...(old.products ?? [])],
-            total: old.total + 1,
-          };
-        });
-      }
+      const row = useProductStore.getState().products?.products?.[0];
+      if (!row) return;
 
-      message.success('Продукт успешно добавлен!');
-      setIsProductPopupOpen(false);
+      setPagination((p) => ({ ...p, current: 1 }));
+
+      queryClient.setQueryData<Products>(
+        productKeys.paginated({
+          limit: pagination.pageSize,
+          skip: 0,
+          sortBy: apiSortBy,
+          order: apiOrder,
+        }),
+        (old) => {
+          const prevProducts = old?.products ?? [];
+          const prevTotal = old?.total ?? prevProducts.length;
+
+          const withoutSameSku = prevProducts.filter((p) => p.sku !== row.sku);
+
+          const merged = [row, ...withoutSameSku];
+          const limited = merged.slice(0, pagination.pageSize);
+
+          return {
+            products: limited,
+            total: prevTotal + 1,
+            skip: 0,
+            limit: old?.limit ?? pagination.pageSize,
+          };
+        }
+      );
+    } catch {
+      message.error('Ошибка при добавлении товара');
+    } finally {
       form.resetFields();
-    } catch (err) {
-      console.error(err);
-      message.error('Ошибка при добавлении продукта');
+      handleModalClose();
     }
   };
 
@@ -177,16 +188,7 @@ const TablePage: React.FC = () => {
     message.error('Пожалуйста, исправьте ошибки в форме');
   };
 
-  const searchQuoteRef = useRef(null);
-
-  const clearFiltersToPage = () => {
-    setPagination((p) => ({ ...p, current: 1 }));
-    setSearchText('');
-    setViewMode('page');
-    setFilters({ category: null, query: null, id: null });
-  };
-
-  const paginationConfig = {
+  const paginationConfig: TablePaginationConfig = {
     className: 'custom-pagination',
     current: pagination.current,
     pageSize: pagination.pageSize,
@@ -195,7 +197,6 @@ const TablePage: React.FC = () => {
     showSizeChanger: true,
     pageSizeOptions: ['5', '10', '20', '50', '100'],
     onChange: (page: number, pageSize: number) => {
-      clearFiltersToPage();
       setPagination({ current: page, pageSize });
     },
     showTotal: (total: number, range: number[]) => (
@@ -275,7 +276,20 @@ const TablePage: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    productsTableData.refetch();
+    setViewMode('page');
+    setFilters({ category: null, query: null, id: null });
+    setSearchText('');
+    setPagination((p) => ({ ...p, current: 1 }));
+    setSelectedRowKeys([]);
+
+    queryClient.invalidateQueries({
+      queryKey: productKeys.paginated({
+        limit: pagination.pageSize,
+        skip: 0,
+        sortBy: apiSortBy,
+        order: apiOrder,
+      }),
+    });
   };
 
   const handleSearch = (raw: string) => {
@@ -292,7 +306,7 @@ const TablePage: React.FC = () => {
     if (!Number.isNaN(numericId) && numericId > 0) {
       setFilters({ id: String(numericId), query: null, category: null });
       setViewMode('id');
-      setSearchText('');
+      setSearchText(text);
       return;
     }
 
@@ -313,254 +327,38 @@ const TablePage: React.FC = () => {
       title="Товары"
       description="Поиск по каталогу, таблица позиций и добавление записей."
     >
-      <Flex justify="space-between" gap={12} wrap="wrap" align="stretch">
-        <Flex
-          gap={8}
-          align="center"
-          wrap="wrap"
-          style={{
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '100%',
-            backgroundColor: '#fff',
-            padding: '12px 16px',
-          }}
-        >
-          <ProductSearch
-            ref={searchQuoteRef}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onSearch={(value: string) => handleSearch(value)}
-          />
-          <Button
-            aria-label="Обновить список товаров"
-            icon={<RefreshIcon />}
-            className="table-refresh-btn"
-            onClick={handleRefresh}
-          ></Button>
-          <Button type="primary" icon={<AddIcon />} className="table-add-btn" onClick={showModal}>
-            Добавить
-          </Button>
-        </Flex>
+      <TableSearchBlock
+        searchQuoteRef={searchQuoteRef}
+        searchText={searchText}
+        setSearchText={handleSearchTextChange}
+        handleSearch={handleSearch}
+        handleRefresh={handleRefresh}
+      />
+      <TableCategoriesBlock
+        categoryOptions={categoryOptions}
+        handleAllCategoriesClick={handleAllCategoriesClick}
+        handleCategoryClick={handleCategoryClick}
+        filters={filters}
+      />
 
-        <Flex
-          vertical
-          gap={0}
-          style={{
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '100%',
-            backgroundColor: '#fff',
-            padding: '12px 16px',
-          }}
-        >
-          <Title level={4} style={pageTitleStyle}>
-            Категория
-          </Title>
-          <Flex gap={6} wrap="wrap" justify="center" align="center">
-            <Button type="primary" onClick={handleAllCategoriesClick}>
-              Все категории
-            </Button>
-
-            {categoryOptions.length > 0 &&
-              categoryOptions.map(({ value, label }) => {
-                return (
-                  <Button
-                    key={value}
-                    aria-label={label}
-                    onClick={() => handleCategoryClick(value)}
-                    className={filters.category === value ? 'table-category-btn-active' : ''}
-                  >
-                    {label}
-                  </Button>
-                );
-              })}
-          </Flex>
-        </Flex>
-      </Flex>
-      <Flex vertical gap={0} style={{ width: '100%' }}>
-        <Flex justify="space-between" gap={0} wrap="wrap" align="center">
-          <Title className="table-title">
-            Все позиции: {productsTableData.total > 0 ? productsTableData.total : '0'}
-          </Title>
-        </Flex>
-
-        <ProductTable
-          emptyText={productsTableData.emptyText}
-          isLoading={productsTableData.loading}
-          onOpenInfoModal={openInfoModal}
-          data={productsTableData.data}
-          sortedInfo={sortedInfo ?? { columnKey: undefined, order: undefined }}
-          errorMessage={productsTableData.errorMessage}
-          onChange={(...args) => {
-            clearFiltersToPage();
-            handleTableChange(...args);
-          }}
-          rowSelection={rowSelection}
-          paginationConfig={paginationConfig}
-        />
-      </Flex>
-
-      <Modal
-        centered={true}
-        title="Добавить товар"
-        closable={true}
-        open={isProductPopupOpen}
-        onCancel={handleModalClose}
-        forceRender
-        footer={null}
-      >
-        <Form
-          form={form}
-          name="product-form"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item
-            aria-label="Наименование"
-            name="title"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              {
-                pattern: /^[a-zA-Zа-яА-ЯёЁ0-9\s.,!?()\-:;'"«»—]{6,25}$/,
-                message: 'Буквы, цифры и знаки препинания',
-              },
-            ]}
-          >
-            <Input placeholder="Наименование" tabIndex={0} />
-          </Form.Item>
-
-          <Form.Item
-            aria-label="Вендор"
-            name="brand"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              {
-                pattern: /^[a-zA-Zа-яА-ЯёЁ0-9\s.,!?()\-:;'"«»—]{6,15}$/,
-                message: 'Буквы, цифры и знаки препинания',
-              },
-            ]}
-          >
-            <Input placeholder="Вендор" />
-          </Form.Item>
-
-          <Form.Item
-            aria-label="Категория"
-            name="category"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              {
-                pattern: /^[a-zA-Zа-яА-ЯёЁ0-9\s.,!?()\-:;'"«»—]{6,15}$/,
-                message: 'Буквы, цифры и знаки препинания',
-              },
-            ]}
-          >
-            <Input placeholder="Категория" />
-          </Form.Item>
-
-          <Form.Item
-            aria-label="Артикул"
-            name="sku"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              {
-                pattern: /^[a-zA-Zа-яА-ЯёЁ0-9\s.,!?()\-:;'"«»—]{6,12}$/,
-                message: 'Буквы, цифры и знаки препинания',
-              },
-            ]}
-          >
-            <Input placeholder="Артикул" />
-          </Form.Item>
-
-          <Form.Item
-            aria-label="Оценка"
-            name="rating"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              { pattern: /^[1-5]$/, message: 'Введите число от 1 до 5' },
-
-              {
-                validator: (_, value) =>
-                  !value || (Number(value) >= 1 && Number(value) <= 5)
-                    ? Promise.resolve()
-                    : Promise.reject(new Error('От 1 до 5')),
-              },
-            ]}
-          >
-            <Input type="number" placeholder="Оценка" />
-          </Form.Item>
-
-          <Form.Item
-            aria-label="Цена"
-            name="price"
-            rules={[
-              { required: true, message: 'Обязательное поле' },
-              { pattern: /^\d+(\.\d{1,2})?$/, message: 'Введите корректную цену' },
-              {
-                validator: (_, value) =>
-                  !value || Number(value) > 0
-                    ? Promise.resolve()
-                    : Promise.reject(new Error('Цена должна быть больше 0')),
-              },
-            ]}
-          >
-            <Input type="number" placeholder="Цена" />
-          </Form.Item>
-          <Flex justify="space-between">
-            <Flex gap={10}>
-              <Button type="default" htmlType="reset" onClick={handleReset} aria-label="Сбросить">
-                Сбросить
-              </Button>
-              <Button type="primary" htmlType="submit" aria-label="Добавить">
-                Добавить
-              </Button>
-            </Flex>
-            <Button type="default" onClick={handleModalClose} aria-label="Закрыть">
-              Закрыть
-            </Button>
-          </Flex>
-        </Form>
-      </Modal>
-      <Modal
-        title="Карточка товара"
-        centered
-        open={infoModalOpen}
-        onCancel={closeInfoModal}
-        footer={null}
-      >
-        {selectedProduct && (
-          <>
-            <Carousel
-              autoplay
-              arrows
-              dots
-              style={{ width: '300px', height: '300px', margin: '0 auto' }}
-            >
-              {selectedProduct.images &&
-                selectedProduct.images.map((image, key) => {
-                  return (
-                    <Image
-                      src={image}
-                      key={key}
-                      alt={selectedProduct.title}
-                      width={300}
-                      height={300}
-                    />
-                  );
-                })}
-            </Carousel>
-            <Descriptions bordered column={1} layout="horizontal">
-              <Descriptions.Item label="Наименование">
-                {selectedProduct.title ?? '—'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Вендор">{selectedProduct.brand ?? '—'}</Descriptions.Item>
-              <Descriptions.Item label="Цена">{selectedProduct.price ?? '—'} ₽</Descriptions.Item>
-              <Descriptions.Item label="Рейтинг">{selectedProduct.rating ?? '—'}</Descriptions.Item>
-            </Descriptions>
-          </>
-        )}
-      </Modal>
+      <ProductTableBlock
+        isProductPopupOpen={isProductPopupOpen}
+        handleModalClose={handleModalClose}
+        form={form}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        handleReset={handleReset}
+        productsTableData={productsTableData}
+        openInfoModal={openInfoModal}
+        closeInfoModal={closeInfoModal}
+        selectedProduct={selectedProduct}
+        sortedInfo={sortedInfo}
+        handleTableChange={handleTableChange}
+        rowSelection={rowSelection}
+        paginationConfig={paginationConfig}
+        infoModalOpen={infoModalOpen}
+        showModal={showModal}
+      />
     </PageShell>
   );
 };
