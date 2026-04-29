@@ -20,7 +20,7 @@ export default [
       parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: { ...globals.node, ...globals.browser }, // ДОБАВЛЕНЫ браузерные глобалы
+      globals: { ...globals.node, ...globals.browser },
 
       parserOptions: {
         project: null,

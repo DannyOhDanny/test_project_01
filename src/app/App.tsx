@@ -31,6 +31,9 @@ const CalcPageLazy = lazy(() =>
 const ReactQueryDevtoolsLazy = lazy(() =>
   import('@tanstack/react-query-devtools').then((m) => ({ default: m.ReactQueryDevtools }))
 );
+
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
+
 export function App() {
   return (
     <StrictMode>
@@ -104,7 +107,7 @@ export function App() {
           <QueryProvider>
             {import.meta.env.DEV ? <ReactQueryDevtoolsLazy initialIsOpen={false} /> : null}
             <StoreProvider>
-              <BrowserRouter>
+              <BrowserRouter basename={routerBasename}>
                 <ErrorBoundary>
                   <Routes>
                     <Route path="/login" element={<LoginPageLazy />} />

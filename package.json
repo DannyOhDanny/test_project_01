@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "predeploy": "rm -rf build && npm run build",
+    "predeploy": "rm -rf build && npm run build && cp build/index.html build/404.html",
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
