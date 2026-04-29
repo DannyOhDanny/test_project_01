@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "pre-commit": "npm run format && npm run lint:fix",
-    "preview": "vite preview",
+    "preview": "vite preview --base /test_project_01/",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "predeploy": "rm -rf build && npm run build && cp build/index.html build/404.html",
@@ -66,7 +66,7 @@
     "vite-plugin-svgr": "^5.0.0",
     "vitest": "^4.1.2"
   },
-  "homepage": "https://DannyOhDanny.github.io/test_project_01",
+  "homepage": "https://dannyohdanny.github.io/test_project_01/",
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "prettier --write",

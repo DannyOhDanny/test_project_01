@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const GH_PAGES_BASE = '/test_project_01/';
+
 export default defineConfig(({ command }) => ({
   plugins: [react(), svgr()],
   resolve: {
@@ -12,7 +15,7 @@ export default defineConfig(({ command }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: command === 'build' ? '/test_project_01/' : '/',
+  base: command === 'build' ? GH_PAGES_BASE : '/',
 
   build: {
     outDir: 'build',
