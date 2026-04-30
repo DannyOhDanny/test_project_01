@@ -1,0 +1,54 @@
+# CI/CD: сборка Vite (TypeScript) и публикация на GitHub Pages (ветка gh-pages).
+# В репозитории: Settings → Pages → Source: Deploy from branch → branch gh-pages / (root).
+name: GitHub Pages # отображаемое имя workflow в вкладке Actions
+
+on: # события, при которых запускается workflow
+  push: # при отправке коммитов в репозиторий
+    branches: # фильтр по имени ветки
+      - main # только ветка main (измените при необходимости)
+  pull_request: # при открытии/обновлении pull request
+    branches: # из каких веток разрешены PR (целевая ветка merge)
+      - main # PR, нацеленные на main
+
+concurrency: # ограничение одновременных запусков одного workflow
+  group: ${{ github.workflow }}-${{ github.ref }} # ключ группы: workflow + ref (ветка/тег)
+  cancel-in-progress: true # отменить предыдущий незавершённый прогон при новом пуше в ту же группу
+
+jobs: # список задач (jobs)
+  build-and-deploy: # имя job (произвольный идентификатор)
+    runs-on: ubuntu-latest # образ runner (Ubuntu, последняя стабильная для GitHub-hosted)
+    permissions: # права GITHUB_TOKEN в рамках этого job
+      contents: write # разрешить запись в репозиторий (нужно для пуша в ветку gh-pages)
+
+    steps: # последовательность шагов job
+      - name: Checkout # человекочитаемый заголовок шага в логе
+        uses: actions/checkout@v4 # action: клонировать репозиторий в рабочую директорию
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # action: установить Node.js и опционально кэш
+        with: # входные параметры action setup-node
+          node-version: '22' # версия Node (согласуйте с локальной / engines)
+          cache: npm # кэшировать node_modules по lockfile (npm)
+
+      - name: Установка зависимостей
+        run: npm ci # детерминированная установка по package-lock.json (без изменения lock)
+
+      - name: Прогон линтеров
+        run: npm run lint # eslint и prettier (см. scripts в package.json); упадёт — билд/деплой не пойдут
+
+      - name: Прогон тестов
+        run: npm test # vitest (см. scripts в package.json); упадёт — билд/деплой не пойдут
+
+      - name: Сборка (Vite → каталог build/, base из vite.config для GitHub Pages)
+        run: npm run build # скрипт из package.json: tsc -b && vite build → папка build/
+
+      - name: SPA fallback для GitHub Pages (копия index.html → 404.html)
+        run: cp build/index.html build/404.html # GitHub Pages отдаёт 404.html при неизвестном пути (для React Router)
+
+      - name: Деплой на gh-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # деплой только при push в main, не при PR
+        uses: peaceiris/actions-gh-pages@v4 # action: задеплоить статику в ветку gh-pages
+        with: # параметры peaceiris/actions-gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }} # встроенный токен Actions для push в репозиторий
+          publish_dir: ./build # каталог с готовым фронтом после vite build
+          # user_name / user_email опционально; по умолчанию github-actions[bot]
