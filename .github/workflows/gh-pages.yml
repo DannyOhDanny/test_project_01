@@ -2,6 +2,9 @@
 # В репозитории: Settings → Pages → Source: Deploy from branch → branch gh-pages / (root).
 name: GitHub Pages # отображаемое имя workflow в вкладке Actions
 
+env: # переменные окружения для всех jobs/steps
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' # форсировать запуск JS actions на Node.js 24 (избавляет от предупреждения про Node 20)
+
 on: # события, при которых запускается workflow
   push: # при отправке коммитов в репозиторий
     branches: # фильтр по имени ветки

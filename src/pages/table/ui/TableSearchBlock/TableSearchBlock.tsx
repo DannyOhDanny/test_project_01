@@ -1,9 +1,10 @@
 import { Button, Flex } from 'antd';
 
-import { ProductSearch } from '../../../entities/product/ui/ProductSearch/ProductSearch';
-import RefreshIcon from '../../../shared/assets/refresh-icon.svg?react';
-import { cardStyle } from '../../../shared/styles/shell';
-import type { TableSearchBlockProps } from '../model/types';
+import { ProductSearch } from '../../../../entities/product/ui/ProductSearch/ProductSearch';
+import RefreshIcon from '../../../../shared/assets/refresh-icon.svg?react';
+import { cardStyle } from '../../../../shared/styles/shell';
+
+import type { TableSearchBlockProps } from './types';
 
 const TableSearchBlock: React.FC<TableSearchBlockProps> = ({
   searchQuoteRef,

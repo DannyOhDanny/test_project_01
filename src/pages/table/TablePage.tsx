@@ -21,9 +21,9 @@ import type {
   TableRowSelection,
   ViewModeType,
 } from './model/types';
-import { ProductTableBlock } from './ui/ProductTableBlock';
-import { TableCategoriesBlock } from './ui/TableCategoriesBlock';
-import { TableSearchBlock } from './ui/TableSearchBlock';
+import { ProductTableBlock } from './ui/ProductTableBlock/ProductTableBlock';
+import { TableCategoriesBlock } from './ui/TableCategoriesBlock/TableCategoriesBlock';
+import { TableSearchBlock } from './ui/TableSearchBlock/TableSearchBlock';
 
 import './TablePage.css';
 

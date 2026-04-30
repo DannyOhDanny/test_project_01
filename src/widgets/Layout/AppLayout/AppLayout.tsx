@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { UserOutlined } from '@ant-design/icons';
-import { Flex, Layout, Menu } from 'antd';
+import { Flex, Image, Layout, Menu } from 'antd';
 
 import { useUserStore } from '../../../entities/user/model/userStore';
 import { LogoutButton } from '../../../features/auth/by-username/ui/LogoutButton/LogoutButton';
+import { menuStyles } from '../../../shared/styles/shell';
 
 import './AppLayout.css';
 
@@ -35,15 +36,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <Layout style={{ minHeight: '100vh', border: 0 }} className="app-layout">
-      <Header
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#fff',
-          boxShadow: 'inset 0 -2px 0 0  #f3f3f3',
-        }}
-      >
+      <Header style={menuStyles}>
+        <Image
+          style={{ overflow: 'hidden' }}
+          preview={false}
+          width={100}
+          height={60}
+          alt="logo"
+          src="../../../../public/favicon.svg"
+          styles={{
+            root: menuStyles,
+          }}
+        />
         <Menu
           theme="light"
           mode="horizontal"

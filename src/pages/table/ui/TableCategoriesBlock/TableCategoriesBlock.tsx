@@ -1,7 +1,9 @@
 import { Button, Flex, Typography } from 'antd';
 
-import { cardStyle } from '../../../shared/styles/shell';
-import type { TableCategoriesBlockProps } from '../model/types';
+import { cardStyle } from '../../../../shared/styles/shell';
+
+import type { TableCategoriesBlockProps } from './types';
+
 const { Title, Text } = Typography;
 
 const TableCategoriesBlock: React.FC<TableCategoriesBlockProps> = ({

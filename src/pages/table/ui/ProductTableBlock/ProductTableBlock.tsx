@@ -13,11 +13,12 @@ import {
   Typography,
 } from 'antd';
 
-import { ProductTable } from '../../../entities/product/ui/ProductTable/ProductTable';
-import AddIcon from '../../../shared/assets/add-icon.svg?react';
-import { cardStyle } from '../../../shared/styles/shell';
-import type { ProductFormFieldsType, ProductTableBlockProps } from '../model/types';
+import { ProductTable } from '../../../../entities/product/ui/ProductTable/ProductTable';
+import AddIcon from '../../../../shared/assets/add-icon.svg?react';
+import { cardStyle } from '../../../../shared/styles/shell';
+import type { ProductFormFieldsType } from '../../model/types';
 
+import type { ProductTableBlockProps } from './types';
 const { Text, Title } = Typography;
 
 const ProductTableBlock: React.FC<ProductTableBlockProps> = ({

@@ -50,3 +50,12 @@ export const cardStyle: CSSProperties = {
   backgroundColor: '#fff',
   padding: '12px 16px',
 };
+
+export const menuStyles: CSSProperties = {
+  display: 'flex',
+  gap: 40,
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  background: '#fff',
+  boxShadow: 'inset 0 -2px 0 0  #f3f3f3',
+};
