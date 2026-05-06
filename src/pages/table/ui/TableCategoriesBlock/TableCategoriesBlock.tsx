@@ -1,11 +1,9 @@
-import { Button, Flex, Typography } from 'antd';
+import { Button, Flex } from 'antd';
 
 import { cardStyle } from '../../../../shared/styles/shell';
+import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 
 import type { TableCategoriesBlockProps } from './types';
-
-const { Title, Text } = Typography;
-
 const TableCategoriesBlock: React.FC<TableCategoriesBlockProps> = ({
   categoryOptions,
   handleAllCategoriesClick,
@@ -14,10 +12,7 @@ const TableCategoriesBlock: React.FC<TableCategoriesBlockProps> = ({
 }) => {
   return (
     <Flex vertical gap={6} style={cardStyle}>
-      <Title level={4} className="table-title">
-        Категории
-      </Title>
-      <Text className="table-text">Выберите категорию для фильтрации</Text>
+      <InfoTitle title="Категории" subtitle="Выберите категорию для фильтрации" />
       <Flex gap={6} wrap="wrap" justify="center" align="center" style={{ marginTop: 20 }}>
         <Button type="primary" onClick={handleAllCategoriesClick}>
           Все категории

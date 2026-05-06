@@ -1,0 +1,24 @@
+.table-title {
+  font-family: var(--font-family) !important;
+  font-weight: 600;
+  font-size: 20px !important;
+  line-height: 100%;
+  color: #333;
+  margin: 0;
+}
+
+.table-add-btn {
+  border-radius: 6px;
+  padding: 10px 20px;
+  height: 42px;
+  min-height: 42px;
+  background: var(--bg-color);
+}
+
+.table-text {
+  font-family: var(--second-family) !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+  color: #333 !important;
+}

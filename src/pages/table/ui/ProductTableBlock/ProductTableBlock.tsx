@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Carousel,
   Col,
   Descriptions,
@@ -9,17 +10,19 @@ import {
   Input,
   InputNumber,
   Modal,
+  Rate,
   Row,
   Typography,
 } from 'antd';
 
 import { ProductTable } from '../../../../entities/product/ui/ProductTable/ProductTable';
-import AddIcon from '../../../../shared/assets/add-icon.svg?react';
+// import AddIcon from '../../../../shared/assets/add-icon.svg?react';
 import { cardStyle } from '../../../../shared/styles/shell';
+import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 import type { ProductFormFieldsType } from '../../model/types';
 
 import type { ProductTableBlockProps } from './types';
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
   productsTableData,
@@ -42,16 +45,12 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
   return (
     <>
       <Flex vertical gap={0} style={cardStyle}>
-        <Flex justify="space-between" gap={0} wrap="wrap" align="center">
-          <Title className="table-title">Товары</Title>
-          <Button type="primary" icon={<AddIcon />} className="table-add-btn" onClick={showModal}>
-            Добавить товар
-          </Button>
-        </Flex>
-        <Text className="table-text">
-          {' '}
-          Все позиции: {productsTableData.total > 0 ? productsTableData.total : '0'}
-        </Text>
+        <InfoTitle
+          title="Товары"
+          showModal={showModal}
+          buttonText="Добавить товар"
+          total={productsTableData.total}
+        />
         <ProductTable
           emptyText={productsTableData.emptyText}
           isLoading={productsTableData.loading}
@@ -64,13 +63,19 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
           paginationConfig={paginationConfig}
         />
       </Flex>
-
+      {/*  Модальное окно для просмотра информации о товаре*/}
       <Modal
         title="Карточка товара"
         centered
         open={infoModalOpen}
         onCancel={closeInfoModal}
         footer={null}
+        styles={{
+          container: {
+            height: `calc(100vh - 200px) !important`,
+            overflow: 'auto',
+          },
+        }}
       >
         {selectedProduct && (
           <>
@@ -101,9 +106,43 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
               <Descriptions.Item label="Цена">{selectedProduct.price ?? '—'} ₽</Descriptions.Item>
               <Descriptions.Item label="Рейтинг">{selectedProduct.rating ?? '—'}</Descriptions.Item>
             </Descriptions>
+            {selectedProduct &&
+              selectedProduct.reviews.length > 0 &&
+              selectedProduct.reviews.map((review) => {
+                const rating = Math.max(0, Math.min(5, Number(review.rating ?? 0)));
+                return (
+                  <Card
+                    key={`${review.date}-${review.reviewerName}`}
+                    size="small"
+                    style={{
+                      marginTop: 12,
+                      background: '#fafafa',
+                      borderRadius: 12,
+                    }}
+                    styles={{ body: { padding: 12 } }}
+                  >
+                    <Flex justify="space-between" align="baseline" gap={8}>
+                      <Text strong>{review.reviewerName ?? '—'}</Text>
+                      <Text type="secondary" style={{ whiteSpace: 'nowrap' }}>
+                        {review.date ?? '—'}
+                      </Text>
+                    </Flex>
+
+                    <Text style={{ display: 'block', marginTop: 8 }}>
+                      {review.comment?.trim() ? review.comment : '—'}
+                    </Text>
+
+                    <Flex align="center" gap={8} style={{ marginTop: 10 }}>
+                      <Rate allowHalf disabled value={rating} />
+                      <Text type="secondary">{rating.toFixed(rating % 1 ? 1 : 0)}</Text>
+                    </Flex>
+                  </Card>
+                );
+              })}
           </>
         )}
       </Modal>
+      {/* Модальное окно для добавления товара */}
       <Modal
         centered={true}
         title="Добавить товар"

@@ -235,6 +235,7 @@ const TablePage: React.FC = () => {
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    console.log('newSelectedRowKeys', newSelectedRowKeys);
   };
 
   const rowSelection: TableRowSelection<Product> = {

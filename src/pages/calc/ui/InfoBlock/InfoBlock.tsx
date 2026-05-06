@@ -1,7 +1,13 @@
 import type { CSSProperties } from 'react';
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  CheckCircleOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Divider, Row, Statistic, Typography } from 'antd';
+import { Button, Card, Col, Divider, Flex, Row, Statistic, Typography } from 'antd';
 
 import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
 import { CHART_LINE_COLORS } from '../../utils/pageConfig';
@@ -40,11 +46,15 @@ const InfoBlock = ({
       <Col xs={24} lg={8}>
         <Card
           variant="borderless"
-          styles={{ body: cardBody }}
+          styles={{
+            body: cardBody,
+            header: {
+              background: CHART_LINE_COLORS.balance,
+            },
+          }}
           style={{
             ...cardShellStyle,
             height: '100%',
-            borderLeft: `3px solid ${CHART_LINE_COLORS.balance}`,
           }}
         >
           <Statistic
@@ -71,15 +81,23 @@ const InfoBlock = ({
               },
             }}
           />
-          <Divider />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onAddOperation}
-            aria-label="Добавить операцию"
-          >
-            Добвить операцию
-          </Button>
+          <Divider
+            style={{
+              height: 5,
+              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.balance})`,
+            }}
+          />
+          <Flex align="center" justify="space-between" gap={10}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onAddOperation}
+              aria-label="Добавить операцию"
+            >
+              Добавить операцию
+            </Button>
+            <CheckCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.balance}` }} />
+          </Flex>
         </Card>
       </Col>
 
@@ -90,7 +108,6 @@ const InfoBlock = ({
           style={{
             ...cardShellStyle,
             height: '100%',
-            borderLeft: `3px solid ${CHART_LINE_COLORS.income}`,
           }}
         >
           <Statistic
@@ -117,6 +134,15 @@ const InfoBlock = ({
               },
             }}
           />
+          <Divider
+            style={{
+              height: 5,
+              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.income})`,
+            }}
+          />
+          <Flex align="center" justify="flex-end" gap={10}>
+            <PlusCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.income}` }} />
+          </Flex>
         </Card>
       </Col>
 
@@ -127,7 +153,6 @@ const InfoBlock = ({
           style={{
             ...cardShellStyle,
             height: '100%',
-            borderLeft: `3px solid ${CHART_LINE_COLORS.expenses}`,
           }}
         >
           <Statistic
@@ -154,6 +179,15 @@ const InfoBlock = ({
               },
             }}
           />
+          <Divider
+            style={{
+              height: 5,
+              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.expenses})`,
+            }}
+          />
+          <Flex align="center" justify="flex-end" gap={10}>
+            <MinusCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.expenses}` }} />
+          </Flex>
         </Card>
       </Col>
     </Row>

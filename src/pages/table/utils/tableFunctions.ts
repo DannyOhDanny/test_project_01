@@ -24,4 +24,17 @@ function getQueryErrorMessage(error: unknown): string {
   return String(error);
 }
 
-export { getQueryErrorMessage };
+const getStrkeColor = (value: number) => {
+  if (!value) return;
+  if (value < 15) return '#ef4444';
+  if (value < 45 && value >= 15) return '#f97316';
+  if (value >= 45 && value < 80) return '#facc15';
+  if (value >= 80 && value <= 100) return '#22c55e';
+  return '#9ca3af';
+};
+function getRandomStock(min: number, max: number) {
+  if (max <= min) return min;
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export { getQueryErrorMessage, getRandomStock, getStrkeColor };

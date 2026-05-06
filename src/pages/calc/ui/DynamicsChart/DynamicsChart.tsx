@@ -1,16 +1,11 @@
 import { useMemo } from 'react';
 import type { LineConfig } from '@ant-design/charts';
 import { Line } from '@ant-design/charts';
-import { Card, Col, Flex, Row, Select, Typography } from 'antd';
+import { Card, Col, Flex, Row, Select } from 'antd';
 
-import {
-  cardShellStyle,
-  PAGE_ROW_GUTTER,
-  sectionBlockTitleStyle,
-} from '../../../../shared/styles/shell';
+import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
+import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 import type { ChartMode, LineDatum } from '../../model/types';
-
-const { Title, Text } = Typography;
 
 type DynamicsChartProps = {
   chartMode: ChartMode;
@@ -53,12 +48,10 @@ const DynamicsChart = ({
             style={{ marginBottom: 16 }}
           >
             <div style={{ minWidth: 0, flex: '1 1 220px' }}>
-              <Title level={4} style={sectionBlockTitleStyle}>
-                Динамика
-              </Title>
-              <Text type="secondary" style={{ fontSize: 13, lineHeight: 1.5, display: 'block' }}>
-                Кумулятивный баланс и дневные суммы, переключение серий данных.
-              </Text>
+              <InfoTitle
+                title="Динамика"
+                subtitle="Кумулятивный баланс и дневные суммы, переключение серий данных."
+              />
             </div>
             <Select
               aria-label="Серия на графике"

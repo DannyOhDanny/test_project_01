@@ -1,15 +1,10 @@
-import { Card, Col, Row, Table, Typography } from 'antd';
+import { Card, Col, Row, Table } from 'antd';
 
-import {
-  cardShellStyle,
-  PAGE_ROW_GUTTER,
-  sectionBlockTitleStyle,
-} from '../../../../shared/styles/shell';
+import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
+import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 import type { TableDataType } from '../../model/types';
 
 import type { BalanceTableProps } from './model/types';
-
-const { Title, Text } = Typography;
 
 const BalanceTable = ({ tableData, tableColumns }: BalanceTableProps) => {
   return (
@@ -20,12 +15,7 @@ const BalanceTable = ({ tableData, tableColumns }: BalanceTableProps) => {
           styles={{ body: { padding: '20px 22px 24px' } }}
           style={cardShellStyle}
         >
-          <Title level={4} style={{ ...sectionBlockTitleStyle, marginBottom: 6 }}>
-            Журнал операций
-          </Title>
-          <Text type="secondary" style={{ fontSize: 13, display: 'block', marginBottom: 16 }}>
-            Все проводки за выбранный период данных.
-          </Text>
+          <InfoTitle title="Журнал операций" subtitle="Все проводки за выбранный период данных." />
           <Table<TableDataType>
             dataSource={tableData ?? []}
             columns={tableColumns}

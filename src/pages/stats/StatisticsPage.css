@@ -1,0 +1,83 @@
+.map {
+  width: 100%;
+  height: min(40vh, 520px);
+  max-height: 520px;
+}
+
+/* Стили карт */
+
+.mapWrapper {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid rgba(234, 132, 132, 0.08);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.mapTooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 22, 26, 0.94);
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 12px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  max-width: min(320px, 85vw);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.08),
+    0 12px 28px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+  width: 150px;
+  cursor: pointer;
+}
+
+.mapTooltip__bucket {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.mapTooltip__count {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.mapTooltip__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mapTooltip__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.mapTooltip__cats {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.82);
+  word-break: break-word;
+  white-space: pre-line;
+}
+.ol-control {
+  display: flex;
+  gap: 8px;
+  margin: 10px;
+}
+.ol-attribution {
+  display: none;
+}

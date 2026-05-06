@@ -6,6 +6,8 @@ import { cardStyle } from '../../../../shared/styles/shell';
 
 import type { TableSearchBlockProps } from './types';
 
+import './TableSearchBlock.css';
+
 const TableSearchBlock: React.FC<TableSearchBlockProps> = ({
   searchQuoteRef,
   searchText,

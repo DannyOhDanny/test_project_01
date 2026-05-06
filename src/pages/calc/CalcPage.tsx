@@ -290,16 +290,29 @@ const CalcPage = () => {
       sorter: (a: TableDataType, b: TableDataType) => a.type.localeCompare(b.type) as number,
       render: (value: 'balance' | 'income' | 'expenses' | 'all') => (
         <Tag
-          icon={value === 'income' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+          icon={(() => {
+            switch (value) {
+              case 'income':
+                return (
+                  <ArrowUpOutlined style={{ fontSize: 20, color: CHART_LINE_COLORS.income }} />
+                );
+              case 'expenses':
+                return (
+                  <ArrowDownOutlined style={{ fontSize: 20, color: CHART_LINE_COLORS.expenses }} />
+                );
+
+              default:
+                return null;
+            }
+          })()}
           variant="outlined"
           styles={{
             root: {
-              borderWidth: '1px',
-              borderColor:
-                value === 'income' ? '#3f8600' : value === 'expenses' ? '#cf1322' : '#8c8c8c',
+              backgroundColor: '#fff',
+              border: '1px solid #d9d9d9',
+              color: CHART_LINE_COLORS[value as keyof typeof CHART_LINE_COLORS],
             },
           }}
-          color={value === 'income' ? '#3f8600' : value === 'expenses' ? '#cf1322' : '#8c8c8c'}
         >
           {value in SERIES_LABEL ? SERIES_LABEL[value as 'balance' | 'income' | 'expenses'] : value}
         </Tag>
