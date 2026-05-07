@@ -13,6 +13,7 @@ const { Header, Content, Footer } = Layout;
 interface AppLayoutProps {
   children: React.ReactNode;
 }
+import logoSrc from '../../../../public/favicon.svg';
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             width={100}
             height={60}
             alt="logo"
-            src="/public/favicon.svg"
+            src={logoSrc}
             styles={{
               root: menuStyles,
             }}
