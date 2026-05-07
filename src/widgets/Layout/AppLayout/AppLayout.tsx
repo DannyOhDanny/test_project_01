@@ -57,7 +57,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             width={100}
             height={60}
             alt="logo"
-            src="/favicon.svg"
+            src="/public/favicon.svg"
             styles={{
               root: menuStyles,
             }}
