@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { Flex, Typography } from 'antd';
+import { Button, Flex, Typography } from 'antd';
 
 import {
   PAGE_SECTION_GAP,
@@ -13,12 +13,21 @@ const { Title, Paragraph } = Typography;
 type PageShellProps = {
   title: string;
   description?: ReactNode;
-  headerExtra?: ReactNode;
+  // headerExtra?: ReactNode;
   children: ReactNode;
   style?: CSSProperties;
+  buttonText?: string;
+  onButtonClick?: () => void;
 };
 
-const PageShell = ({ title, description, headerExtra, children, style }: PageShellProps) => {
+const PageShell = ({
+  title,
+  description,
+  buttonText,
+  children,
+  style,
+  onButtonClick,
+}: PageShellProps) => {
   return (
     <div
       style={{
@@ -39,8 +48,14 @@ const PageShell = ({ title, description, headerExtra, children, style }: PageShe
               </Paragraph>
             ) : null}
           </div>
-          {headerExtra ? (
-            <div style={{ flex: '0 0 auto', alignSelf: 'flex-start' }}>{headerExtra}</div>
+          {buttonText && onButtonClick ? (
+            <Button
+              type="primary"
+              style={{ flex: '0 0 auto', alignSelf: 'flex-start' }}
+              onClick={onButtonClick}
+            >
+              {buttonText}
+            </Button>
           ) : null}
         </Flex>
       </header>

@@ -32,6 +32,13 @@ function normalizeAmountByType(amount: number, type: CalcItem['type']): number {
   return Math.abs(amount);
 }
 
+function operationTypeAccentColor(type: TableDataType['type'] | 'balance' | 'all'): string {
+  if (type === 'income' || type === 'expenses' || type === 'balance') {
+    return CHART_LINE_COLORS[type];
+  }
+  return 'rgba(0, 0, 0, 0.65)';
+}
+
 const CalcPage = () => {
   const { data } = useCalcQuery();
   const [chartMode, setChartMode] = useState<ChartMode>('all');
@@ -270,12 +277,12 @@ const CalcPage = () => {
       title: 'Сумма',
       dataIndex: 'amount',
       sorter: (a: TableDataType, b: TableDataType) => a.amount - b.amount,
-      render: (value: number) => (
+      render: (value: number, record: TableDataType) => (
         <Text
           style={{
             fontVariantNumeric: 'tabular-nums',
             letterSpacing: '-0.01em',
-            color: value > 0 ? '#237804' : value < 0 ? '#cf1322' : undefined,
+            color: operationTypeAccentColor(record.type),
           }}
         >
           {rubFormatSignedTable(value)}
@@ -288,35 +295,36 @@ const CalcPage = () => {
       title: 'Тип',
       dataIndex: 'type',
       sorter: (a: TableDataType, b: TableDataType) => a.type.localeCompare(b.type) as number,
-      render: (value: 'balance' | 'income' | 'expenses' | 'all') => (
-        <Tag
-          icon={(() => {
-            switch (value) {
-              case 'income':
-                return (
-                  <ArrowUpOutlined style={{ fontSize: 20, color: CHART_LINE_COLORS.income }} />
-                );
-              case 'expenses':
-                return (
-                  <ArrowDownOutlined style={{ fontSize: 20, color: CHART_LINE_COLORS.expenses }} />
-                );
+      render: (value: 'balance' | 'income' | 'expenses' | 'all') => {
+        const accent = operationTypeAccentColor(value);
+        return (
+          <Tag
+            icon={(() => {
+              switch (value) {
+                case 'income':
+                  return <ArrowUpOutlined style={{ fontSize: 20, color: accent }} />;
+                case 'expenses':
+                  return <ArrowDownOutlined style={{ fontSize: 20, color: accent }} />;
 
-              default:
-                return null;
-            }
-          })()}
-          variant="outlined"
-          styles={{
-            root: {
-              backgroundColor: '#fff',
-              border: '1px solid #d9d9d9',
-              color: CHART_LINE_COLORS[value as keyof typeof CHART_LINE_COLORS],
-            },
-          }}
-        >
-          {value in SERIES_LABEL ? SERIES_LABEL[value as 'balance' | 'income' | 'expenses'] : value}
-        </Tag>
-      ),
+                default:
+                  return null;
+              }
+            })()}
+            variant="outlined"
+            styles={{
+              root: {
+                backgroundColor: '#fff',
+                border: `1px solid ${accent}`,
+                color: accent,
+              },
+            }}
+          >
+            {value in SERIES_LABEL
+              ? SERIES_LABEL[value as 'balance' | 'income' | 'expenses']
+              : value}
+          </Tag>
+        );
+      },
       align: 'center',
     },
 

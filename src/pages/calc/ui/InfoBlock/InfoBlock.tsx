@@ -20,6 +20,10 @@ const rowWrap: CSSProperties = { width: '100%' };
 
 const cardBody = { padding: '22px 24px 24px' };
 
+const STAT_PREFIX_ICON_SIZE = 20;
+/** Нейтральный префикс при нулевом значении (стрелка без акценса расхода/дохода). */
+const mutedArrowColor = 'rgba(0, 0, 0, 0.45)';
+
 const statTitle = (label: string, hint: string) => (
   <div style={{ marginBottom: 8 }}>
     <Text
@@ -63,9 +67,13 @@ const InfoBlock = ({
             precision={2}
             prefix={
               total >= 0 ? (
-                <ArrowUpOutlined style={{ color: '#3f8600', fontSize: 20 }} />
+                <ArrowUpOutlined
+                  style={{ color: CHART_LINE_COLORS.balance, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               ) : (
-                <ArrowDownOutlined style={{ color: '#cf1322', fontSize: 20 }} />
+                <ArrowDownOutlined
+                  style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               )
             }
             suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
@@ -76,7 +84,7 @@ const InfoBlock = ({
                 fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '-0.03em',
                 lineHeight: 1.2,
-                color: total >= 0 ? '#237804' : '#cf1322',
+                color: total >= 0 ? CHART_LINE_COLORS.balance : CHART_LINE_COLORS.expenses,
                 fontFeatureSettings: '"tnum" 1',
               },
             }}
@@ -96,7 +104,7 @@ const InfoBlock = ({
             >
               Добавить операцию
             </Button>
-            <CheckCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.balance}` }} />
+            <CheckCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.balance }} />
           </Flex>
         </Card>
       </Col>
@@ -116,9 +124,13 @@ const InfoBlock = ({
             precision={2}
             prefix={
               income > 0 ? (
-                <ArrowUpOutlined style={{ color: '#3f8600', fontSize: 20 }} />
+                <ArrowUpOutlined
+                  style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               ) : (
-                <ArrowDownOutlined style={{ color: '#cf1322', fontSize: 20 }} />
+                <ArrowDownOutlined
+                  style={{ color: mutedArrowColor, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               )
             }
             suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
@@ -129,7 +141,7 @@ const InfoBlock = ({
                 fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '-0.03em',
                 lineHeight: 1.2,
-                color: income > 0 ? '#237804' : 'rgba(0,0,0,0.45)',
+                color: income > 0 ? CHART_LINE_COLORS.income : mutedArrowColor,
                 fontFeatureSettings: '"tnum" 1',
               },
             }}
@@ -141,7 +153,7 @@ const InfoBlock = ({
             }}
           />
           <Flex align="center" justify="flex-end" gap={10}>
-            <PlusCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.income}` }} />
+            <PlusCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.income }} />
           </Flex>
         </Card>
       </Col>
@@ -161,9 +173,13 @@ const InfoBlock = ({
             precision={2}
             prefix={
               expenses < 0 ? (
-                <ArrowDownOutlined style={{ color: '#cf1322', fontSize: 20 }} />
+                <ArrowDownOutlined
+                  style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               ) : (
-                <ArrowUpOutlined style={{ color: '#389e0d', fontSize: 20 }} />
+                <ArrowUpOutlined
+                  style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
+                />
               )
             }
             suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
@@ -174,7 +190,7 @@ const InfoBlock = ({
                 fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '-0.03em',
                 lineHeight: 1.2,
-                color: expenses < 0 ? '#cf1322' : 'rgba(0,0,0,0.45)',
+                color: expenses < 0 ? CHART_LINE_COLORS.expenses : mutedArrowColor,
                 fontFeatureSettings: '"tnum" 1',
               },
             }}
@@ -186,7 +202,7 @@ const InfoBlock = ({
             }}
           />
           <Flex align="center" justify="flex-end" gap={10}>
-            <MinusCircleOutlined style={{ fontSize: 30, color: `${CHART_LINE_COLORS.expenses}` }} />
+            <MinusCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.expenses }} />
           </Flex>
         </Card>
       </Col>
