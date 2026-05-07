@@ -1,10 +1,31 @@
 .app-layout {
   background-color: #f3f3f3;
 }
+.app-layout-header-user {
+  cursor: pointer;
+  gap: 8px;
+}
 
+.app-layout-header-user,
 .app-layout-header-user-hovered,
 .app-layout-header-user-hovered:hover,
 .app-layout-header-user-hovered:active,
 .app-layout-header-user-hovered:focus {
   color: #4a5cff;
+  cursor: pointer;
+  margin-right: clamp(0px, 3vw, 12px);
+}
+
+.menu-logo {
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+@media screen and (max-width: 900px) {
+  .menu-logo {
+    display: none;
+  }
+  .app-layout-header-user {
+    margin-right: 0;
+  }
 }

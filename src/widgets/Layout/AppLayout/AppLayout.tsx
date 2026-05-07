@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { UserOutlined } from '@ant-design/icons';
 import { Flex, Image, Layout, Menu } from 'antd';
@@ -19,6 +19,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user } = useUserStore();
   const [isHovered, setIsHovered] = useState(false);
+  const [isCompactHeader, setIsCompactHeader] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mql = window.matchMedia('(max-width: 900px)');
+    const onChange = () => setIsCompactHeader(mql.matches);
+
+    onChange();
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
   const menuItems = [
     {
       key: '/table',
@@ -37,17 +50,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <Layout style={{ minHeight: '100vh', border: 0 }} className="app-layout">
       <Header style={menuStyles}>
-        <Image
-          style={{ overflow: 'hidden' }}
-          preview={false}
-          width={100}
-          height={60}
-          alt="logo"
-          src="../../../../public/favicon.svg"
-          styles={{
-            root: menuStyles,
-          }}
-        />
+        {!isCompactHeader && (
+          <Image
+            className="menu-logo"
+            preview={false}
+            width={100}
+            height={60}
+            alt="logo"
+            src="/favicon.svg"
+            styles={{
+              root: menuStyles,
+            }}
+          />
+        )}
         <Menu
           theme="light"
           mode="horizontal"
@@ -58,11 +73,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
         {user && (
           <Flex
-            gap={12}
             align="center"
-            className={isHovered ? 'app-layout-header-user-hovered' : ''}
+            className={isHovered ? 'app-layout-header-user-hovered' : 'app-layout-header-user'}
             onClick={() => navigate('/profile')}
-            style={{ cursor: 'pointer', marginRight: `clamp(0px, 3vw, 12px)` }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
