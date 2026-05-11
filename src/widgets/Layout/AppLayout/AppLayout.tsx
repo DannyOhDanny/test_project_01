@@ -3,17 +3,16 @@ import { useLocation, useNavigate } from 'react-router';
 import { UserOutlined } from '@ant-design/icons';
 import { Flex, Image, Layout, Menu } from 'antd';
 
+import logoSrc from '../../../../public/favicon.svg';
 import { useUserStore } from '../../../entities/user/model/userStore';
 import { LogoutButton } from '../../../features/auth/by-username/ui/LogoutButton/LogoutButton';
 import { menuStyles } from '../../../shared/styles/shell';
 
+import type { AppLayoutProps } from './model/types';
+
 import './AppLayout.css';
 
 const { Header, Content, Footer } = Layout;
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-import logoSrc from '../../../../public/favicon.svg';
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const navigate = useNavigate();

@@ -11,9 +11,10 @@ export const productApi = {
     }),
   getAllProducts: async (total: number): Promise<Products> => {
     try {
-      return axiosProductInstance
-        .get<Products>(`${PRODUCT_API_CONFIG.BASE_URL}?limit=${total}&skip=0`)
-        .then((response) => response.data);
+      const data = await axiosProductInstance.get<Products>(
+        `${PRODUCT_API_CONFIG.BASE_URL}?limit=${total}&skip=0`
+      );
+      return data.data;
     } catch (error) {
       console.error('Error fetching products', error);
       throw new Error('Error fetching products');
