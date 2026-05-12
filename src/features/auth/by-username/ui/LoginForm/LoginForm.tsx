@@ -50,16 +50,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             className="form"
           >
             <Form.Item
-              label="Почта"
+              label="Логин"
               name="new_user_name"
               className="form-item"
               rules={[
-                { required: true, message: 'Введите почту' },
+                { required: true, message: 'Введите логин' },
                 { min: 6, message: 'Минимум 6 символов' },
-                { max: 20, message: 'Максимум 20 символов' },
+                { max: 20, message: 'Максимум 10 символов' },
                 {
-                  pattern: /^[a-zA-Z0-9_]+$/,
-                  message: 'Латинские буквы, цифры и нижнее подчеркивание',
+                  pattern: /^[a-zA-Z]+$/,
+                  message: 'Латинские буквы',
                 },
               ]}
             >
@@ -81,6 +81,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               rules={[
                 { required: true, message: 'Введите пароль' },
                 { min: 6, message: 'Минимум 6 символов' },
+                { max: 20, message: 'Максимум 10 символов' },
+                {
+                  pattern: /^[a-zA-Z]+$/,
+                  message: 'Латинские буквы',
+                },
               ]}
             >
               <Input.Password
