@@ -1,12 +1,15 @@
 import React from 'react';
 import { Card, Select, Space, Table, Typography } from 'antd';
 
+import { cardShellStyle } from '../../../shared/styles/shell';
+
 import type { RatingsCardProps } from './model/types';
 
 import './styles.css';
 const { Text } = Typography;
 
 const RatingsCard: React.FC<RatingsCardProps> = ({
+  themeMode,
   data,
   title,
   options,
@@ -48,10 +51,7 @@ const RatingsCard: React.FC<RatingsCardProps> = ({
     style={{
       width: '100%',
       minWidth: 0,
-      borderRadius: 18,
-      border: '1px solid rgba(5, 5, 5, 0.08)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)',
-      background: '#ffffff',
+      ...cardShellStyle(themeMode),
     }}
   >
     <Table

@@ -9,6 +9,7 @@ import type { TableSearchBlockProps } from './types';
 import './TableSearchBlock.css';
 
 const TableSearchBlock: React.FC<TableSearchBlockProps> = ({
+  themeMode,
   searchQuoteRef,
   searchText,
   setSearchText,
@@ -17,7 +18,7 @@ const TableSearchBlock: React.FC<TableSearchBlockProps> = ({
 }) => {
   return (
     <Flex justify="space-between" gap={12} wrap="wrap" align="stretch">
-      <Flex gap={8} align="center" wrap="wrap" style={cardStyle}>
+      <Flex gap={8} align="center" wrap="wrap" style={cardStyle(themeMode)}>
         <ProductSearch
           ref={searchQuoteRef}
           value={searchText}

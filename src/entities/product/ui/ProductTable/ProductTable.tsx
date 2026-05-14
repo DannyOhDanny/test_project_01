@@ -19,6 +19,7 @@ import './ProductTable.css';
 const { Text } = Typography;
 
 const ProductTable: React.FC<ProductTableProps> = ({
+  themeMode,
   emptyText,
   errorMessage,
   data,
@@ -62,7 +63,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
             <Text
               className="item-title"
               ellipsis={{ tooltip: record.title }}
-              style={{ textAlign: 'center' }}
+              style={{ textAlign: 'center', color: themeMode === 'dark' ? '#fff' : '#000' }}
             >
               {record.title}{' '}
             </Text>
@@ -161,8 +162,8 @@ const ProductTable: React.FC<ProductTableProps> = ({
         const [integerPart, fractionalPart] = formattedPrice.split(',');
         return (
           <Text className="price-item">
-            <span style={{ color: '#222' }}>{integerPart}</span>
-            <span style={{ color: '#999' }}>,{fractionalPart}</span>
+            <span style={{ color: themeMode === 'dark' ? '#fff' : '#000' }}>{integerPart}</span>
+            <span style={{ color: themeMode === 'dark' ? '#fff' : '#000' }}>,{fractionalPart}</span>
           </Text>
         );
       },

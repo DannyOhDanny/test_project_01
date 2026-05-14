@@ -1,6 +1,11 @@
-.app-layout {
+.app-layout-light {
   background-color: #f3f3f3;
 }
+
+.app-layout-dark {
+  background-color: #1f1f1f;
+}
+
 .app-layout-header-user {
   cursor: pointer;
   gap: 8px;
@@ -24,13 +29,20 @@
   transition: opacity 0.3s ease;
 }
 
-.menu-logo {
+.menu-logo-light {
   overflow: hidden;
   flex: 0 0 auto;
 }
 
+.menu-logo-dark {
+  overflow: hidden;
+  flex: 0 0 auto;
+  fill: #1f1f1f;
+}
+
 @media screen and (max-width: 900px) {
-  .menu-logo {
+  .menu-logo-light,
+  .menu-logo-dark {
     display: none;
   }
   .app-layout-header-user {

@@ -1,6 +1,8 @@
 import type { InputRef } from 'antd';
 
+import type { AppThemeMode } from '../../../../app/App';
 interface TableSearchBlockProps {
+  themeMode: AppThemeMode;
   searchQuoteRef: React.RefObject<InputRef | null> | null;
   searchText: string;
   setSearchText: (text: string) => void;

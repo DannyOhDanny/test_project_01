@@ -17,6 +17,7 @@ import VectorSource from 'ol/source/Vector.js'; // хранилище векто
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style.js'; // стиль отрисовки точки (круг + обводка)
 import View from 'ol/View.js'; // камера карты: центр, масштаб, вращение
 
+import type { AppThemeMode } from '../../app/App';
 import { useProductAllQuery } from '../../entities/product/api/useProductAllQuery.ts';
 import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery.ts';
 import type { Product } from '../../entities/product/model/types';
@@ -56,7 +57,11 @@ const ChartLazy = lazy(() =>
   }))
 );
 
-const StatisticsPage: React.FC = () => {
+interface StatisticsPageProps {
+  themeMode: AppThemeMode;
+}
+
+const StatisticsPage: React.FC<StatisticsPageProps> = ({ themeMode }) => {
   const limitPerSlide = 5;
   const [selectedStat, setSelectedStat] = useState<string>('highPrice');
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // DOM-узел, в который ol/Map монтируется (target)
@@ -500,6 +505,7 @@ const StatisticsPage: React.FC = () => {
 
   return (
     <PageShell
+      themeMode={themeMode}
       title="Статистика"
       description="Сводка по выбранным срезам каталога, распределение товаров по категориям."
     >
@@ -507,7 +513,7 @@ const StatisticsPage: React.FC = () => {
         <Card
           variant="borderless"
           styles={{ body: { padding: 16 } }}
-          style={cardShellStyle}
+          style={cardShellStyle(themeMode)}
           extra={
             <Segmented<'table' | 'list'>
               value={selectedView}
@@ -546,6 +552,7 @@ const StatisticsPage: React.FC = () => {
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
             <Suspense fallback={<Skeleton active paragraph={{ rows: 4 }} />}>
               <RatingCardLazy
+                themeMode={themeMode}
                 data={currentSlide}
                 columns={columns}
                 options={options}
@@ -558,7 +565,11 @@ const StatisticsPage: React.FC = () => {
                 countText={`${currentSlide?.length ?? 0} поз.`}
               />
             </Suspense>
-            <Card variant="borderless" styles={{ body: { paddingTop: 8 } }} style={cardShellStyle}>
+            <Card
+              variant="borderless"
+              styles={{ body: { paddingTop: 8 } }}
+              style={cardShellStyle(themeMode)}
+            >
               <InfoTitle
                 title="Распределение по категориям"
                 subtitle="График распределения товаров по категориям."
@@ -567,7 +578,7 @@ const StatisticsPage: React.FC = () => {
                 <ChartLazy config={chartConfig} />
               </Suspense>
             </Card>
-            <Card variant="borderless" style={cardShellStyle}>
+            <Card variant="borderless" style={cardShellStyle(themeMode)}>
               <InfoTitle
                 title="Доля категорий"
                 subtitle="Показаны категории с количеством товаров больше 1."
@@ -581,6 +592,7 @@ const StatisticsPage: React.FC = () => {
           <Space orientation="vertical" size={16} style={{ width: '100%' }}>
             <Suspense fallback={<Skeleton active paragraph={{ rows: 4 }} />}>
               <RatingCardLazy
+                themeMode={themeMode}
                 data={currentSlide}
                 columns={columns}
                 options={options}

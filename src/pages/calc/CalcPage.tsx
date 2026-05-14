@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, message, type TableColumnType, Tag, Typography } from 'antd';
 
+import type { AppThemeMode } from '../../app/App';
 import { type CalcItem, useCalcQuery } from '../../entities/product/api/useCalcQuery';
 import { localDayKeyFromIso } from '../../shared/functions/productFunctions';
 import { CategoryColorMap, CategoryNameMapRu } from '../../shared/lib/categoryConfig';
@@ -38,8 +39,10 @@ function operationTypeAccentColor(type: TableDataType['type'] | 'balance' | 'all
   }
   return 'rgba(0, 0, 0, 0.65)';
 }
-
-const CalcPage = () => {
+interface CalcPageProps {
+  themeMode: AppThemeMode;
+}
+const CalcPage: React.FC<CalcPageProps> = ({ themeMode }) => {
   const { data } = useCalcQuery();
   const [chartMode, setChartMode] = useState<ChartMode>('all');
   const [isEditOperationModalOpen, setIsEditOperationModalOpen] = useState(false);
@@ -373,6 +376,7 @@ const CalcPage = () => {
 
   return (
     <PageShell
+      themeMode={themeMode}
       title="Калькулятор"
       description="Сводка по балансу, доходам и расходам, динамика по дням, список операций."
     >

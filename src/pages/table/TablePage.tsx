@@ -10,6 +10,7 @@ import type { Product, Products } from '../../entities/product/model/types';
 import { productKeys } from '../../entities/product/productKeys';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
+import type { AppThemeMode } from '../../shared/config/themeMode';
 import { categoryMap } from '../../shared/lib/categoryConfig';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';
 
@@ -36,7 +37,11 @@ export interface ProductsTableDataProps {
   refetch: () => Promise<unknown>;
 }
 
-const TablePage: React.FC = () => {
+interface TablePageProps {
+  themeMode: AppThemeMode;
+}
+
+const TablePage: React.FC<TablePageProps> = ({ themeMode }) => {
   const isAuthenticatedAuth = useAuthStore((s) => s.isAuthenticated);
   const isAuthenticatedUser = useUserStore((s) => s.isAuthenticated);
   const isSessionAuthenticated = isAuthenticatedAuth || isAuthenticatedUser;
@@ -325,10 +330,12 @@ const TablePage: React.FC = () => {
 
   return (
     <PageShell
+      themeMode={themeMode}
       title="Товары"
       description="Поиск по каталогу, таблица позиций и добавление записей."
     >
       <TableSearchBlock
+        themeMode={themeMode}
         searchQuoteRef={searchQuoteRef}
         searchText={searchText}
         setSearchText={handleSearchTextChange}
@@ -336,6 +343,7 @@ const TablePage: React.FC = () => {
         handleRefresh={handleRefresh}
       />
       <TableCategoriesBlock
+        themeMode={themeMode}
         categoryOptions={categoryOptions}
         handleAllCategoriesClick={handleAllCategoriesClick}
         handleCategoryClick={handleCategoryClick}
@@ -343,6 +351,7 @@ const TablePage: React.FC = () => {
       />
 
       <ProductTableBlock
+        themeMode={themeMode}
         isProductPopupOpen={isProductPopupOpen}
         handleModalClose={handleModalClose}
         form={form}

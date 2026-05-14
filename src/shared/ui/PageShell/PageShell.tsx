@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type React from 'react';
 import { Button, Flex, Typography } from 'antd';
 
 import {
@@ -8,42 +8,35 @@ import {
   pageTitleStyle,
 } from '../../styles/shell';
 
+import type { PageShellProps } from './model/types';
+
 const { Title, Paragraph } = Typography;
 
-type PageShellProps = {
-  title: string;
-  description?: ReactNode;
-  // headerExtra?: ReactNode;
-  children: ReactNode;
-  style?: CSSProperties;
-  buttonText?: string;
-  onButtonClick?: () => void;
-};
-
-const PageShell = ({
+const PageShell: React.FC<PageShellProps> = ({
+  themeMode,
   title,
   description,
   buttonText,
   children,
   style,
   onButtonClick,
-}: PageShellProps) => {
+}) => {
   return (
     <div
       style={{
         WebkitFontSmoothing: 'antialiased',
-        ...pageContentContainerStyle,
+        ...pageContentContainerStyle(themeMode),
         ...style,
       }}
     >
       <header style={{ marginBottom: PAGE_SECTION_GAP }}>
         <Flex justify="space-between" align="flex-start" gap={16} wrap="wrap">
           <div style={{ minWidth: 0, flex: '1 1 280px' }}>
-            <Title level={2} style={pageTitleStyle}>
+            <Title level={2} style={pageTitleStyle(themeMode)}>
               {title}
             </Title>
             {description != null && description !== '' ? (
-              <Paragraph type="secondary" style={pageDescriptionStyle}>
+              <Paragraph type="secondary" style={pageDescriptionStyle(themeMode)}>
                 {description}
               </Paragraph>
             ) : null}

@@ -20,7 +20,7 @@ import {
   Typography,
 } from 'antd';
 
-import { pageContentContainerStyle } from '../../../../shared/styles/shell';
+import { cardShellStyle, pageContentContainerStyle } from '../../../../shared/styles/shell';
 import { userApi } from '../../model/api/userApi';
 import { useUserStore } from '../../model/userStore';
 const { Title, Text } = Typography;
@@ -63,7 +63,7 @@ function getChangedProfileFields(
   }, {});
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ themeMode, user, isLoading, error }) => {
   const [openEditProfileModal, setOpenEditProfileModal] = useState(false);
   const [editProfileForm] = Form.useForm();
   const editProfileInitialRef = useRef<EditProfileFormValues | null>(null);
@@ -73,7 +73,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
       <Card
         loading
         variant="borderless"
-        style={{ borderRadius: 16, ...pageContentContainerStyle }}
+        style={{ borderRadius: 16, ...pageContentContainerStyle(themeMode) }}
       />
     );
   }
@@ -126,14 +126,17 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
         showIcon={true}
         title="Не удалось загрузить профиль"
         description={error}
-        style={pageContentContainerStyle}
+        style={pageContentContainerStyle(themeMode)}
       />
     );
   }
 
   if (!user) {
     return (
-      <Card variant="borderless" style={{ borderRadius: 16, ...pageContentContainerStyle }}>
+      <Card
+        variant="borderless"
+        style={{ borderRadius: 16, ...pageContentContainerStyle(themeMode) }}
+      >
         <Empty description="Профиль недоступен. Повторите авторизацию." />
       </Card>
     );
@@ -185,9 +188,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
         style={{
           padding: 24,
           borderRadius: 16,
-          background:
-            'linear-gradient(135deg, color-mix(in oklab, #242EDB 12%, white) 0%, #ffffff 55%, color-mix(in oklab, #797fea 12%, white) 100%)',
-          border: '1px solid #f0f0f0',
+          ...cardShellStyle(themeMode),
         }}
         wrap
       >
@@ -332,12 +333,12 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, isLoading, error }) => {
   );
 
   return (
-    <Flex vertical gap={16} style={pageContentContainerStyle}>
+    <Flex vertical gap={16} style={pageContentContainerStyle(themeMode)}>
       {profileHeader}
 
       <Card
         variant="borderless"
-        style={{ borderRadius: 16, padding: '20px', border: '1px solid #f0f0f0' }}
+        style={{ borderRadius: 16, padding: '20px', ...cardShellStyle(themeMode) }}
       >
         <Tabs
           items={[

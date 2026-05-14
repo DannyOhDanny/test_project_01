@@ -134,6 +134,20 @@
   width: 100%;
 }
 
+.form-input-dark {
+  min-width: 399px;
+  width: 100%;
+  background-color: #1f1f1f;
+  color: #fff;
+}
+
+.form-input-light {
+  min-width: 399px;
+  width: 100%;
+  background-color: #fff;
+  color: #000;
+}
+
 .form-label {
   font-family: var(--third-family);
   font-weight: 500;

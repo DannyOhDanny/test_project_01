@@ -9,16 +9,18 @@ import EyeOpenIcon from '../../../../../shared/assets/eye-on-icon.svg?react';
 import LockIcon from '../../../../../shared/assets/lock-icon.svg?react';
 import logo from '../../../../../shared/assets/logo.svg';
 import UserIcon from '../../../../../shared/assets/user-icon.svg?react';
+import type { AppThemeMode } from '../../../../../shared/config/themeMode';
 import { LoginFormValues } from '../../model/types';
 
 import './LoginForm.css';
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  themeMode: AppThemeMode;
 }
 const { Text, Title } = Typography;
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, themeMode }) => {
   const [form] = Form.useForm();
   const { login, isLoading, error } = useAuthStore();
   const onFinish = async (values: LoginFormValues) => {
@@ -35,7 +37,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
   return (
     <Flex vertical align="center" justify="center">
-      <Flex vertical align="center" className="form-content" justify="center">
+      <Flex vertical align="center" className={`form-content-${themeMode}`} justify="center">
         <Card className="form-card" classNames={{ body: 'form-card-body' }}>
           <Image alt="logo" src={logo} className="form-image" preview={false} />
           <Title className="form-title">Добро пожаловать</Title>
@@ -71,6 +73,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 autoComplete="off"
                 classNames={{
                   root: 'form-input',
+                  input: `form-input-${themeMode}`,
                 }}
               />
             </Form.Item>
@@ -94,6 +97,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 size="large"
                 autoComplete="new-password"
                 iconRender={(visible) => (visible ? <EyeOpenIcon /> : <EyeOffIcon />)}
+                classNames={{
+                  root: 'form-input',
+                  input: `form-input-${themeMode}`,
+                }}
               />
             </Form.Item>
 

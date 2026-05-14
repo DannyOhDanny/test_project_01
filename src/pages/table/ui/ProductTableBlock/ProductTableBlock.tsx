@@ -17,7 +17,7 @@ import {
 
 import { ProductTable } from '../../../../entities/product/ui/ProductTable/ProductTable';
 // import AddIcon from '../../../../shared/assets/add-icon.svg?react';
-import { cardStyle } from '../../../../shared/styles/shell';
+import { cardShellStyle, cardStyle } from '../../../../shared/styles/shell';
 import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 import type { ProductFormFieldsType } from '../../model/types';
 
@@ -25,6 +25,7 @@ import type { ProductTableBlockProps } from './types';
 const { Text } = Typography;
 
 const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
+  themeMode,
   productsTableData,
   openInfoModal,
   closeInfoModal,
@@ -44,7 +45,7 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
 }) => {
   return (
     <>
-      <Flex vertical gap={0} style={cardStyle}>
+      <Flex vertical gap={0} style={cardStyle(themeMode)}>
         <InfoTitle
           title="Товары"
           showModal={showModal}
@@ -52,6 +53,7 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
           total={productsTableData.total}
         />
         <ProductTable
+          themeMode={themeMode}
           emptyText={productsTableData.emptyText}
           isLoading={productsTableData.loading}
           onOpenInfoModal={openInfoModal}
@@ -116,8 +118,7 @@ const ProductTableBlock: React.FC<ProductTableBlockProps> = ({
                     size="small"
                     style={{
                       marginTop: 12,
-                      background: '#fafafa',
-                      borderRadius: 12,
+                      ...cardShellStyle(themeMode),
                     }}
                     styles={{ body: { padding: 12 } }}
                   >

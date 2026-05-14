@@ -1,3 +1,5 @@
+import type { AppThemeMode } from '../../../shared/config/themeMode';
+
 export interface User {
   id: number;
   username: string;
@@ -14,7 +16,6 @@ export interface User {
     address: string;
   };
 }
-
 export interface UserState {
   user: User | null;
   isAuthenticated: boolean;
@@ -23,6 +24,7 @@ export interface UserState {
   updated: boolean;
   updatedError: string | null;
   updatedLoading: boolean;
+  themeMode: AppThemeMode;
 }
 
 export interface UserActions {
@@ -36,4 +38,6 @@ export interface UserActions {
   setError: (error: string | null) => void;
   clearUser: () => void;
   checkAuth: () => Promise<boolean>;
+  setThemeMode: (themeMode: AppThemeMode) => void;
+  getThemeMode: () => AppThemeMode;
 }

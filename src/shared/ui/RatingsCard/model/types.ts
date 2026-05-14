@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import type { SelectProps, TableColumnsType } from 'antd';
 
+import type { AppThemeMode } from '../../../../app/App';
 import type { Product } from '../../../../entities/product/model/types';
-
 export type RatingsCardSortBy = 'price' | 'rating';
 export type RatingsCardSortOrder = 'asc' | 'desc';
 
 export type RatingsCardProps = {
+  themeMode: AppThemeMode;
   title?: ReactNode;
   tag?: ReactNode;
   data: Product[];
