@@ -1,0 +1,1 @@
+import{Bt as e,Rt as t,zt as n}from"./gapSize-BJivJvVE.js";function r(r,i,a){return i=e(i),t(r,n()?Reflect.construct(i,a||[],e(r).constructor):i.apply(r,a))}export{r as t};
