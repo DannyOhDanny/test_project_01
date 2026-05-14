@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { SelectProps, TableColumnsType } from 'antd';
 
-import type { AppThemeMode } from '../../../../app/App';
 import type { Product } from '../../../../entities/product/model/types';
+import type { AppThemeMode } from '../../../config/themeMode';
 export type RatingsCardSortBy = 'price' | 'rating';
 export type RatingsCardSortOrder = 'asc' | 'desc';
 

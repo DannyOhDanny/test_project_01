@@ -4,8 +4,8 @@ import type { FormProps } from 'antd';
 import type { TableProps } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
 
-import type { AppThemeMode } from '../../../../app/App';
 import type { Product } from '../../../../entities/product/model/types';
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
 import type { ProductFormFieldsType } from '../../model/types';
 import type { ProductsTableDataProps } from '../../TablePage';
 interface ProductTableBlockProps {

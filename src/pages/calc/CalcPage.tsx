@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, message, type TableColumnType, Tag, Typography } from 'antd';
 
-import type { AppThemeMode } from '../../app/App';
 import { type CalcItem, useCalcQuery } from '../../entities/product/api/useCalcQuery';
+import type { AppThemeMode } from '../../shared/config/themeMode';
 import { localDayKeyFromIso } from '../../shared/functions/productFunctions';
 import { CategoryColorMap, CategoryNameMapRu } from '../../shared/lib/categoryConfig';
 import { formatLocalDateRu } from '../../shared/lib/formatLocalDateRu';
@@ -389,13 +389,14 @@ const CalcPage: React.FC<CalcPageProps> = ({ themeMode }) => {
       />
 
       <DynamicsChart
+        themeMode={themeMode}
         chartMode={chartMode}
         onChartModeChange={setChartMode}
         lineChartData={lineChartData}
         lineChartConfig={lineChartConfig}
         selectOptions={selectOptions}
       />
-      <BalanceTable tableData={tableData} tableColumns={tableColumns} />
+      <BalanceTable tableData={tableData} tableColumns={tableColumns} themeMode={themeMode} />
       <BalanceModal
         open={isEditOperationModalOpen}
         draftOperationId={initialValues ? undefined : draftOperationId}

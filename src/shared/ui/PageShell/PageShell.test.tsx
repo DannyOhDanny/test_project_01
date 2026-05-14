@@ -6,7 +6,7 @@ import { PageShell } from './PageShell';
 describe('PageShell', () => {
   it('рендерится с title, description и children', () => {
     render(
-      <PageShell title="Заголовок страницы" description="Описание раздела">
+      <PageShell themeMode="light" title="Заголовок страницы" description="Описание раздела">
         <div>Содержимое</div>
       </PageShell>
     );
@@ -18,7 +18,7 @@ describe('PageShell', () => {
 
   it('не рендерит вторичный текст описания без description или при пустой строке', () => {
     const { container, rerender } = render(
-      <PageShell title="Только заголовок">
+      <PageShell themeMode="light" title="Только заголовок">
         <span>Контент</span>
       </PageShell>
     );
@@ -26,7 +26,7 @@ describe('PageShell', () => {
     expect(container.querySelector('.ant-typography-secondary')).not.toBeInTheDocument();
 
     rerender(
-      <PageShell title="Только заголовок" description="">
+      <PageShell themeMode="light" title="Только заголовок" description="">
         <span>Контент</span>
       </PageShell>
     );
@@ -36,7 +36,12 @@ describe('PageShell', () => {
 
   it('рендерит buttonText и передает функцию onButtonClick справа от заголовка', () => {
     render(
-      <PageShell title="Страница" buttonText="Кнопка действия" onButtonClick={vi.fn()}>
+      <PageShell
+        themeMode="light"
+        title="Страница"
+        buttonText="Кнопка действия"
+        onButtonClick={vi.fn()}
+      >
         <div>Тело страницы</div>
       </PageShell>
     );

@@ -82,6 +82,7 @@ describe('ProductTable', () => {
   it('рендерит таблицу с данными', () => {
     render(
       <ProductTable
+        themeMode="light"
         isLoading={false}
         data={mockProducts}
         sortedInfo={{
@@ -122,6 +123,7 @@ describe('ProductTable', () => {
   it('показывает рейтинг с правильным цветом', () => {
     render(
       <ProductTable
+        themeMode="light"
         isLoading={false}
         data={mockProducts}
         sortedInfo={{
@@ -161,6 +163,7 @@ describe('ProductTable', () => {
   it('форматирует цену через formatPrice', () => {
     render(
       <ProductTable
+        themeMode="light"
         isLoading={false}
         data={mockProducts}
         sortedInfo={{
@@ -199,6 +202,7 @@ describe('ProductTable', () => {
     const openModalMock = vi.fn();
     render(
       <ProductTable
+        themeMode="light"
         isLoading={false}
         data={mockProducts}
         sortedInfo={{

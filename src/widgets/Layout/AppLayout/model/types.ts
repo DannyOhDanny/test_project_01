@@ -1,5 +1,4 @@
-import { AppThemeMode } from '../../../../app/App';
-
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
 interface AppLayoutProps {
   children: React.ReactNode;
   themeMode: AppThemeMode;

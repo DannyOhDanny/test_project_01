@@ -3,11 +3,13 @@ import type { LineConfig } from '@ant-design/charts';
 import { Line } from '@ant-design/charts';
 import { Card, Col, Flex, Row, Select } from 'antd';
 
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
 import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
 import { InfoTitle } from '../../../../shared/ui/InfoTitle/InfoTitle';
 import type { ChartMode, LineDatum } from '../../model/types';
 
 type DynamicsChartProps = {
+  themeMode: AppThemeMode;
   chartMode: ChartMode;
   onChartModeChange: (mode: ChartMode) => void;
   selectOptions: { label: string; value: ChartMode }[];
@@ -16,6 +18,7 @@ type DynamicsChartProps = {
 };
 
 const DynamicsChart = ({
+  themeMode,
   chartMode,
   onChartModeChange,
   selectOptions,
@@ -38,7 +41,7 @@ const DynamicsChart = ({
         <Card
           variant="borderless"
           styles={{ body: { padding: '20px 22px 22px' } }}
-          style={cardShellStyle}
+          style={cardShellStyle(themeMode)}
         >
           <Flex
             justify="space-between"

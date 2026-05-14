@@ -1,4 +1,5 @@
-import type { AppThemeMode } from '../../../../app/App';
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
+
 interface TableCategoriesBlockProps {
   categoryOptions: { value: string; label: string }[];
   handleAllCategoriesClick: () => void;

@@ -17,12 +17,12 @@ import VectorSource from 'ol/source/Vector.js'; // хранилище векто
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style.js'; // стиль отрисовки точки (круг + обводка)
 import View from 'ol/View.js'; // камера карты: центр, масштаб, вращение
 
-import type { AppThemeMode } from '../../app/App';
 import { useProductAllQuery } from '../../entities/product/api/useProductAllQuery.ts';
 import { useProductPageQuery } from '../../entities/product/api/useProductPageQuery.ts';
 import type { Product } from '../../entities/product/model/types';
 import { useAuthStore } from '../../entities/user/model/authStore';
 import { useUserStore } from '../../entities/user/model/userStore';
+import type { AppThemeMode } from '../../shared/config/themeMode.ts';
 import { getCategory } from '../../shared/functions/productFunctions';
 import { InfoTitle } from '../../shared/ui/InfoTitle/InfoTitle';
 import { PageShell } from '../../shared/ui/PageShell/PageShell';

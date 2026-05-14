@@ -1,7 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 
 import type { AppThemeMode } from '../../../config/themeMode';
-
 type PageShellProps = {
   title: string;
   description?: ReactNode;

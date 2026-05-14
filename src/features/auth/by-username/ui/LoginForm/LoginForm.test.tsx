@@ -23,11 +23,11 @@ describe('LoginForm', () => {
       error: null,
     });
   });
-  const renderForm = (props = {}) =>
+  const renderForm = () =>
     render(
       <MemoryRouter>
         <Routes>
-          <Route path="/" element={<LoginForm {...props} />} />
+          <Route path="/" element={<LoginForm themeMode="light" onSuccess={() => {}} />} />
         </Routes>
       </MemoryRouter>
     );

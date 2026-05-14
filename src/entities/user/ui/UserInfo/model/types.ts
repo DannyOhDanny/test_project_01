@@ -1,4 +1,4 @@
-import type { AppThemeMode } from '../../../../../app/App';
+import type { AppThemeMode } from '../../../../../shared/config/themeMode';
 import type { User } from '../../../model/types';
 export type EditProfileFormValues = Pick<
   User,

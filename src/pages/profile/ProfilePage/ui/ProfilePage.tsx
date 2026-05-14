@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { AppThemeMode } from '../../../../app/App';
 import { useUserStore } from '../../../../entities/user/model/userStore';
 import { UserInfo } from '../../../../entities/user/ui/UserInfo/UserInfo';
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
 import { PageShell } from '../../../../shared/ui/PageShell/PageShell';
 
 interface ProfilePageProps {

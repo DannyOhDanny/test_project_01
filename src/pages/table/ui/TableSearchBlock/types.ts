@@ -1,6 +1,7 @@
 import type { InputRef } from 'antd';
 
-import type { AppThemeMode } from '../../../../app/App';
+import type { AppThemeMode } from '../../../../shared/config/themeMode';
+
 interface TableSearchBlockProps {
   themeMode: AppThemeMode;
   searchQuoteRef: React.RefObject<InputRef | null> | null;

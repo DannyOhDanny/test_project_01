@@ -6,14 +6,14 @@ import type { TableDataType } from '../../model/types';
 
 import type { BalanceTableProps } from './model/types';
 
-const BalanceTable = ({ tableData, tableColumns }: BalanceTableProps) => {
+const BalanceTable = ({ tableData, tableColumns, themeMode }: BalanceTableProps) => {
   return (
     <Row gutter={PAGE_ROW_GUTTER} style={{ width: '100%' }}>
       <Col span={24}>
         <Card
           variant="borderless"
           styles={{ body: { padding: '20px 22px 24px' } }}
-          style={cardShellStyle}
+          style={cardShellStyle(themeMode)}
         >
           <InfoTitle title="Журнал операций" subtitle="Все проводки за выбранный период данных." />
           <Table<TableDataType>
