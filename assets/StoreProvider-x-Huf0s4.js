@@ -1,0 +1,1 @@
+import"./chunk-DECur_0Z.js";import{t as e}from"./react-DYpzXrK8.js";import{l as t}from"./index-DdKLfp73.js";e();var n=t(),r=({children:e})=>(0,n.jsx)(n.Fragment,{children:e});export{r as StoreProvider};
