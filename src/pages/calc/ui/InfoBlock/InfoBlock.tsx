@@ -1,211 +1,187 @@
-import type { CSSProperties } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   CheckCircleOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Divider, Flex, Row, Statistic, Typography } from 'antd';
+import { Button, Card, Col, Divider, Flex, Row, Statistic } from 'antd';
+import gsap from 'gsap';
 
 import { cardShellStyle, PAGE_ROW_GUTTER } from '../../../../shared/styles/shell';
 import { CHART_LINE_COLORS } from '../../utils/pageConfig';
 
+import { INFO_BLOCK_CARDS, type InfoCardKey } from './config/cardsConfig';
+import {
+  cardBody,
+  mutedArrowColor,
+  rowWrap,
+  STAT_PREFIX_ICON_SIZE,
+  statisticValue,
+  statTitle,
+} from './config/styleConfig';
 import type { InfoBlockProps } from './model/type';
-
-const { Text } = Typography;
-
-const rowWrap: CSSProperties = { width: '100%' };
-
-const cardBody = { padding: '22px 24px 24px' };
-
-const STAT_PREFIX_ICON_SIZE = 20;
-/** Нейтральный префикс при нулевом значении (стрелка без акценса расхода/дохода). */
-const mutedArrowColor = 'rgba(0, 0, 0, 0.45)';
-
-const statTitle = (label: string, hint: string) => (
-  <div style={{ marginBottom: 8 }}>
-    <Text
-      strong
-      style={{ fontSize: 15, display: 'block', letterSpacing: '-0.02em', lineHeight: 1.35 }}
-    >
-      {label}
-    </Text>
-    <Text type="secondary" style={{ fontSize: 12, lineHeight: 1.45 }}>
-      {hint}
-    </Text>
-  </div>
-);
-
 const InfoBlock = ({
+  themeMode,
   total,
   income,
   expenses,
   expensesDisplay,
   onAddOperation,
 }: InfoBlockProps) => {
+  const cardsRowRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Record<InfoCardKey, HTMLDivElement | null>>({
+    balance: null,
+    income: null,
+    expenses: null,
+  });
+
+  useLayoutEffect(() => {
+    const cards = INFO_BLOCK_CARDS.map((c) => cardRefs.current[c.key]).filter(
+      (el): el is HTMLDivElement => el != null
+    );
+    const scope = cardsRowRef.current;
+    if (cards.length === 0 || !scope) return;
+
+    const ctx = gsap.context(() => {
+      const timeline = gsap.timeline({ defaults: { duration: 0.55, ease: 'power2.out' } });
+      cards.forEach((cardEl, index) => {
+        timeline.from(
+          cardEl,
+          { x: -36, opacity: 0, autoAlpha: 0 },
+          index === 0 ? undefined : '+=0.1'
+        );
+      });
+    }, scope);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <Row gutter={PAGE_ROW_GUTTER} style={rowWrap}>
-      <Col xs={24} lg={8}>
-        <Card
-          variant="borderless"
-          styles={{
-            body: cardBody,
-            header: {
-              background: CHART_LINE_COLORS.balance,
-            },
-          }}
-          style={{
-            ...cardShellStyle,
-            height: '100%',
-          }}
-        >
-          <Statistic
-            title={statTitle('Баланс', 'Итого за период')}
-            value={total}
-            precision={2}
-            prefix={
-              total >= 0 ? (
-                <ArrowUpOutlined
-                  style={{ color: CHART_LINE_COLORS.balance, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              ) : (
-                <ArrowDownOutlined
-                  style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              )
-            }
-            suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
-            styles={{
-              content: {
-                fontSize: 28,
-                fontWeight: 600,
-                fontVariantNumeric: 'tabular-nums',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.2,
-                color: total >= 0 ? CHART_LINE_COLORS.balance : CHART_LINE_COLORS.expenses,
-                fontFeatureSettings: '"tnum" 1',
-              },
-            }}
-          />
-          <Divider
-            style={{
-              height: 5,
-              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.balance})`,
-            }}
-          />
-          <Flex align="center" justify="space-between" gap={10}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={onAddOperation}
-              aria-label="Добавить операцию"
+    <Row gutter={PAGE_ROW_GUTTER} style={rowWrap} ref={cardsRowRef}>
+      {INFO_BLOCK_CARDS.map((card) => {
+        const accent = CHART_LINE_COLORS[card.accentKey];
+        const value = statisticValue(card.valueSource, { total, income, expensesDisplay });
+
+        const prefix =
+          card.valueSource === 'total' ? (
+            total >= 0 ? (
+              <ArrowUpOutlined
+                style={{ color: CHART_LINE_COLORS.balance, fontSize: STAT_PREFIX_ICON_SIZE }}
+              />
+            ) : (
+              <ArrowDownOutlined
+                style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
+              />
+            )
+          ) : card.valueSource === 'income' ? (
+            income > 0 ? (
+              <ArrowUpOutlined
+                style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
+              />
+            ) : (
+              <ArrowDownOutlined
+                style={{ color: mutedArrowColor, fontSize: STAT_PREFIX_ICON_SIZE }}
+              />
+            )
+          ) : expenses < 0 ? (
+            <ArrowDownOutlined
+              style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
+            />
+          ) : (
+            <ArrowUpOutlined
+              style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
+            />
+          );
+
+        const contentColor =
+          card.valueSource === 'total'
+            ? total >= 0
+              ? CHART_LINE_COLORS.balance
+              : CHART_LINE_COLORS.expenses
+            : card.valueSource === 'income'
+              ? income > 0
+                ? CHART_LINE_COLORS.income
+                : mutedArrowColor
+              : expenses < 0
+                ? CHART_LINE_COLORS.expenses
+                : mutedArrowColor;
+
+        return (
+          <Col xs={card.col.xs} lg={card.col.lg} key={card.key}>
+            <Card
+              ref={(el) => {
+                cardRefs.current[card.key] = el;
+              }}
+              variant="borderless"
+              styles={{
+                body: cardBody,
+                ...(card.tintedHeader
+                  ? {
+                      header: {
+                        background: CHART_LINE_COLORS.balance,
+                      },
+                    }
+                  : {}),
+              }}
+              style={{
+                ...cardShellStyle(themeMode),
+                height: '100%',
+              }}
             >
-              Добавить операцию
-            </Button>
-            <CheckCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.balance }} />
-          </Flex>
-        </Card>
-      </Col>
-
-      <Col xs={24} lg={8}>
-        <Card
-          variant="borderless"
-          styles={{ body: cardBody }}
-          style={{
-            ...cardShellStyle,
-            height: '100%',
-          }}
-        >
-          <Statistic
-            title={statTitle('Доходы', 'Сумма поступлений')}
-            value={income}
-            precision={2}
-            prefix={
-              income > 0 ? (
-                <ArrowUpOutlined
-                  style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              ) : (
-                <ArrowDownOutlined
-                  style={{ color: mutedArrowColor, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              )
-            }
-            suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
-            styles={{
-              content: {
-                fontSize: 28,
-                fontWeight: 600,
-                fontVariantNumeric: 'tabular-nums',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.2,
-                color: income > 0 ? CHART_LINE_COLORS.income : mutedArrowColor,
-                fontFeatureSettings: '"tnum" 1',
-              },
-            }}
-          />
-          <Divider
-            style={{
-              height: 5,
-              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.income})`,
-            }}
-          />
-          <Flex align="center" justify="flex-end" gap={10}>
-            <PlusCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.income }} />
-          </Flex>
-        </Card>
-      </Col>
-
-      <Col xs={24} lg={8}>
-        <Card
-          variant="borderless"
-          styles={{ body: cardBody }}
-          style={{
-            ...cardShellStyle,
-            height: '100%',
-          }}
-        >
-          <Statistic
-            title={statTitle('Расходы', 'Сумма списаний')}
-            value={expensesDisplay}
-            precision={2}
-            prefix={
-              expenses < 0 ? (
-                <ArrowDownOutlined
-                  style={{ color: CHART_LINE_COLORS.expenses, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              ) : (
-                <ArrowUpOutlined
-                  style={{ color: CHART_LINE_COLORS.income, fontSize: STAT_PREFIX_ICON_SIZE }}
-                />
-              )
-            }
-            suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
-            styles={{
-              content: {
-                fontSize: 28,
-                fontWeight: 600,
-                fontVariantNumeric: 'tabular-nums',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.2,
-                color: expenses < 0 ? CHART_LINE_COLORS.expenses : mutedArrowColor,
-                fontFeatureSettings: '"tnum" 1',
-              },
-            }}
-          />
-          <Divider
-            style={{
-              height: 5,
-              background: `linear-gradient(to right, #fff, ${CHART_LINE_COLORS.expenses})`,
-            }}
-          />
-          <Flex align="center" justify="flex-end" gap={10}>
-            <MinusCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.expenses }} />
-          </Flex>
-        </Card>
-      </Col>
+              <Statistic
+                title={statTitle(card.title, card.subtitle)}
+                value={value}
+                precision={2}
+                prefix={prefix}
+                suffix={<span style={{ marginLeft: 4, fontWeight: 500 }}>₽</span>}
+                styles={{
+                  content: {
+                    fontSize: 28,
+                    fontWeight: 600,
+                    fontVariantNumeric: 'tabular-nums',
+                    letterSpacing: '-0.03em',
+                    lineHeight: 1.2,
+                    color: contentColor,
+                    fontFeatureSettings: '"tnum" 1',
+                  },
+                }}
+              />
+              <Divider
+                style={{
+                  height: 5,
+                  background: `linear-gradient(to right, #fff, ${accent})`,
+                }}
+              />
+              <Flex align="center" justify={card.footerJustify} gap={10}>
+                {card.footerSlot === 'addOperationPlusCheck' ? (
+                  <>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={onAddOperation}
+                      aria-label="Добавить операцию"
+                    >
+                      Добавить операцию
+                    </Button>
+                    <CheckCircleOutlined
+                      style={{ fontSize: 30, color: CHART_LINE_COLORS.balance }}
+                    />
+                  </>
+                ) : card.footerSlot === 'plusCircleOnly' ? (
+                  <PlusCircleOutlined style={{ fontSize: 30, color: CHART_LINE_COLORS.income }} />
+                ) : (
+                  <MinusCircleOutlined
+                    style={{ fontSize: 30, color: CHART_LINE_COLORS.expenses }}
+                  />
+                )}
+              </Flex>
+            </Card>
+          </Col>
+        );
+      })}
     </Row>
   );
 };

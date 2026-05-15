@@ -381,6 +381,7 @@ const CalcPage: React.FC<CalcPageProps> = ({ themeMode }) => {
       description="Сводка по балансу, доходам и расходам, динамика по дням, список операций."
     >
       <InfoBlock
+        themeMode={themeMode}
         total={total}
         income={income}
         expenses={expenses}
